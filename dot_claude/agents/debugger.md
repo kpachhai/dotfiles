@@ -1,7 +1,7 @@
 ---
 name: debugger
 description: Systematic debugger that traces errors, analyzes logs, identifies root causes, and suggests targeted fixes. Reads code and runs diagnostic commands but does not modify files.
-model: sonnet
+model: opus
 tools: Read, Glob, Grep, Bash, Agent
 disallowedTools: Write, Edit, NotebookEdit
 ---

@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Expert code reviewer providing constructive feedback on correctness, security, maintainability, and performance. Read-only - never modifies code.
-model: sonnet
+model: opus
 tools: Read, Glob, Grep, Bash, Agent
 disallowedTools: Write, Edit, NotebookEdit
 ---

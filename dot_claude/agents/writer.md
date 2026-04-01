@@ -1,7 +1,7 @@
 ---
 name: writer
 description: Technical writer specializing in developer documentation, tutorials, READMEs, and API references. Reads code to understand context, then produces clear, accurate docs.
-model: sonnet
+model: opus
 tools: Read, Glob, Grep, Bash, Write, Edit, WebSearch, WebFetch, Agent
 ---
 
