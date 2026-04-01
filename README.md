@@ -6,7 +6,7 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 
 | Category | What | Highlights |
 |----------|------|------------|
-| **Claude Code** | Settings, 8 subagents, 3 skills | Opus default, auto-permissions, desktop notifications |
+| **Claude Code** | Settings, 17 subagents, 3 skills | Opus default, auto-permissions, desktop notifications |
 | **Zsh** | Zim framework, autosuggestions, syntax highlighting | Fish-like experience with history substring search |
 | **Git** | GPG signing, user config | DCO sign-off ready |
 | **Tmux** | Mouse mode, vi keys | Minimal config |
@@ -71,10 +71,19 @@ chezmoi update
 | `researcher` | Opus | Deep research with citations |
 | `debugger` | Opus | Systematic bug tracing |
 | `writer` | Opus | Technical documentation |
-| `security-auditor` | Opus | Security audit, threat modeling |
+| `security-auditor` | Opus | General security audit, threat modeling, OWASP |
+| `blockchain-security-auditor` | Opus | Adversarial Solidity audit, DeFi exploit analysis |
 | `solidity-engineer` | Opus | Smart contracts, EVM smart contracts |
 | `dev-advocate` | Opus | Tutorials, demos, talks |
 | `architect` | Opus | System design, ADRs |
+| `frontend-developer` | Opus | React/Vue/Angular, UI, accessibility, performance |
+| `backend-architect` | Opus | API design, scalability, server-side architecture |
+| `ai-engineer` | Opus | ML models, LLM integration, RAG, embeddings |
+| `devops-automator` | Opus | CI/CD, Docker, Kubernetes, GitHub Actions |
+| `database-optimizer` | Opus | Schema design, query performance, indexing |
+| `mcp-builder` | Opus | MCP server design and implementation |
+| `accessibility-auditor` | Opus | WCAG compliance, ARIA, screen readers |
+| `api-tester` | Opus | API validation, endpoint testing, OWASP API Security |
 
 ## Claude Code Skills (Slash Commands)
 
@@ -105,7 +114,7 @@ To re-run: `chezmoi state delete-bucket --bucket=scriptState && chezmoi apply`
 ## Machine-Specific Config
 
 Not synced (use for per-machine overrides):
-- `~/.claude/settings.local.json` - AIM hooks, machine-specific permissions
+- `~/.claude/settings.json` - AIM hooks, machine-managed (chezmoi ignores this)
 - `~/.claude/projects/` - Auto-memory (machine-specific paths)
 - `~/.zim/` - Zim modules (installed per-machine)
 
@@ -116,7 +125,7 @@ dot_claude/           -> ~/.claude/
   agents/             -> ~/.claude/agents/
   skills/             -> ~/.claude/skills/
   rules/              -> ~/.claude/rules/
-  settings.json       -> ~/.claude/settings.json
+  settings.local.json -> ~/.claude/settings.local.json
   CLAUDE.md           -> ~/.claude/CLAUDE.md
 dot_gitconfig         -> ~/.gitconfig
 dot_tmux.conf         -> ~/.tmux.conf
