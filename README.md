@@ -12,6 +12,23 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 | **Tmux** | Mouse mode, vi keys | Minimal config |
 | **macOS** | Developer defaults | Fast key repeat, Finder tweaks, Dock auto-hide, no smart quotes |
 
+## Prerequisites
+
+Install these before running the setup:
+
+| Tool | Install | Purpose |
+|------|---------|---------|
+| **Homebrew** | [brew.sh](https://brew.sh/) | macOS package manager |
+| **Git** | `brew install git` | Version control |
+| **GPG** | `brew install gnupg` | Commit signing (configure your own key) |
+| **Claude Code** | [claude.ai/code](https://claude.ai/code) | AI coding assistant CLI |
+| **Node.js** | `brew install nvm && nvm install --lts` | JavaScript runtime |
+| **Tmux** | `brew install tmux` | Terminal multiplexer |
+
+Optional (installed automatically by configs if missing):
+- **Zim** - Installed automatically by `.zshrc` on first shell launch
+- **chezmoi** - Can self-install during setup (see below)
+
 ## Setup on a New Machine
 
 ```bash
@@ -22,7 +39,13 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply kpachhai
 chezmoi init --apply kpachhai
 ```
 
-That's it. Chezmoi clones this repo, applies all configs, and runs the macOS defaults script.
+This will:
+1. Clone this repo to `~/.local/share/chezmoi`
+2. Copy all dotfiles to their target locations (`~/.zshrc`, `~/.claude/`, etc.)
+3. Run `run_once_macos-defaults.sh` to apply macOS developer defaults (restarts Dock/Finder)
+4. On first shell launch, Zim auto-installs its modules (autosuggestions, syntax highlighting, etc.)
+
+After setup, install Zim modules by opening a new terminal or running `source ~/.zshrc`.
 
 ## Day-to-Day Usage
 
