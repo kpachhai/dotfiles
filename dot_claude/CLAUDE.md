@@ -45,11 +45,11 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 ## Subagents Available
 
 Use these when the task matches their specialty:
-- `code-reviewer` - Read-only code review (Sonnet, fast)
-- `researcher` - Deep research with web search (Opus, thorough)
-- `debugger` - Systematic bug tracing (Sonnet, fast)
-- `writer` - Technical documentation (Sonnet)
-- `security-auditor` - Security audit and threat modeling (Opus, thorough)
+- `code-reviewer` - Read-only code review (Opus)
+- `researcher` - Deep research with web search (Opus)
+- `debugger` - Systematic bug tracing (Opus)
+- `writer` - Technical documentation (Opus)
+- `security-auditor` - Security audit and threat modeling (Opus)
 - `solidity-engineer` - Smart contracts and EVM smart contracts (Opus)
-- `dev-advocate` - Tutorials, demos, conference content (Sonnet)
+- `dev-advocate` - Tutorials, demos, conference content (Opus)
 - `architect` - System design and ADRs (Opus)

@@ -67,13 +67,13 @@ chezmoi update
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
-| `code-reviewer` | Sonnet | Read-only code review |
+| `code-reviewer` | Opus | Read-only code review |
 | `researcher` | Opus | Deep research with citations |
-| `debugger` | Sonnet | Systematic bug tracing |
-| `writer` | Sonnet | Technical documentation |
+| `debugger` | Opus | Systematic bug tracing |
+| `writer` | Opus | Technical documentation |
 | `security-auditor` | Opus | Security audit, threat modeling |
 | `solidity-engineer` | Opus | Smart contracts, EVM smart contracts |
-| `dev-advocate` | Sonnet | Tutorials, demos, talks |
+| `dev-advocate` | Opus | Tutorials, demos, talks |
 | `architect` | Opus | System design, ADRs |
 
 ## Claude Code Skills (Slash Commands)
