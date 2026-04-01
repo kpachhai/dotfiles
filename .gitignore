@@ -1,0 +1,15 @@
+# Machine-specific (never sync)
+*.local.json
+projects/
+sessions/
+cache/
+backups/
+telemetry/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Zim (installed per-machine)
+.zim/

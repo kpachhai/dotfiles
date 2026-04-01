@@ -1,0 +1,16 @@
+PROMPT='%~ >> '
+
+# NVM stuff
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+# Solo stuff
+export SOLO_CLUSTER_NAME=solo
+export SOLO_NAMESPACE=solo
+export SOLO_CLUSTER_SETUP_NAMESPACE=solo-cluster
+export SOLO_DEPLOYMENT=solo-deployment
+source <(kubectl completion zsh)
+export NODE_OPTIONS="--no-deprecation"
+
+export PATH=/opt/homebrew/share/google-cloud-sdk/bin:"$PATH"
