@@ -1,5 +1,6 @@
 # Machine-specific (never sync)
 *.local.json
+!dot_claude/settings.local.json
 projects/
 sessions/
 cache/
