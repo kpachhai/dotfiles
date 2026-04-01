@@ -10,6 +10,7 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
   - `-S` - GPG sign the commit
   - `-s` - add Signed-off-by line (DCO)
 - **NEVER** add `Co-Authored-By` lines or mention Claude/AI in commit messages.
+- **NEVER** run `git commit` or `git push` unless the user explicitly asks you to. Always wait for the user to initiate commits and pushes. Preparing changes is fine; committing and pushing is the user's decision.
 
 ## Code Style Preferences
 
