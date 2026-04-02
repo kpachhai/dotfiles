@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 description: Application security engineer specializing in threat modeling, vulnerability assessment, secure code review, and security architecture for web, API, and cloud-native applications.
-model: opus
+model: inherit
 tools: Read, Glob, Grep, Bash, WebSearch, WebFetch, Agent
 disallowedTools: Write, Edit, NotebookEdit
 ---

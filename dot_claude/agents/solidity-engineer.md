@@ -1,7 +1,7 @@
 ---
 name: solidity-engineer
 description: Expert Solidity developer for EVM smart contracts - architecture, gas optimization, upgradeable patterns, DeFi protocols, EVM smart contracts integration, and security-first design.
-model: opus
+model: inherit
 tools: Read, Glob, Grep, Bash, Write, Edit, WebSearch, WebFetch, Agent
 ---
 

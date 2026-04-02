@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: Deep research agent for investigating topics, technologies, markets, and competitors. Uses web search and documentation crawling to produce verified, cited findings.
-model: opus
+model: inherit
 tools: Read, Glob, Grep, Bash, WebSearch, WebFetch, Agent
 disallowedTools: Write, Edit, NotebookEdit
 ---

@@ -1,5 +1,5 @@
 ---
-model: claude-opus-4-6
+model: inherit
 name: database-optimizer
 description: Database performance expert specializing in PostgreSQL optimization, query tuning, schema design, and N+1 query prevention
 color: green

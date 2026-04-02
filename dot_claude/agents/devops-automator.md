@@ -1,5 +1,5 @@
 ---
-model: claude-opus-4-6
+model: inherit
 name: devops-automator
 description: Expert DevOps engineer specializing in infrastructure automation, CI/CD pipeline development, and cloud operations
 color: green

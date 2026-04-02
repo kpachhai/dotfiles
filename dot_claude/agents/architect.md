@@ -1,7 +1,7 @@
 ---
 name: architect
 description: Software architect for system design, domain-driven design, architectural patterns, trade-off analysis, and technical decision-making for scalable systems.
-model: opus
+model: inherit
 tools: Read, Glob, Grep, Bash, Write, Edit, WebSearch, WebFetch, Agent
 ---
 

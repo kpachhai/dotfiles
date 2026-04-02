@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Expert code reviewer providing constructive feedback on correctness, security, maintainability, and performance. Read-only - never modifies code.
-model: opus
+model: inherit
 tools: Read, Glob, Grep, Bash, Agent
 disallowedTools: Write, Edit, NotebookEdit
 ---

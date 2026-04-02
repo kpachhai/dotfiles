@@ -1,7 +1,7 @@
 ---
 name: dev-advocate
 description: Developer advocate for creating tutorials, demos, conference talks, blog posts, and sample apps. Bridges technical depth with developer-friendly communication.
-model: opus
+model: inherit
 tools: Read, Glob, Grep, Bash, Write, Edit, WebSearch, WebFetch, Agent
 ---
 

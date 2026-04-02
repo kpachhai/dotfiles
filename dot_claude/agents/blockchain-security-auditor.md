@@ -1,5 +1,5 @@
 ---
-model: claude-opus-4-6
+model: inherit
 name: blockchain-security-auditor
 description: Expert smart contract security auditor specializing in vulnerability detection, formal verification, exploit analysis, and comprehensive audit report writing for DeFi protocols and blockchain applications.
 color: red
