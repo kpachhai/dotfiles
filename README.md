@@ -31,6 +31,8 @@ Optional (installed automatically by configs if missing):
 
 ## Setup on a New Machine
 
+This is the only time you should run `chezmoi apply` - it deploys the repo contents to the machine. After this, follow the daily workflow above.
+
 ```bash
 # Install chezmoi and apply dotfiles in one command
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply kpachhai
@@ -45,22 +47,46 @@ This will:
 3. Run `run_once_macos-defaults.sh` to apply macOS developer defaults (restarts Dock/Finder)
 4. On first shell launch, Zim auto-installs its modules (autosuggestions, syntax highlighting, etc.)
 
-After setup, install Zim modules by opening a new terminal or running `source ~/.zshrc`.
+After setup, open a new terminal or run `source ~/.zshrc` to load Zim modules. From this point on, use the daily workflow above - do not run `chezmoi apply` again unless you explicitly want to overwrite local files with repo versions.
 
-## Day-to-Day Usage
+## Daily Workflow (on your main machine)
+
+chezmoi uses a **copy model**: source files in `~/.local/share/chezmoi` (this repo) are copied to their target locations in `~`. Edits to local files (`~/.zshrc`, `~/.claude/CLAUDE.md`, etc.) are **not** automatically reflected in the repo.
+
+> **Warning:** Never run `chezmoi apply` on a machine where you actively edit dotfiles. It overwrites local changes with the repo version and there is no undo.
+
+The correct direction on your main machine is **local -> repo**, not the other way around:
 
 ```bash
-# After changing a config file locally, update the source
-chezmoi add ~/.zshrc              # Re-add changed file
+# 1. Edit the local file as usual (e.g. ~/.claude/CLAUDE.md, ~/.zshrc)
 
-# See what would change
+# 2. Commit and push - the pre-push hook runs `chezmoi re-add` automatically,
+#    syncing all modified local files to source before the push goes through
+cd ~/.local/share/chezmoi
+git add -p
+git commit -S -s -m "your message"
+git push   # re-add runs here automatically
+
+# Pull updates from GitHub (safe - only updates source, does not apply)
+git pull
+```
+
+If you want to manually check or sync at any point:
+
+```bash
+chezmoi status          # see what local files differ from source
+chezmoi re-add          # sync all local changes to source (no-op if clean)
+chezmoi diff            # see what source differs from local (should be empty after re-add)
+```
+
+To apply source changes to local files (e.g. after pulling on a fresh machine):
+
+```bash
+# Preview first - always
 chezmoi diff
 
-# Apply changes from source to home
+# Apply only if the diff shows what you expect
 chezmoi apply
-
-# Pull latest from GitHub and apply
-chezmoi update
 ```
 
 ## Claude Code Subagents

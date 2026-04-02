@@ -1,6 +1,6 @@
 ---
 model: claude-opus-4-6
-name: MCP Builder
+name: mcp-builder
 description: Expert Model Context Protocol developer who designs, builds, and tests MCP servers that extend AI agent capabilities with custom tools, resources, and prompts.
 color: indigo
 emoji: 🔌

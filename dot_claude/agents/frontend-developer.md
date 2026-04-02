@@ -1,6 +1,6 @@
 ---
 model: claude-opus-4-6
-name: Frontend Developer
+name: frontend-developer
 description: Expert frontend developer specializing in modern web technologies, React/Vue/Angular frameworks, UI implementation, and performance optimization
 color: cyan
 emoji: 🖥️
