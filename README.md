@@ -51,7 +51,9 @@ After setup, open a new terminal or run `source ~/.zshrc` to load Zim modules. F
 
 ## Daily Workflow (on your main machine)
 
-chezmoi uses a **copy model**: source files in `~/.local/share/chezmoi` (this repo) are copied to their target locations in `~`. Edits to local files (`~/.zshrc`, `~/.claude/CLAUDE.md`, etc.) are **not** automatically reflected in the repo.
+chezmoi uses a **copy model**: source files in this repo are copied to their target locations in `~`. Edits to local files (`~/.zshrc`, `~/.claude/CLAUDE.md`, etc.) are **not** automatically reflected in the repo.
+
+`~/.local/share/chezmoi` is chezmoi's default source path. On this machine it is symlinked to `~/repos/github.com/kpachhai/dotfiles` - they are the same directory. On a new machine set up via `chezmoi init`, the repo is cloned directly to `~/.local/share/chezmoi`.
 
 > **Warning:** Never run `chezmoi apply` on a machine where you actively edit dotfiles. It overwrites local changes with the repo version and there is no undo.
 
@@ -60,9 +62,10 @@ The correct direction on your main machine is **local -> repo**, not the other w
 ```bash
 # 1. Edit the local file as usual (e.g. ~/.claude/CLAUDE.md, ~/.zshrc)
 
-# 2. Commit and push - the pre-push hook runs `chezmoi re-add` automatically,
-#    syncing all modified local files to source before the push goes through
-cd ~/.local/share/chezmoi
+# 2. Commit and push from the dotfiles repo - the pre-push hook runs
+#    `chezmoi re-add` automatically, syncing all modified local files
+#    to source before the push goes through
+cd ~/repos/github.com/kpachhai/dotfiles
 git add -p
 git commit -S -s -m "your message"
 git push   # re-add runs here automatically
