@@ -31,65 +31,50 @@ Optional (installed automatically by configs if missing):
 
 ## Setup on a New Machine
 
-This is the only time you should run `chezmoi apply` - it deploys the repo contents to the machine. After this, follow the daily workflow above.
+Clone the repo to wherever you keep your repos, then run the setup script from inside it:
 
 ```bash
-# Install chezmoi and apply dotfiles in one command
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply kpachhai
-
-# Or if chezmoi is already installed
-chezmoi init --apply kpachhai
+cd /path/to/cloned/dotfiles
+./setup.sh
 ```
 
-This will:
-1. Clone this repo to `~/.local/share/chezmoi`
-2. Copy all dotfiles to their target locations (`~/.zshrc`, `~/.claude/`, etc.)
-3. Run `run_once_macos-defaults.sh` to apply macOS developer defaults (restarts Dock/Finder)
-4. On first shell launch, Zim auto-installs its modules (autosuggestions, syntax highlighting, etc.)
+`setup.sh` will:
+1. Create a symlink from `~/.local/share/chezmoi` to your cloned repo so chezmoi can find it
+2. Install chezmoi if it is not already installed
+3. Run `chezmoi apply` to copy all dotfiles to their target locations
+4. Run `run_once_macos-defaults.sh` automatically (once, on first apply)
 
-After setup, open a new terminal or run `source ~/.zshrc` to load Zim modules. From this point on, use the daily workflow above - do not run `chezmoi apply` again unless you explicitly want to overwrite local files with repo versions.
+After setup, open a new terminal or run `source ~/.zshrc` to load Zim modules. Then follow the daily workflow below.
+
+> `chezmoi apply` is a one-time deploy step. Do not run it again on a machine where you actively edit dotfiles - it overwrites local changes with no undo.
 
 ## Daily Workflow (on your main machine)
 
-chezmoi uses a **copy model**: source files in this repo are copied to their target locations in `~`. Edits to local files (`~/.zshrc`, `~/.claude/CLAUDE.md`, etc.) are **not** automatically reflected in the repo.
+chezmoi uses a **copy model**: source files in this repo are copied to their target locations in `~`. This means edits to `~/.zshrc`, `~/.claude/CLAUDE.md`, etc. are **not** automatically reflected in the repo - you have to push them back.
 
-`~/.local/share/chezmoi` is chezmoi's default source path. On this machine it is symlinked to `~/repos/github.com/kpachhai/dotfiles` - they are the same directory. On a new machine set up via `chezmoi init`, the repo is cloned directly to `~/.local/share/chezmoi`.
-
-> **Warning:** Never run `chezmoi apply` on a machine where you actively edit dotfiles. It overwrites local changes with the repo version and there is no undo.
-
-The correct direction on your main machine is **local -> repo**, not the other way around:
+The correct direction on your main machine is **local -> repo**:
 
 ```bash
 # 1. Edit the local file as usual (e.g. ~/.claude/CLAUDE.md, ~/.zshrc)
 
-# 2. Commit and push from the dotfiles repo - the pre-push hook runs
-#    `chezmoi re-add` automatically, syncing all modified local files
-#    to source before the push goes through
+# 2. Commit and push from the dotfiles repo
+#    The pre-push hook runs `chezmoi re-add` automatically before pushing,
+#    syncing all modified local files to source so nothing is lost.
 cd ~/repos/github.com/kpachhai/dotfiles
 git add -p
 git commit -S -s -m "your message"
-git push   # re-add runs here automatically
+git push
 
-# Pull updates from GitHub (safe - only updates source, does not apply)
+# Pull updates from GitHub (only updates source, does not touch local files)
 git pull
 ```
 
-If you want to manually check or sync at any point:
+If you want to check or sync manually at any point:
 
 ```bash
-chezmoi status          # see what local files differ from source
-chezmoi re-add          # sync all local changes to source (no-op if clean)
-chezmoi diff            # see what source differs from local (should be empty after re-add)
-```
-
-To apply source changes to local files (e.g. after pulling on a fresh machine):
-
-```bash
-# Preview first - always
-chezmoi diff
-
-# Apply only if the diff shows what you expect
-chezmoi apply
+chezmoi status    # see which local files differ from source
+chezmoi re-add    # sync all local changes to source
+chezmoi diff      # see what source differs from local (should be empty after re-add)
 ```
 
 ## Claude Code Subagents
@@ -150,18 +135,20 @@ Not synced (use for per-machine overrides):
 ## File Layout (chezmoi source)
 
 ```
-dot_claude/           -> ~/.claude/
-  agents/             -> ~/.claude/agents/
-  skills/             -> ~/.claude/skills/
-  rules/              -> ~/.claude/rules/
-  settings.local.json -> ~/.claude/settings.local.json
-  CLAUDE.md           -> ~/.claude/CLAUDE.md
-dot_gitconfig         -> ~/.gitconfig
-dot_tmux.conf         -> ~/.tmux.conf
-dot_zshrc             -> ~/.zshrc
-dot_zsh_profile       -> ~/.zsh_profile
-dot_zimrc             -> ~/.zimrc
-run_once_macos-defaults.sh  -> Runs once on first apply
+setup.sh                         Bootstrap script for new machines
+dot_claude/                   -> ~/.claude/
+  agents/                     -> ~/.claude/agents/
+  skills/                     -> ~/.claude/skills/
+  rules/                      -> ~/.claude/rules/
+  settings.local.json         -> ~/.claude/settings.local.json
+  CLAUDE.md                   -> ~/.claude/CLAUDE.md
+dot_gitconfig                 -> ~/.gitconfig
+dot_tmux.conf                 -> ~/.tmux.conf
+dot_zshrc                     -> ~/.zshrc
+dot_zsh_profile               -> ~/.zsh_profile
+dot_zimrc                     -> ~/.zimrc
+run_once_macos-defaults.sh       Runs once on first chezmoi apply
+run_once_install-chezmoi-hooks.sh  Installs pre-push hook on first apply
 ```
 
 ## License
