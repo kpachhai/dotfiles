@@ -92,23 +92,23 @@ chezmoi diff      # see what source differs from local (should be empty after re
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
-| `code-reviewer` | Opus | Read-only code review |
-| `researcher` | Opus | Deep research with citations |
-| `debugger` | Opus | Systematic bug tracing |
-| `writer` | Opus | Technical documentation |
-| `security-auditor` | Opus | General security audit, threat modeling, OWASP |
-| `blockchain-security-auditor` | Opus | Adversarial Solidity audit, DeFi exploit analysis |
-| `solidity-engineer` | Opus | Smart contracts, EVM smart contracts |
-| `dev-advocate` | Opus | Tutorials, demos, talks |
-| `architect` | Opus | System design, ADRs |
-| `frontend-developer` | Opus | React/Vue/Angular, UI, accessibility, performance |
-| `backend-architect` | Opus | API design, scalability, server-side architecture |
-| `ai-engineer` | Opus | ML models, LLM integration, RAG, embeddings |
-| `devops-automator` | Opus | CI/CD, Docker, Kubernetes, GitHub Actions |
-| `database-optimizer` | Opus | Schema design, query performance, indexing |
-| `mcp-builder` | Opus | MCP server design and implementation |
-| `accessibility-auditor` | Opus | WCAG compliance, ARIA, screen readers |
-| `api-tester` | Opus | API validation, endpoint testing, OWASP API Security |
+| `code-reviewer` | inherit | Read-only code review |
+| `researcher` | inherit | Deep research with citations |
+| `debugger` | inherit | Systematic bug tracing |
+| `writer` | inherit | Technical documentation |
+| `security-auditor` | inherit | General security audit, threat modeling, OWASP |
+| `blockchain-security-auditor` | inherit | Adversarial Solidity audit, DeFi exploit analysis |
+| `solidity-engineer` | inherit | Smart contracts, EVM smart contracts |
+| `dev-advocate` | inherit | Tutorials, demos, talks |
+| `architect` | inherit | System design, ADRs |
+| `frontend-developer` | inherit | React/Vue/Angular, UI, accessibility, performance |
+| `backend-architect` | inherit | API design, scalability, server-side architecture |
+| `ai-engineer` | inherit | ML models, LLM integration, RAG, embeddings |
+| `devops-automator` | inherit | CI/CD, Docker, Kubernetes, GitHub Actions |
+| `database-optimizer` | inherit | Schema design, query performance, indexing |
+| `mcp-builder` | inherit | MCP server design and implementation |
+| `accessibility-auditor` | inherit | WCAG compliance, ARIA, screen readers |
+| `api-tester` | inherit | API validation, endpoint testing, OWASP API Security |
 
 ## Claude Code Skills (Slash Commands)
 

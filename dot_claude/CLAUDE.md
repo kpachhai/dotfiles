@@ -45,20 +45,20 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 ## Subagents Available
 
 Use these when the task matches their specialty:
-- `code-reviewer` - Read-only code review (Opus)
-- `researcher` - Deep research with web search (Opus)
-- `debugger` - Systematic bug tracing (Opus)
-- `writer` - Technical documentation (Opus)
-- `security-auditor` - General security audit and threat modeling (Opus)
-- `blockchain-security-auditor` - Adversarial Solidity audit, DeFi exploit analysis (Opus)
-- `solidity-engineer` - Smart contracts and EVM smart contracts (Opus)
-- `dev-advocate` - Tutorials, demos, conference content (Opus)
-- `architect` - System design and ADRs (Opus)
-- `frontend-developer` - React/Vue/Angular, UI, accessibility, performance (Opus)
-- `backend-architect` - API design, scalability, server-side architecture (Opus)
-- `ai-engineer` - ML models, LLM integration, RAG, embeddings (Opus)
-- `devops-automator` - CI/CD, Docker, Kubernetes, GitHub Actions (Opus)
-- `database-optimizer` - Schema design, query performance, indexing (Opus)
-- `mcp-builder` - MCP server design and implementation (Opus)
-- `accessibility-auditor` - WCAG compliance, ARIA, screen readers (Opus)
-- `api-tester` - API validation, endpoint testing, OWASP API Security (Opus)
+- `code-reviewer` - Read-only code review
+- `researcher` - Deep research with web search
+- `debugger` - Systematic bug tracing
+- `writer` - Technical documentation
+- `security-auditor` - General security audit and threat modeling
+- `blockchain-security-auditor` - Adversarial Solidity audit, DeFi exploit analysis
+- `solidity-engineer` - Smart contracts and EVM smart contracts
+- `dev-advocate` - Tutorials, demos, conference content
+- `architect` - System design and ADRs
+- `frontend-developer` - React/Vue/Angular, UI, accessibility, performance
+- `backend-architect` - API design, scalability, server-side architecture
+- `ai-engineer` - ML models, LLM integration, RAG, embeddings
+- `devops-automator` - CI/CD, Docker, Kubernetes, GitHub Actions
+- `database-optimizer` - Schema design, query performance, indexing
+- `mcp-builder` - MCP server design and implementation
+- `accessibility-auditor` - WCAG compliance, ARIA, screen readers
+- `api-tester` - API validation, endpoint testing, OWASP API Security
