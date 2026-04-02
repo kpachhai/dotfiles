@@ -41,12 +41,23 @@ cd /path/to/cloned/dotfiles
 `setup.sh` will:
 1. Create a symlink from `~/.local/share/chezmoi` to your cloned repo so chezmoi can find it
 2. Install chezmoi if it is not already installed
-3. Run `chezmoi apply` to copy all dotfiles to their target locations
-4. Run `run_once_macos-defaults.sh` automatically (once, on first apply)
+3. Show a diff of any conflicts between the repo and your existing dotfiles
+4. Prompt you to apply, merge interactively, or exit to resolve manually
+5. Run `run_once_macos-defaults.sh` automatically (once, on first apply)
+
+If you already have dotfiles on this machine, choose **merge** at the prompt. This opens a 3-way merge for each conflicting file so you can pick which parts to keep. After resolving, `chezmoi apply` is called automatically.
+
+If you skip the prompt, you can resolve conflicts manually at any time:
+
+```bash
+chezmoi diff        # review what would change
+chezmoi merge-all   # merge conflicts interactively file by file
+chezmoi apply       # apply after resolving
+```
 
 After setup, open a new terminal or run `source ~/.zshrc` to load Zim modules. Then follow the daily workflow below.
 
-> `chezmoi apply` is a one-time deploy step. Do not run it again on a machine where you actively edit dotfiles - it overwrites local changes with no undo.
+> `chezmoi apply` is a one-time deploy step. Do not run it again on a machine where you are actively editing dotfiles - it overwrites local changes with no undo.
 
 ## Daily Workflow (on your main machine)
 
