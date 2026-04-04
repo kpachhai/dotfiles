@@ -9,7 +9,7 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 | **Claude Code** | Settings, 17 subagents, 3 skills | Opus default, auto-permissions, desktop notifications |
 | **Zsh** | Zim framework, autosuggestions, syntax highlighting | Fish-like experience with history substring search |
 | **Git** | GPG signing, per-machine email | DCO sign-off ready, work email auto-set for your-org/platform/your-org repos |
-| **Tmux** | Mouse mode, vi keys | Minimal config |
+| **Tmux** | Catppuccin theme, easy splits, Claude Code agent teams | Alt+arrow pane nav, top status bar, vi copy mode |
 | **macOS** | Developer defaults | Fast key repeat, Finder tweaks, Dock auto-hide, no smart quotes |
 
 ## Prerequisites
@@ -124,6 +124,25 @@ chezmoi diff      # see what source differs from local (should be empty after re
 - **History substring search** - Type partial command, up arrow to search history
 - **Smart completions** - Tab completion with descriptions
 - **Git aliases** - `gst`, `gco`, `gcm`, etc.
+
+## Tmux
+
+Catppuccin Mocha-inspired theme with a top status bar. No plugin manager needed.
+
+**Key bindings (cheat sheet):**
+
+| Action | Keys |
+|--------|------|
+| Split horizontal | `Ctrl-b |` |
+| Split vertical | `Ctrl-b -` |
+| Navigate panes | `Alt + arrow` (no prefix) |
+| Resize panes | `Ctrl-b + arrow` |
+| Switch windows | `Shift + left/right` (no prefix) |
+| New window | `Ctrl-b c` |
+| Reload config | `Ctrl-b r` |
+| Copy mode | `Ctrl-b [` then `v` to select, `y` to copy |
+
+**Claude Code + tmux:** Start tmux first (`tmux`), then run `claude`. When Claude spawns agent teams, they automatically get their own tmux panes. The `teammateMode` defaults to `auto` - it detects tmux and uses split panes.
 
 ## macOS Defaults
 
