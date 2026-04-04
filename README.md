@@ -142,7 +142,19 @@ Catppuccin Mocha-inspired theme with a top status bar. No plugin manager needed.
 | Reload config | `Ctrl-b r` |
 | Copy mode | `Ctrl-b [` then `v` to select, `y` to copy |
 
-**Claude Code + tmux:** Start tmux first (`tmux`), then run `claude`. When Claude spawns agent teams, they automatically get their own tmux panes. The `teammateMode` defaults to `auto` - it detects tmux and uses split panes.
+**Session management:**
+
+```bash
+tmux new -s work     # create named session
+tmux a -t work       # reattach to it later
+tmux ls              # list all sessions
+```
+
+Detach with `Ctrl-b d` — the session keeps running in the background.
+
+**Claude Code + tmux:** Start tmux first (`tmux new -s claude`), then run `claude`. When Claude spawns agent teams, they automatically get their own tmux panes. The `teammateMode` defaults to `auto` - it detects tmux and uses split panes.
+
+**Copying text in Claude Code:** Press `Ctrl-b [` to enter copy mode, then click-drag to select text. It auto-copies to clipboard on release.
 
 ## macOS Defaults
 
