@@ -32,13 +32,18 @@ if ! command -v chezmoi > /dev/null 2>&1; then
   sh -c "$(curl -fsLS get.chezmoi.io)"
 fi
 
+# Run chezmoi init to process template prompts (machine type, etc.)
+echo ""
+echo "Initializing chezmoi config..."
+chezmoi init
+
 # Show diff before applying so existing dotfiles are not silently overwritten
 echo ""
 echo "Checking for conflicts with existing dotfiles..."
 if chezmoi diff | grep -q '^diff'; then
   echo ""
   echo "The following files differ between this repo and your current dotfiles:"
-  chezmoi diff --stat
+  chezmoi diff --no-pager | diffstat 2>/dev/null || chezmoi diff --no-pager | head -50
   echo ""
   echo "Options:"
   echo "  a) Apply repo version for all files (overwrites your local dotfiles)"

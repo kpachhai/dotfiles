@@ -1,0 +1,24 @@
+[user]
+	name = YOUR_NAME
+	signingkey = REMOVED-GPG-KEY
+{{- if eq .machine_type "work" }}
+	email = REMOVED-EMAIL
+{{- else }}
+	email = REMOVED-EMAIL
+{{- end }}
+[commit]
+	gpgsign = true
+[pull]
+	rebase = false
+{{- if eq .machine_type "personal" }}
+[includeIf "gitdir:~/repos/github.com/your-org/"]
+	path = ~/.gitconfig-work
+[includeIf "gitdir:~/repos/github.com/your-org/"]
+	path = ~/.gitconfig-work
+[includeIf "gitdir:~/repos/github.com/your-org/"]
+	path = ~/.gitconfig-work
+{{- end }}
+{{- if eq .machine_type "work" }}
+[includeIf "gitdir:~/repos/github.com/kpachhai/"]
+	path = ~/.gitconfig-personal
+{{- end }}

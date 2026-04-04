@@ -1,8 +1,0 @@
-[user]
-	name = YOUR_NAME
-	signingkey = D2C0623E22D235FD
-	email = REMOVED-EMAIL
-[commit]
-	gpgsign = true
-[pull]
-	rebase = false

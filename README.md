@@ -8,7 +8,7 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 |----------|------|------------|
 | **Claude Code** | Settings, 17 subagents, 3 skills | Opus default, auto-permissions, desktop notifications |
 | **Zsh** | Zim framework, autosuggestions, syntax highlighting | Fish-like experience with history substring search |
-| **Git** | GPG signing, user config | DCO sign-off ready |
+| **Git** | GPG signing, per-machine email | DCO sign-off ready, work email auto-set for your-org/platform/your-org repos |
 | **Tmux** | Mouse mode, vi keys | Minimal config |
 | **macOS** | Developer defaults | Fast key repeat, Finder tweaks, Dock auto-hide, no smart quotes |
 
@@ -41,9 +41,10 @@ cd /path/to/cloned/dotfiles
 `setup.sh` will:
 1. Create a symlink from `~/.local/share/chezmoi` to your cloned repo so chezmoi can find it
 2. Install chezmoi if it is not already installed
-3. Show a diff of any conflicts between the repo and your existing dotfiles
-4. Prompt you to apply, merge interactively, or exit to resolve manually
-5. Run `run_once_macos-defaults.sh` automatically (once, on first apply)
+3. Run `chezmoi init` - prompts you to select **personal** or **work** machine (controls default git email)
+4. Show a diff of any conflicts between the repo and your existing dotfiles
+5. Prompt you to apply, merge interactively, or exit to resolve manually
+6. Run `run_once_macos-defaults.sh` automatically (once, on first apply)
 
 If you already have dotfiles on this machine, choose **merge** at the prompt. This opens a 3-way merge for each conflicting file so you can pick which parts to keep. After resolving, `chezmoi apply` is called automatically.
 
@@ -138,7 +139,14 @@ To re-run: `chezmoi state delete-bucket --bucket=scriptState && chezmoi apply`
 
 ## Machine-Specific Config
 
+`chezmoi init` prompts for a machine type (`personal` or `work`) and stores the choice in `~/.config/chezmoi/chezmoi.toml`. This controls:
+- **Default git email** - `gmail.com` on personal, `example.com` on work
+- **includeIf directives** - On personal machines, repos under `your-org/`, `your-org/`, and `your-org/` use the work email; on work machines, repos under `kpachhai/` use the personal email
+
+To change the machine type later, edit `~/.config/chezmoi/chezmoi.toml` and re-run `chezmoi apply`.
+
 Not synced (use for per-machine overrides):
+- `~/.config/chezmoi/chezmoi.toml` - Machine type and chezmoi template data
 - `~/.claude/settings.json` - AIM hooks, machine-managed (chezmoi ignores this)
 - `~/.claude/projects/` - Auto-memory (machine-specific paths)
 - `~/.zim/` - Zim modules (installed per-machine)
@@ -147,13 +155,16 @@ Not synced (use for per-machine overrides):
 
 ```
 setup.sh                         Bootstrap script for new machines
+.chezmoi.toml.tmpl               Chezmoi config template (prompts for machine type)
 dot_claude/                   -> ~/.claude/
   agents/                     -> ~/.claude/agents/
   skills/                     -> ~/.claude/skills/
   rules/                      -> ~/.claude/rules/
   settings.local.json         -> ~/.claude/settings.local.json
   CLAUDE.md                   -> ~/.claude/CLAUDE.md
-dot_gitconfig                 -> ~/.gitconfig
+dot_gitconfig.tmpl            -> ~/.gitconfig (templated per machine type)
+dot_gitconfig-work            -> ~/.gitconfig-work (your-org email override)
+dot_gitconfig-personal        -> ~/.gitconfig-personal (gmail email override)
 dot_tmux.conf                 -> ~/.tmux.conf
 dot_zshrc                     -> ~/.zshrc
 dot_zsh_profile               -> ~/.zsh_profile
