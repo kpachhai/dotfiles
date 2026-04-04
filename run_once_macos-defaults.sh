@@ -146,6 +146,21 @@ defaults write com.apple.terminal StringEncodings -array 4
 # Enable Secure Keyboard Entry in Terminal.app
 defaults write com.apple.terminal SecureKeyboardEntry -bool true
 
+# Install Catppuccin Mocha terminal profile if missing, then set as default
+CATPPUCCIN_PROFILE="Catppuccin Mocha"
+if ! plutil -extract "Window Settings.${CATPPUCCIN_PROFILE}.name" raw \
+    ~/Library/Preferences/com.apple.Terminal.plist >/dev/null 2>&1; then
+  CATPPUCCIN_URL="https://raw.githubusercontent.com/catppuccin/Terminal.app/main/Catppuccin%20Mocha.terminal"
+  CATPPUCCIN_TMP="/tmp/catppuccin-mocha.terminal"
+  if curl -fsSL -o "$CATPPUCCIN_TMP" "$CATPPUCCIN_URL"; then
+    open "$CATPPUCCIN_TMP"
+    sleep 2
+    echo "Catppuccin Mocha terminal profile installed"
+  fi
+fi
+defaults write com.apple.Terminal "Default Window Settings" -string "${CATPPUCCIN_PROFILE}"
+defaults write com.apple.Terminal "Startup Window Settings" -string "${CATPPUCCIN_PROFILE}"
+
 # =============================================================================
 # Activity Monitor
 # =============================================================================

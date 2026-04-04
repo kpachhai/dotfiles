@@ -9,6 +9,7 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 | **Claude Code** | Settings, 17 subagents, 3 skills | Opus default, auto-permissions, desktop notifications |
 | **Zsh** | Zim framework, autosuggestions, syntax highlighting | Fish-like experience with history substring search |
 | **Git** | GPG signing, per-machine email | DCO sign-off ready, work email auto-set for your-org/platform/your-org repos |
+| **iTerm2** | Catppuccin Mocha, MesloLGS Nerd Font | True color, auto-installed profile, 14pt font |
 | **Tmux** | Catppuccin theme, easy splits, Claude Code agent teams | Alt+arrow pane nav, top status bar, vi copy mode |
 | **macOS** | Developer defaults | Fast key repeat, Finder tweaks, Dock auto-hide, no smart quotes |
 
@@ -26,6 +27,8 @@ Install these before running the setup:
 | **Tmux** | `brew install tmux` | Terminal multiplexer |
 
 Optional (installed automatically by configs if missing):
+- **iTerm2** - Installed automatically on first `chezmoi apply` with Catppuccin Mocha profile
+- **MesloLGS Nerd Font** - Installed automatically with iTerm2 setup
 - **Zim** - Installed automatically by `.zshrc` on first shell launch
 - **chezmoi** - Can self-install during setup (see below)
 
@@ -200,7 +203,9 @@ dot_tmux.conf                 -> ~/.tmux.conf
 dot_zshrc                     -> ~/.zshrc
 dot_zsh_profile               -> ~/.zsh_profile
 dot_zimrc                     -> ~/.zimrc
+iterm2/                          iTerm2 exported preferences (Catppuccin Mocha + Nerd Font)
 run_once_macos-defaults.sh       Runs once on first chezmoi apply
+run_once_setup-iterm2.sh         Installs iTerm2, Nerd Font, and Catppuccin profile
 run_once_install-chezmoi-hooks.sh  Installs pre-push hook on first apply
 ```
 
