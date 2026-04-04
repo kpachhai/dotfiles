@@ -10,7 +10,14 @@ export SOLO_CLUSTER_NAME=solo
 export SOLO_NAMESPACE=solo
 export SOLO_CLUSTER_SETUP_NAMESPACE=solo-cluster
 export SOLO_DEPLOYMENT=solo-deployment
-source <(kubectl completion zsh)
+# Lazy-load kubectl completions (avoids hanging if no cluster is reachable)
+if command -v kubectl > /dev/null 2>&1; then
+  kubectl() {
+    unfunction kubectl
+    source <(command kubectl completion zsh)
+    command kubectl "$@"
+  }
+fi
 export NODE_OPTIONS="--no-deprecation"
 
 export PATH=/opt/homebrew/share/google-cloud-sdk/bin:"$PATH"
