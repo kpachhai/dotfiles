@@ -92,6 +92,8 @@ chezmoi re-add    # sync all local changes to source
 chezmoi diff      # see what source differs from local (should be empty after re-add)
 ```
 
+> **If you edit files directly in the repo** (not in `~/`), run `chezmoi apply` **before** committing and pushing. The pre-push hook runs `chezmoi re-add` which syncs from local -> repo. If local files are stale, it will overwrite your repo changes. Always apply first so both sides match.
+
 ## Claude Code Subagents
 
 | Agent | Model | Purpose |
