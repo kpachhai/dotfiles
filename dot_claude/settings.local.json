@@ -63,16 +63,5 @@
         ]
       }
     ]
-  },
-  "mcpServers": {
-    "open-brain": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "${OB1_SUPABASE_URL}/functions/v1/open-brain-mcp",
-        "--header",
-        "x-brain-key:${OB1_MCP_ACCESS_KEY}"
-      ]
-    }
   }
 }
