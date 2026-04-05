@@ -42,6 +42,44 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 - Versioned files: `<slug>-<type>-v<N>.md` - keep only latest version
 - North Star documents are immutable once approved
 
+## Open Brain - Persistent Memory
+
+Open Brain is my persistent AI memory system (Supabase + pgvector + MCP). When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
+
+### Proactive Capture
+
+Automatically capture to Open Brain during sessions when you encounter:
+- **Debugging breakthroughs** - root cause found after investigation (prefix with `[Lesson]`)
+- **Architectural decisions** - why we chose approach A over B (prefix with `[Decision]`)
+- **Surprising behaviors** - something that didn't work as expected (prefix with `[Lesson]`)
+- **Reusable patterns** - techniques worth remembering for future projects (prefix with `[Pattern]`)
+- **Workarounds** - non-obvious fixes for tools, libraries, or APIs (prefix with `[Lesson]`)
+- **Key project context** - important decisions or constraints that future sessions need (prefix with `[Decision]`)
+
+### Do NOT Capture
+
+- Trivial Q&A or simple lookups
+- Information already in the code, docs, or git history
+- Intermediate debugging steps (only capture the breakthrough)
+- Anything the user explicitly says not to save
+
+### How to Capture
+
+1. Call `capture_thought` with a clear, standalone statement that will make sense when retrieved months later by any AI
+2. Include enough context that the thought is useful without the original conversation
+3. Use the appropriate prefix: `[Lesson]`, `[Pattern]`, `[Decision]`, `[Meta]`, `[Action Item]`
+
+### Proactive Search
+
+At the start of sessions or when encountering a problem:
+- Search Open Brain for relevant past learnings before starting work
+- If the user is debugging something, search for related past lessons
+- Reference found thoughts naturally: "I found a past note about this..."
+
+### When Tools Are Unavailable
+
+If the MCP tools are not available, work normally without mentioning Open Brain. Never suggest the user set it up or warn about missing tools.
+
 ## Global Skills
 
 Available across all projects via `~/.claude/skills/`:
