@@ -44,6 +44,7 @@ Extract:
 
 Before creating anything new:
 
+0. **Check Open Brain (if available)** - if the `search_thoughts` MCP tool is available, search for the pattern/learning using a concise description as the query. If a result comes back with similarity > 0.8, show it to the user and ask: "This pattern was previously captured in Open Brain. Should I update the existing thought, or create a new skill entry?" If `search_thoughts` is not available, skip this check silently.
 1. **Check existing project skills** - does a skill in this repo already cover this?
 2. **Check global skills** - does `~/.claude/skills/` already have this?
 3. **Check CLAUDE.md** - is this already documented as a rule?
@@ -114,4 +115,4 @@ This skill is opt-in. It does not run automatically. It can be invoked:
 
 ---
 
-**Version:** 1.0.0
+**Version:** 1.1.0

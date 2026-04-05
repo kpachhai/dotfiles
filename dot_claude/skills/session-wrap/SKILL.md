@@ -97,6 +97,27 @@ Save to memory (not to a file) unless the user requests a file. The memory entry
 - <idea> - revisit when <trigger>
 ```
 
+### Step 5.5: Persist to Open Brain (Optional)
+
+If the `capture_thought` MCP tool is available (Open Brain is connected):
+
+1. **Capture the session summary** as a single thought. Format the content as:
+   ```
+   [Session Summary] <date> - <project or topic>
+   Accomplished: <bullet points from Step 1>
+   Learned: <insights from Step 2>
+   Should Change: <items from Step 3>
+   ```
+
+2. **Capture each ACT NOW item** as a separate thought. Format each as:
+   ```
+   [Action Item] <what> - <why> - Next step: <next step>
+   ```
+
+3. **Do not capture PARKED items** - they are low-priority and would add noise.
+
+If the `capture_thought` tool is NOT available, skip this step silently. Do not warn the user or suggest they set up Open Brain.
+
 ### Step 6: Skill Improvement Check (Optional)
 
 If anything in "What Was Learned" or "What Should Change" qualifies for the skill-improver (investigation > 10 min, workaround found, etc.), ask the user: "Should I run the skill-improver to capture these patterns?"
@@ -117,4 +138,4 @@ If anything in "What Was Learned" or "What Should Change" qualifies for the skil
 
 ---
 
-**Version:** 1.0.0
+**Version:** 1.1.0
