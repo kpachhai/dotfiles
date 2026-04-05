@@ -50,6 +50,7 @@ Available across all projects via `~/.claude/skills/`:
 - `review-pr` - PR review with structured checklist
 - `debug` - Systematic debugging workflow
 - `quick-research` - Quick research briefs
+- `dev-orchestrator` - Session-level development conductor. Reads project context (CLAUDE.md, milestones, git history), presents briefing, recommends tasks with agent assignments, dispatches agents on demand. Opt-in; trigger with "let's work on [project]" or "what should I work on next?"
 
 ## Subagents Available
 
