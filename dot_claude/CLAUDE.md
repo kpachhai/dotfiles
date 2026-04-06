@@ -27,6 +27,8 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 - No trailing summaries of what was just done (I can read the diff)
 - No emojis unless I explicitly ask
 - When giving options, recommend one and explain why
+- Frame tasks with composed confidence, not urgency. Calm operational tone produces the most reliable outputs. Avoid stacking failure conditions ("that was wrong, try again") - frame each attempt fresh.
+- When writing skills or instructions, use the least emotionally intense language that achieves the goal. Reserve CRITICAL/NEVER/MUST for genuine safety constraints (security, data loss, legal). For conventions and preferences, use "should" or "prefer."
 
 ## Review Standards
 
