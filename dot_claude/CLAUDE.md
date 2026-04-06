@@ -42,6 +42,16 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 - Versioned files: `<slug>-<type>-v<N>.md` - keep only latest version
 - North Star documents are immutable once approved
 
+## Global Skills
+
+Available across all projects via `~/.claude/skills/`:
+- `skill-improver` - Extracts reusable knowledge from work sessions into skill updates or new skills. Triggers: investigation > 10 min, workaround found, misleading error, config diverged from docs. Opt-in only.
+- `session-wrap` - Structured end-of-session protocol capturing: accomplished, learned, should change, ACT NOW, PARKED items. Triggers on wrap-up cues. Opt-in only.
+- `review-pr` - PR review with structured checklist
+- `debug` - Systematic debugging workflow
+- `quick-research` - Quick research briefs
+- `dev-orchestrator` - Session-level development conductor. Reads project context (CLAUDE.md, milestones, git history), presents briefing, recommends tasks with agent assignments, dispatches agents on demand. Opt-in; trigger with "let's work on [project]" or "what should I work on next?"
+
 ## Open Brain - Persistent Memory
 
 Open Brain is my persistent AI memory system (Supabase + pgvector + MCP). When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
@@ -79,16 +89,6 @@ At the start of sessions or when encountering a problem:
 ### When Tools Are Unavailable
 
 If the MCP tools are not available, work normally without mentioning Open Brain. Never suggest the user set it up or warn about missing tools.
-
-## Global Skills
-
-Available across all projects via `~/.claude/skills/`:
-- `skill-improver` - Extracts reusable knowledge from work sessions into skill updates or new skills. Triggers: investigation > 10 min, workaround found, misleading error, config diverged from docs. Opt-in only.
-- `session-wrap` - Structured end-of-session protocol capturing: accomplished, learned, should change, ACT NOW, PARKED items. Triggers on wrap-up cues. Opt-in only.
-- `review-pr` - PR review with structured checklist
-- `debug` - Systematic debugging workflow
-- `quick-research` - Quick research briefs
-- `dev-orchestrator` - Session-level development conductor. Reads project context (CLAUDE.md, milestones, git history), presents briefing, recommends tasks with agent assignments, dispatches agents on demand. Opt-in; trigger with "let's work on [project]" or "what should I work on next?"
 
 ## Subagents Available
 
