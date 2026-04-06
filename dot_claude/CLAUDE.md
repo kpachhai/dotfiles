@@ -46,7 +46,7 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 
 Available across all projects via `~/.claude/skills/`:
 - `skill-improver` - Extracts reusable knowledge from work sessions into skill updates or new skills. Triggers: investigation > 10 min, workaround found, misleading error, config diverged from docs. Opt-in only.
-- `session-wrap` - Structured end-of-session protocol capturing: accomplished, learned, should change, ACT NOW, PARKED items. Triggers on wrap-up cues. Opt-in only.
+- `session-wrap` - Structured end-of-session protocol capturing: accomplished, learned, should change, ACT NOW, PARKED items. Triggers on wrap-up cues. Opt-in only. **Proactive nudge:** When a session has been productive (significant code changes, new skills created, debugging breakthroughs, or multiple articles processed), suggest `/session-wrap` before the conversation ends. One suggestion per session max; only when genuinely warranted.
 - `review-pr` - PR review with structured checklist
 - `debug` - Systematic debugging workflow
 - `quick-research` - Quick research briefs
