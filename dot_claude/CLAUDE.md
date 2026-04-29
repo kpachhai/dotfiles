@@ -37,6 +37,12 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 - No placeholder text in final outputs
 - Test every code example before presenting it
 
+## Session Management
+
+- **Rewind beats continuing-with-correction.** When Claude takes a wrong turn (failed approach, wrong file), use `/rewind` (or Esc Esc) to drop the bad context, then re-prompt with what you learned. Continuing with "no, try X instead" leaves the failed attempt polluting context. Use "summarize from here" first to leave a handoff note.
+- **New task = new session.** Don't continue an open session into unrelated work. Exception: closely related work where re-reading would be expensive (e.g., writing docs for the feature just built).
+- **Steer `/compact`.** Pass a focus instruction: `/compact focus on the auth refactor, drop the test debugging`. Auto-compact during long sessions often drops context that becomes relevant for the next prompt; proactive steered compaction beats waiting.
+
 ## YouTube URLs
 
 When a YouTube URL appears (watch, shorts, youtu.be, embed, mobile, anything with `v=<id>`), use the `youtube-transcript` MCP if available - WebFetch on YouTube returns rendered HTML, not the transcript. If the MCP is not connected, tell me to run `~/repos/github.com/kpachhai/dotfiles/run_once_install-claude-mcps.sh` rather than scraping or asking me to paste content.
