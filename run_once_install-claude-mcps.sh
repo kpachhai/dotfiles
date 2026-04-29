@@ -59,3 +59,10 @@ else
 fi
 
 echo "[claude-mcps] done."
+echo ""
+echo "[claude-mcps] One-time manual step on this machine:"
+echo "  Open a Claude Code session and run:  /effort xhigh"
+echo "  Reason: '/effort xhigh' is sticky across sessions but can only be set"
+echo "  via the in-session slash command (no CLI flag, no settings key)."
+echo "  Per Boris Cherny's Opus 4.7 guidance: xhigh for most tasks, max for the"
+echo "  hardest. 'max' is per-session; 'xhigh' persists."
