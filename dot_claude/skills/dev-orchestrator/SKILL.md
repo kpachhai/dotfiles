@@ -57,6 +57,12 @@ Silently gather project state. Do NOT present raw data to the user - synthesize 
    - For `[IN PROGRESS]` tasks: check if git log shows recent commits touching related files.
    - Flag any discrepancies (e.g., milestone says DONE but key files are missing).
 
+### Phase 1.5: Determine Current Milestone
+
+**Critical rule:** The "current milestone" is the FIRST milestone marked `[IN PROGRESS]` in `milestones.md`. If multiple milestones are `[IN PROGRESS]`, use the lowest-numbered one. Only fall back to `[PLANNED]` milestones if NO `[IN PROGRESS]` milestone exists. Never skip an `[IN PROGRESS]` milestone to recommend tasks from a later `[PLANNED]` one.
+
+Also read the project's memory (MEMORY.md) for any "ACTIVE" milestone or explicit priority list that may override or supplement milestones.md.
+
 ### Phase 2: Present Briefing
 
 Format and present a concise briefing:
@@ -99,10 +105,12 @@ RECOMMENDED TASKS (pick one, or tell me what you want):
 ```
 
 **Prioritization rules:**
-- Blockers and dependencies first (tasks that unblock other tasks)
+- **ONLY recommend tasks from the current `[IN PROGRESS]` milestone.** Do NOT recommend tasks from `[PLANNED]` milestones unless the user explicitly asks.
+- Within the current milestone: blockers and dependencies first
 - Mandatory quality gates second (tasks with mandatory security audits)
 - Independent tasks last (can be done in any order)
 - If multiple tasks are independent, suggest parallelization
+- If MEMORY.md has a numbered priority list for the active milestone, use that ordering
 
 ### Phase 4: Dispatch on User Selection
 
