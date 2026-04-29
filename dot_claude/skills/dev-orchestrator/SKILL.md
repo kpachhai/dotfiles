@@ -133,8 +133,23 @@ When the user picks a task (or describes their own):
    - Relevant file paths and code context from CLAUDE.md
    - Project conventions the agent must follow
    - Clear instruction to write code (not just research) unless it's a review agent
+   - **Agent Dispatch Contract** (required on Opus 4.7 - see below)
 
    Dispatch independent agents in parallel. Dispatch dependent agents sequentially.
+
+   #### Agent Dispatch Contract (required clauses on every dispatched prompt)
+
+   Opus 4.7 uses adaptive thinking and task budgets. Vague dispatches eat early budget figuring out intent before doing real work, then truncate or refuse. Every dispatched prompt must include:
+
+   - **Task budget** - rough token expectation, e.g., "spend up to ~30k tokens; you can exceed if the task genuinely requires it." Soft cap, not hard. Ballpark: 2-3x what a competent human would spend on the task. Without a budget, the agent has no signal for when to stop reasoning vs. start producing.
+   - **Stop criterion** - testable, e.g., "stop when the 5 most relevant files have been read", "stop when N gaps are surfaced", "stop when tests pass." Beats vague "stop when done."
+   - **Fallback rule** - what to do when expected inputs are missing, e.g., "if no relevant files found, return a 1-line note rather than guessing", "if the spec is ambiguous, surface the ambiguity rather than picking an arbitrary interpretation."
+
+   Example dispatch fragment:
+
+   > Read the user-management code in src/auth and identify any places where session state is held outside the canonical store. Spend up to ~25k tokens. Stop when you have surveyed src/auth/*.ts files OR when 5 violations are surfaced, whichever comes first. If the directory does not exist, return a 1-line note rather than searching elsewhere.
+
+   Skip the contract for trivial dispatches (single-file lookups, formatting). Apply it whenever the agent would do >5 tool calls.
 
 4. **Present results:** After each agent completes, summarize what it did and any issues found.
 
