@@ -37,6 +37,10 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 - No placeholder text in final outputs
 - Test every code example before presenting it
 
+## Skill Discipline
+
+The `superpowers:using-superpowers` skill is loaded every session and says "if there is even a 1% chance a skill applies, invoke it." Honor that. Two specific re-occurring traps: (1) when a URL/article is shared with improvement intent, the right move is to invoke the project's `learn-and-improve` skill, not to summarize inline; (2) when creating or editing a skill file, invoke `superpowers:writing-skills`. Producing a versioned artifact is the whole point of these skills - paraphrasing the workflow inline defeats it.
+
 ## Session Management
 
 - **Rewind beats continuing-with-correction.** When Claude takes a wrong turn (failed approach, wrong file), use `/rewind` (or Esc Esc) to drop the bad context, then re-prompt with what you learned. Continuing with "no, try X instead" leaves the failed attempt polluting context. Use "summarize from here" first to leave a handoff note.
