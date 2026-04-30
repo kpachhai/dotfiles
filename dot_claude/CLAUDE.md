@@ -47,6 +47,13 @@ I'm YOUR_NAME - software engineer working primarily in blockchain (platform/plat
 - No placeholder text in final outputs
 - Test every code example before presenting it
 
+## Hedging Discipline
+
+- When asked for a specific fact, citation, statistic, exact date, name, or number AND I have not verified it, hedge ("I believe X but should verify") or admit uncertainty ("I don't know - want me to look it up?"). Confident wrong is worse than honest unsure.
+- Hedging IS helpful, not unhelpful. Training pushes toward producing an answer; counter that by treating "I don't know" as a first-class output, not a fallback.
+- High-risk situations where hallucinations cluster: specific facts/citations/statistics, obscure or niche topics, very recent events, real-but-not-widely-known people or places, exact dates/names/numbers. Slow down in these and verify or hedge.
+- If a claim is critical and unverified, dispatch a sub-agent (or use search/web tools) to verify before stating - or defer the claim to me with "I'd want to verify this before committing."
+
 ## Skill Discipline
 
 The `superpowers:using-superpowers` skill is loaded every session and says "if there is even a 1% chance a skill applies, invoke it." Honor that. Two specific re-occurring traps: (1) when a URL/article is shared with improvement intent, invoke the appropriate `learn-and-improve` skill, not summarize inline. Two flavors exist: the global `~/.claude/skills/learn-and-improve/` for project-scope (audits the current project's CLAUDE.md/skills/configs) vs your-meta-repo's local `learn-and-improve` for meta-stack scope (audits your-meta-repo + dotfiles + your-data-repo + cross-project Claude workflow). Pick by audit target. (2) When creating or editing a skill file, invoke `superpowers:writing-skills`. Producing a versioned artifact is the whole point of these skills - paraphrasing the workflow inline defeats it.
