@@ -17,7 +17,7 @@ This pattern is identical to Claude Code's own `settings.json` + `settings.local
 
 ## Existing Scopes
 
-- `meta-stack.txt` - the user's cross-project Claude tooling. Default committed contents: your-meta-repo + dotfiles + your-data-repo (the public meta-stack). Add machine-specific extras to `meta-stack.local.txt`.
+- `meta-stack.txt` - the user's cross-project Claude tooling. Committed defaults are the repos that should be audited on every machine (e.g., the user's your-meta-repo + dotfiles plus shared work repos available across machines). Machine-specific extras (personal-only, this-machine-only, or repos not present on every machine) go in `meta-stack.local.txt`. The combined audit target is the union of both files, deduplicated and tilde-expanded.
 
 ## Adding a New Scope
 

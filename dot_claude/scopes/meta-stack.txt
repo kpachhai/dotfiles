@@ -1,3 +1,4 @@
+~/repos/github.com/your-org/platform-skills
+~/repos/github.com/your-org/your-org-work-plugins
 ~/repos/github.com/kpachhai/your-meta-repo
 ~/repos/github.com/kpachhai/dotfiles
-~/repos/github.com/kpachhai/your-data-repo
