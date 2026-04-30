@@ -31,7 +31,7 @@ For each tool, score these six dimensions. Each one is independently meaningful 
 
 Does this tool bridge to the user's (or client's) existing infrastructure, or does it force the existing infrastructure to adopt the tool's protocol/format?
 
-- **Strong (bridge):** Speaks the existing transport, format, or auth surface. Drops in next to existing services with minimal translation.
+- **Strong (bridge):** Speaks the existing transport, format, or auth surface. Drops in next to existing services with minimal translation. **Strongest positive signal: tool ships as an MCP server (or installable Claude Code skill).** MCP-first distribution composes immediately with the rest of the agent ecosystem; no bridging work needed. Empirical evidence: Remotion went from a niche website to 150K+ Claude Code installs in 8 weeks after shipping as a skill.
 - **Weak (force):** Requires the user to replace, rewrite, or wrap existing services to fit the tool's expectations.
 
 This is the highest-value dimension for enterprise contexts because force-adoption costs scale with org size.
