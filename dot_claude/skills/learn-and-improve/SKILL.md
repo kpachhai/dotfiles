@@ -174,11 +174,33 @@ If user approves recommendations:
 4. After all changes: consistency check (cross-references still resolve, version numbers updated)
 5. **Mark superseded Friction** (if Phase 0 ran AND skills changed): for each Friction cluster that drove a change, capture `[Resolution] <skill> updated <date> to address <theme>: <one-sentence summary>`. If `add_edge` MCP is exposed, insert `supersedes` edges from Friction thoughts to the Resolution. Otherwise note pending in the output doc.
 
-## Output Format
+## Output Contract
 
-File: `<project-root>/.claude/audits/<slug>-learn-improve-v<N>.md`
+The audit is delivered as a versioned Markdown file at `<project-root>/.claude/audits/<slug>-learn-improve-v<N>.md`. Create `.claude/audits/` if it doesn't exist. Slug is derived from source title (kebab-case, ~30 chars max).
 
-Create `.claude/audits/` if it doesn't exist. The slug is derived from the source title (kebab-case, ~30 chars max).
+**Required sections (always present):**
+- **Header:** Date, Author, Status (Draft/Reviewed/Applied), Project
+- **Sources Ingested:** table with title, author, date, type, URL
+- **Extracted Patterns:** Concepts + Techniques + Anti-Patterns + Architecture Decisions (any may be empty list, but section header always present)
+- **Current State Audit:** Gap Summary (table) + Detailed Gaps
+- **Recommendations:** Quick Wins / Projects / Backlog / Cross-Cutting Themes (any may be empty)
+
+**Optional sections (depends on phases run):**
+- **Friction Sources** (only if Phase 0 ran)
+- **Open Brain Captures** (only if Phase 2.5 ran)
+- **Applied Changes** table (only if Phase 5 executed)
+
+**Out of scope (this skill does NOT produce):**
+- The actual skill/file modifications themselves (Phase 5 produces those; the audit doc only tracks them)
+- Open Brain captures (Phase 2.5 produces those; the audit doc only references them)
+- Multi-project audits (one project per audit file; meta-stack lives in your-meta-repo-local skill)
+- Recommendations for skills marked DO NOT MODIFY (per Audit Rules)
+
+**Format guarantees:**
+- Markdown file with versioned filename suffix `-v<N>.md`
+- Status field is one of three exact values: `Draft`, `Reviewed`, `Applied`
+- Recommendations sorted Impact desc → Effort asc → Risk asc within each priority tier
+- Every Recommendation references at least one specific file path
 
 ```markdown
 # Learn and Improve: <Topic or Article Title>

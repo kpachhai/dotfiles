@@ -150,13 +150,32 @@ Present to the user:
 2. A brief summary line: "Code analysis read N files. Risk sub-agent flagged X high-priority risks: <names>. Edge case sub-agent flagged Y boundary conditions. Critique surfaced Z findings, revised."
 3. Optional: full sub-agent outputs in a collapsible Appendix if the user wants to verify which finding came from which agent
 
-## Output Format
+## Output Contract
 
 The plan is delivered inline in the conversation. It is the work product, not a side artifact.
 
-For very high-stakes work (architectural decisions, migrations, security changes), save a copy to:
-- `<project>/.claude/plans/<slug>-deep-plan-<YYYY-MM-DD>.md` if `.claude/plans/` exists
-- Otherwise present inline only
+**Required sections (always present):**
+- **Goal:** one-sentence verifiable goal
+- **Current State:** key facts from code-analysis sub-agent
+- **Risks:** prioritized list with mitigations addressed in Plan section
+- **Edge Cases:** boundary conditions, each addressed in Plan steps OR explicitly deferred
+- **Plan:** numbered steps with inline verifier per step (Karpathy Goal-Driven Execution format)
+- **Open Questions:** unresolved items requiring user input before execution
+
+**Optional sections (depends on task):**
+- **Sub-agent findings appendix:** raw outputs from analyze/risk/edge-case sub-agents (when high-stakes work warrants the verification trail)
+- **Plan file:** saved to `<project>/.claude/plans/<slug>-deep-plan-<YYYY-MM-DD>.md` if `.claude/plans/` exists, otherwise inline only
+
+**Out of scope (this skill does NOT produce):**
+- Implementation code (the plan describes what to do; doesn't write it)
+- Tests (named in plan steps but not authored)
+- PR drafts or commit messages (use `ship` skill for that)
+- Final verification of completed work (use `verify-before-done` for that)
+
+**Format guarantees:**
+- Markdown headers in the order shown above
+- Every Risk and Edge Case appears in either the Plan section (as a step that handles it) or Open Questions (deferred with reason); never silently dropped
+- Every Plan step has an inline verifier (`-> verify: <how>`)
 
 ## Cost & Trade-offs
 

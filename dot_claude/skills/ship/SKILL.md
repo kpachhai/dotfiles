@@ -92,9 +92,32 @@ Summarize:
 
 The user runs `git commit` and `git push` themselves. This skill never commits or pushes.
 
-## Output Format
+## Output Contract
 
-Inline in the conversation. Structured sections, but compact. The discipline of running the steps is the artifact, not paperwork.
+The shipping report is delivered inline in the conversation. Structured sections, compact. The discipline of running the steps is the artifact, not paperwork.
+
+**Required sections (always present):**
+- **Test results:** stdout summary + explicit stderr disposition (clean / warnings / errors with quotes)
+- **Scope diff:** files changed, lines +/-, with one-sentence summary per file group
+- **Commit message draft:** scope-honest, matches actual diff (no inflation)
+- **Final state:** working tree status, branch name, ready-to-commit yes/no
+
+**Optional sections (depends on context):**
+- **Simplification pass results** (only if user requested or skill judged it warranted)
+- **PR draft** (only if user is ready to push and wants PR text drafted)
+- **Verify-before-done summary** (only if `verify-before-done` was invoked as part of ship)
+
+**Out of scope (this skill does NOT produce):**
+- Actual git commits (always hands off to user for explicit approval; never `git commit` without user confirmation)
+- Actual git pushes (same - never `git push` without user confirmation)
+- PR creation on GitHub (drafts the text; user runs `gh pr create`)
+- Bug fixes for failures discovered during testing (reports them; doesn't fix unless asked separately)
+
+**Format guarantees:**
+- Stderr is always reported separately from stdout (per Verification Discipline)
+- Commit message scope matches `git diff --stat` output
+- Sections in the order shown above
+- Hand-off to user is always explicit ("Ready to commit?" vs auto-committing)
 
 ## Failure Modes This Catches
 

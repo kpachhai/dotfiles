@@ -116,9 +116,30 @@ When verifying agent runs, multi-step automated workflows, or any work where out
 
 If any failure is observed, do not declare done. Fix the named mode (each has distinct fixes - shorter sessions for context degradation, forced spec reminders for spec drift, input validation for sycophantic confirmation, tool description sharpening for tool selection, correction loops for cascading, functional checks for silent failure).
 
-## Output Format
+## Output Contract
 
-Produce the checklist inline in the conversation. Do not save it to a file unless the user requests one. The artifact is the discipline of filling it in, not a permanent document.
+The checklist is delivered inline in the conversation as a structured response. The artifact is the discipline of filling it in honestly, not a permanent document.
+
+**Required sections (always present):**
+- **Section 1: Execution Evidence** (items 1-4: test/build run, edge cases tested, bounds-checks, UI rendered)
+- **Section 2: Scope Honesty** (items 5-7: change-vs-request match, list of changes, list of touched-but-shouldnt)
+- **Section 3: What Was NOT Verified** (item 8: explicit gaps with reasons)
+- **Section 4: Risk Assessment** (items 9-10: production-break risk + 5-more-minutes question)
+
+**Optional sections (depends on work type):**
+- **Section 5: Six-Failure-Type Diagnostic** (only if work involved agents or multi-step automated workflows)
+
+**Out of scope (this skill does NOT produce):**
+- Actual fixes to issues found (this is verification, not remediation - if a fix is needed, the agent does it as a separate step)
+- Commit messages (use `ship` skill for that)
+- Permanent file artifacts (compressing the checklist to one paragraph is fine; persisting to disk is opt-in only when user requests)
+- Recommendations for future work (focused on current task verification only)
+
+**Format guarantees:**
+- Every numbered item gets one of three dispositions: `VERIFIED: <how>`, `SKIPPED: <why>`, or `BLOCKED: <reason>`
+- Empty checkmarks not allowed - every item gets a real answer
+- Sections appear in numerical order even if compressed
+- Section 5 appears only when applicable (agent/multi-step work)
 
 If the user asked for a quick check, you can compress sections into a single paragraph - but every numbered item must still be addressed honestly.
 

@@ -101,9 +101,27 @@ When the tool will execute actions in production without per-action human approv
 
 This sub-rubric does not replace the 6 main dimensions - it complements them when the tool will run autonomously. Skip it for tools that are dev-only, internal-research-only, or always require human approval per action.
 
-## Output Format
+## Output Contract
 
-Present the evaluation as a structured response:
+The evaluation is delivered inline in the conversation as a structured response.
+
+**Required sections (always present):**
+- **Tool name** as heading
+- **6-dimension scoring table** with Strong/Mixed/Weak rating per dimension and one-line notes
+- **Recommendation** verdict: Adopt / Adopt with conditions / Defer / Don't adopt
+- **Reasoning** (2-3 sentences) citing the specific dimensions that drove the verdict
+
+**Optional sections (depends on verdict):**
+- **Conditions / cautions** list (only if verdict is "Adopt with conditions")
+- **Runtime Guardrail Risk Profile** sub-rubric (only if the tool will execute autonomous actions in production)
+
+**Out of scope (this skill does NOT produce):**
+- Implementation guidance for adopted tools (this is decision support, not setup help)
+- Migration plans away from existing tools (separate concern)
+- Cost-benefit financial models (rough scale economics only, not detailed ROI)
+- Vendor procurement or contract terms
+
+**Format guarantees:**
 
 ```markdown
 ## Tool: <name>
