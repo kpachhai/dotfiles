@@ -1,0 +1,3 @@
+~/repos/github.com/kpachhai/your-meta-repo
+~/repos/github.com/kpachhai/dotfiles
+~/repos/github.com/kpachhai/your-data-repo
