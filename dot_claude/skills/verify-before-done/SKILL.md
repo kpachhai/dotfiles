@@ -88,6 +88,34 @@ Output a checklist with these items. Each item must be either `VERIFIED: <how>`,
     <one specific action - if non-trivial, do it>
 ```
 
+### Section 5: Six-Failure-Type Diagnostic (Agent / Multi-Step Work Only)
+
+When verifying agent runs, multi-step automated workflows, or any work where output came from an AI system rather than direct human-driven implementation, classify any anomaly into one of six named failure modes. If output looks fine, briefly check that none of these are silently happening.
+
+```
+11. Agent / multi-step work failure check (skip if N/A)
+    a. Context Degradation - quality dropped as session lengthened?
+       (Symptom: later output worse than earlier; context window saturated)
+       Status: <not observed / observed: ...>
+    b. Specification Drift - did the agent forget the original spec mid-task?
+       (Symptom: final output drifts from initial intent; missing pieces declared earlier)
+       Status: <not observed / observed: ...>
+    c. Sycophantic Confirmation - did the agent confirm incorrect input and build on it?
+       (Symptom: agent agreed with a premise that was wrong, then built downstream work on the wrong premise)
+       Status: <not observed / observed: ...>
+    d. Tool Selection Errors - did the agent pick the wrong tool?
+       (Symptom: outcome is partially correct but the path was wrong; suggests tool framing issue)
+       Status: <not observed / observed: ...>
+    e. Cascading Failure - did one sub-task failure propagate without correction?
+       (Symptom: a small early error became a much larger downstream error)
+       Status: <not observed / observed: ...>
+    f. Silent Failure - does the output look correct but functionally isn't?
+       (Most dangerous. Symptom: passes semantic checks; downstream consequence test reveals incorrectness)
+       Status: <not observed / observed: ...>
+```
+
+If any failure is observed, do not declare done. Fix the named mode (each has distinct fixes - shorter sessions for context degradation, forced spec reminders for spec drift, input validation for sycophantic confirmation, tool description sharpening for tool selection, correction loops for cascading, functional checks for silent failure).
+
 ## Output Format
 
 Produce the checklist inline in the conversation. Do not save it to a file unless the user requests one. The artifact is the discipline of filling it in, not a permanent document.
