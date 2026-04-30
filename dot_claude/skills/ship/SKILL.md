@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Active end-to-end completion workflow. Detects the project type, runs tests with stderr discipline, optionally simplifies, and prepares a commit + PR draft. Use when wrapping up a non-trivial implementation. Counterpart to verify-before-done (passive checklist) - this one actually executes the verification.
+description: Use when wrapping up a non-trivial implementation - multi-file change, new feature, bug fix, refactor - and ready to commit/push. Triggered by "ship it", "/ship", "wrap this up", "ready to commit", "let's finalize". Detects project type, runs tests with stderr discipline, optionally simplifies, prepares a scope-honest commit message and PR draft. Active counterpart to verify-before-done - this one executes the verification, not just produces a checklist. Never commits/pushes without explicit user approval.
 ---
 
 # Ship

@@ -29,6 +29,19 @@ Watch for these signals during any work session:
 - User invokes `/skill-improver`
 - End of a session where significant debugging or problem-solving occurred
 
+## When NOT to Capture
+
+Skip this skill when:
+
+- The learning was a one-off solution unlikely to recur (specific bug in throwaway code)
+- The pattern is already well-documented in vendor docs, project README, or existing skill
+- The "learning" is just rediscovering something the user already knows (won't add value)
+- The user has explicitly said "don't save this" or signaled the topic is sensitive
+- The learning is project-specific in a way that won't generalize (e.g., specific file path coincidence)
+- A duplicate Open Brain capture already exists at >0.8 similarity (covered by Step 2 dedup, but worth naming as a stop-condition)
+
+If unsure, default to capturing. Cost of an extra Open Brain entry is low; cost of a re-investigation later is high.
+
 ## Process
 
 ### Step 1: Identify What Was Learned

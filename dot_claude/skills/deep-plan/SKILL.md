@@ -1,6 +1,6 @@
 ---
 name: deep-plan
-description: Multi-sub-agent planning skill for non-trivial work. Dispatches code-analysis, risk, and edge-case sub-agents in parallel during plan construction (not after), then runs a critique pass over the synthesis. Inspired by Anthropic's /ultra plan Deep Plan variant. Use BEFORE writing code on tasks with multi-file scope, hidden coupling, irreversible side effects, or unclear failure modes.
+description: Use BEFORE writing code on non-trivial tasks - multi-file changes, architectural decisions, security-relevant work, bug fixes with unclear root cause, refactors touching shared abstractions, or any work where shipping a wrong plan is expensive. Triggered by phrases like "plan this", "design before coding", "what's the approach", "/deep-plan". Dispatches code-analysis, risk, and edge-case sub-agents in parallel during plan construction, then runs a critique pass. Produces an inline plan with risks and edge cases already incorporated, not appended after.
 ---
 
 # Deep Plan
