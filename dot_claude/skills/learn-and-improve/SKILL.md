@@ -116,6 +116,21 @@ Discipline:
 - Be honest about "Already Done." If partial, mark Partial.
 - Consider cascading effects - changes that affect multiple downstream files.
 
+### Phase 3.5: Enterprise / Work-Context Lens (Mandatory)
+
+**Do not dismiss content purely because it doesn't fit the current project.** The user is a Solutions Architect working across multiple clients and enterprise customers. Many articles cover patterns that apply to internal tooling, day-job architecture decisions, or developer-advocacy content even when they don't fit the project being audited.
+
+For every pattern extracted in Phase 2, run a second-pass enterprise audit:
+
+- **Internal tooling fit:** Could this pattern improve internal tools the user builds for clients or enterprises? (e.g., MCP server design, agent-tool integration, AI-tooling rubrics)
+- **Work-context architecture:** Does this pattern inform decisions the user makes at work even if no code ships in this project?
+- **Developer-advocacy content opportunity:** Worth a blog post, talk, or demo for community or enterprise audiences?
+- **New artifact opportunity:** Could a new skill, MCP, repo, or tool justify itself based on client/enterprise need?
+
+When the enterprise lens surfaces opportunities, add them as first-class **"Enterprise / Work-Context"** recommendations in Phase 4 - equal priority to project-scope recs. Don't fold them into "Backlog" or "diminishing returns."
+
+The discipline: project-scope and enterprise-scope are independent audit targets. Always run both before declaring no recommendations. Keep this section generic - do not name specific companies or product ecosystems; focus on roles (Solutions Architect, developer advocate) and responsibilities.
+
 ### Phase 4: Recommend Changes
 
 For each gap:

@@ -53,6 +53,21 @@ Before creating anything new:
 
 If an existing skill partially covers it, **update that skill** instead of creating a new one.
 
+### Step 2.5: Enterprise / Work-Context Lens (Mandatory)
+
+Before classifying the improvement, run a second-pass check: **does this learning apply to the user's client/enterprise work, not just the immediate project?**
+
+The user is a Solutions Architect working across multiple clients and enterprise customers. Many session learnings (debugging patterns, integration approaches, AI-tooling workarounds, MCP design quirks) apply to client work even if the immediate session was personal. Don't bias capture toward "this only matters for the current project."
+
+Check:
+- **Client/enterprise transfer:** Could this pattern help in a different client/enterprise context with similar tech?
+- **Architecture-decision input:** Does this learning inform architecture choices the user makes at work even if no code ships?
+- **Developer-advocacy material:** Is this worth a blog post, talk, or demo for community or enterprise audiences?
+
+If yes, scope the captured artifact (skill, rule, lesson) to be generic - phrase it in terms of roles and patterns, not the specific project context. A skill captured from a personal-project session with a generic rule serves both personal and enterprise contexts.
+
+The discipline: skill-improver captures should default to generic-and-portable, not project-specific-and-narrow. If the rule only applies to one project, that's fine - just be sure that's the actual scope, not lazy bounding.
+
 ### Step 3: Classify the Improvement
 
 | Type | Where It Goes | Example |
