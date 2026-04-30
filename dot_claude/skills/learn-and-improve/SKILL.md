@@ -161,7 +161,7 @@ After individual recommendations, identify Cross-Cutting Themes that span multip
 
 Recommendation rules:
 - Every recommendation must reference a specific file path.
-- Prefer modifying existing artifacts over creating new ones.
+- Prefer modifying existing artifacts when the change fits within an existing artifact's purpose. Create new artifacts when the new responsibility genuinely doesn't fit. Apply timing discipline: don't create speculatively, but don't avoid creation when it's justified.
 - Be honest about diminishing returns - not every article applies.
 
 ### Phase 5: Execute (Optional)
