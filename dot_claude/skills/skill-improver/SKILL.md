@@ -101,13 +101,108 @@ For **skill updates** (most common):
 | <today> | <specific failure> | <rule/process updated> |
 ```
 
-For **new skills**, follow the standard SKILL.md format:
+For **new skills**, follow the Skill Authoring Blueprint below. A starter template lives at `~/.claude/skills/skill-improver/template-SKILL.md` - copy it as the starting point.
+
+## Skill Authoring Blueprint
+
+This blueprint consolidates patterns learned from authoring 15+ skills across dotfiles and your-meta-repo. Apply every rule when creating a new skill or substantially editing an existing one.
+
+### Frontmatter Discipline
+
 ```yaml
 ---
-name: <name>
-description: <trigger conditions and purpose>
+name: <skill-name-with-hyphens>
+description: <single line - leads with "Use when..." trigger phrase + artifact produced + output shape>
 ---
 ```
+
+**Description rules (80% of skill quality):**
+
+1. **Single line ONLY.** No formatter line-breaks. If a code formatter wraps it, Claude reads only the first line.
+2. **Lead with "Use when..."** trigger phrasing, not label-style openings ("Multi-sub-agent planning skill..." → wrong; "Use BEFORE writing code on..." → right).
+3. **Include real trigger phrases** users/agents would type ("ship it", "/deep-plan", "improve this project", etc.).
+4. **Name the artifact type** the skill produces (versioned audit doc, structured eval, plan, etc.).
+5. **State the output shape** concretely (markdown file at path X, inline structured response, etc.).
+6. **Be pushy not vague.** Skills tend to UNDER-trigger by default. Make it confident enough to fire when the situation matches.
+7. **80/20 attention rule.** Spend 80% of skill-writing effort on the description (which determines whether the skill ever fires). 20% on the body. Resist the temptation to write a long body before the description is dialed in.
+
+### Body Discipline
+
+**Length target:** 100-200 lines for the core SKILL.md. Heavy reference material goes in supporting files in the same skill folder.
+
+**Required body sections (in order):**
+
+1. **One-paragraph purpose** - what does the skill do, why does it exist as a separate artifact?
+2. **`## When To Use`** - specific behavioral triggers, slash command, user phrases
+3. **`## When NOT to Use` / `## Skip When` / `## When NOT to Capture`** - explicit edge cases. Don't assume "common sense"; write it down.
+4. **Workflow / Process** - reasoning + frameworks, not just numbered steps. Encode the WHY along with the WHAT.
+5. **`## Output Contract`** - for agent-callable skills, frame outputs as contracts (see below).
+6. **`## Common Pitfalls`** or **`## Anti-Patterns`** - things that break, lessons from real usage.
+7. **`## Source`** (if inspired by external content) - cite the source.
+8. **`**Version:**` line at the bottom** - SemVer-style (1.0.0, 1.1.0, 2.0.0).
+
+### Output Contract Pattern (for Agent-Callable Skills)
+
+Replace generic "Output Format" sections with structured contracts:
+
+```markdown
+## Output Contract
+
+The <artifact> is delivered <where: inline / file path / both>.
+
+**Required sections (always present):**
+- <section 1 name + brief description>
+- <section 2>
+
+**Optional sections (depends on...):**
+- <section X> (only when <condition>)
+
+**Out of scope (this skill does NOT produce):**
+- <explicit non-deliverable 1>
+- <explicit non-deliverable 2>
+
+**Format guarantees:**
+- <structural promise: markdown headers, table format, etc.>
+- <invariants: every X has Y, no X without Z, etc.>
+
+**Consumed by (downstream chain):**
+- <what skill or workflow stage uses this output>
+```
+
+The contract semantics matter more than the exact wording - it tells downstream agents what they can rely on, what's optional, and what's NOT in scope. Without this, agents fail in handoffs (sycophantic confirmation on missing data, silent failure on assumed-but-absent fields).
+
+### Authoring Process Discipline
+
+- **Latent-space-trigger awareness:** the same instruction phrased differently produces different output qualities. Expect 3-4 wording iterations to dial in the right output for important skills. This is engineering work, not polish.
+- **Eval gold standard:** would two independent reviewers reach the same pass/fail when comparing actual output to the skill's expectations? If unsure, sharpen the criteria.
+- **Hardwired behavior uses scripts, not skills.** Skills are guidance. If something MUST happen exactly the same way every time (data validation, security check, side-effecting operation), use deterministic code, not natural-language skill text.
+- **Examples are powerful but expensive.** One excellent example pattern-matches better than three mediocre ones. Put examples in supporting files (`example.md`, `template.md`) referenced from the main SKILL.md, not inline in the body.
+
+### File Structure
+
+```
+~/.claude/skills/<skill-name>/
+├── SKILL.md           # Required - main file with frontmatter + body
+├── template.md        # Optional - if the skill produces a structured artifact
+├── example.md         # Optional - one excellent example pattern-match target
+└── reference.md       # Optional - heavy reference material the body cites
+```
+
+For your-meta-repo project-local skills: `your-meta-repo/skills/<category>/<skill-name>/SKILL.md` with the same internal structure.
+
+### Quality Gates Before Shipping a New Skill
+
+Run through this checklist when authoring or substantially editing:
+
+- [ ] Description is single line and leads with "Use when..."
+- [ ] Description includes concrete trigger phrases
+- [ ] Body has explicit `When NOT to Use` section
+- [ ] Body has Output Contract section (if agent-callable)
+- [ ] Body length is 100-200 lines for core SKILL.md
+- [ ] Reasoning + frameworks present, not just steps
+- [ ] Common Pitfalls / Anti-Patterns section present
+- [ ] Source / inspiration cited if from external content
+- [ ] Version line at bottom
 
 ### Step 5: Quality Gates
 
