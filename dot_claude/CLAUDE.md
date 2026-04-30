@@ -2,7 +2,9 @@
 
 ## Identity
 
-I'm YOUR_NAME - software engineer working primarily in blockchain (platform/platform ecosystem), full-stack development, and developer advocacy. I work across Solidity, Go, TypeScript, Python, and Rust.
+I'm YOUR_NAME - **Solutions Architect** by role. I work across multiple clients and enterprise customers on architecture review, integration design, AI tooling adoption decisions, and internal MCP/agent design. I also help with developer advocacy tasks (community + enterprises) when relevant. I have personal projects unrelated to work. Tooling should serve both contexts: client/enterprise architecture work AND personal development. I work across Solidity, Go, TypeScript, Python, and Rust.
+
+Keep skills and CLAUDE.md generic - focus on roles and responsibilities, never specific company names or product ecosystems. The existing project memory rule about not naming employer-companies in strategic documents extends here to skills and CLAUDE.md as well.
 
 ## Git Commits
 
@@ -115,6 +117,17 @@ The `verify-before-done` global skill produces an explicit verification checklis
 - Versioned files: `<slug>-<type>-v<N>.md` - keep only latest version
 - North Star documents are immutable once approved
 
+## Dotfiles Discipline (Generic vs Local)
+
+When making any change to my dotfiles repo (`~/repos/github.com/kpachhai/dotfiles`), always consider environment portability before committing. I run dotfiles across multiple machines (personal, work, potentially others) with different available repos, services, secrets, and constraints. Apply this split:
+
+- **Committed file** (`<name>.json`, `<name>.txt`, etc.): the generic / public / cross-machine default that works everywhere.
+- **Local file** (`<name>.local.json`, `<name>.local.txt`, etc.): machine-specific additions - private repo paths, work-only services, client identifiers, secrets. Gitignored via `*.local.*` rules.
+- **Skill code** that consumes the file should read BOTH the committed and `.local.*` versions and merge, so I can extend without forking the committed file.
+- **Paths** use `~/` syntax (not `/Users/...`) so files are portable across machines with different home-directory conventions; expand `~` to `$HOME` when reading.
+
+Existing precedents: `dot_claude/settings.json` + `dot_claude/settings.local.json`; `dot_claude/scopes/<name>.txt` + `dot_claude/scopes/<name>.local.txt`. Default to this pattern for any new dotfiles file that might contain machine-specific data.
+
 ## Installing Third-Party Skills
 
 Two distribution surfaces exist:
@@ -130,6 +143,7 @@ Available across all projects via `~/.claude/skills/`:
 - `session-wrap` - Structured end-of-session protocol capturing: accomplished, learned, should change, ACT NOW, PARKED items. Triggers on wrap-up cues. Opt-in only. **Proactive nudge:** When a session has been productive (significant code changes, new skills created, debugging breakthroughs, or multiple articles processed), suggest `/session-wrap` before the conversation ends. One suggestion per session max; only when genuinely warranted.
 - `verify-before-done` - Produces a verification checklist (stderr check, bounds-checks, edge cases, scope honesty, gaps) before claiming a non-trivial task is complete. Triggers on completion claims for code/UI/bug-fix tasks. Counters the premature-completion failure mode.
 - `deep-plan` - Multi-sub-agent planning skill for non-trivial work. Dispatches code-analysis + risk + edge-case sub-agents in parallel during plan construction, then runs a critique pass. Use BEFORE writing code on multi-file or architecturally-significant changes. Counterpart to `verify-before-done` - one runs at start-of-task, the other at end-of-task. Together they bracket non-trivial work.
+- `evaluate-ai-tool` - Structured rubric for evaluating new AI tools (MCP servers, agent frameworks, models, platforms) against six dimensions: infrastructure fit, layering/pluggability, semantic surface, configurability, scale economics, lock-in. Use for personal adoption decisions, internal tooling choices, or client/enterprise recommendations. Prevents shallow "this looks cool" decisions.
 - `learn-and-improve` - Project-scope version: ingest external articles/URLs/videos with improvement intent, extract patterns, audit current project, produce versioned recommendations doc at `<project>/.claude/audits/<slug>-learn-improve-v<N>.md`. Use in any project. For meta-stack improvements (your-meta-repo + dotfiles + your-data-repo + workflow), use your-meta-repo's local `learn-and-improve` skill instead.
 - `ship` - Active completion workflow. Detects project type, runs tests with stderr discipline, optionally `/simplify`s, drafts a scope-honest commit message and PR. Counterpart to `verify-before-done` (passive checklist) - this one executes. Never commits/pushes; always hands off draft to user.
 - `review-pr` - PR review with structured checklist
