@@ -110,6 +110,17 @@ For UI/frontend work, prefer local test runs and local screenshot/preview tools 
 
 The `verify-before-done` global skill produces an explicit verification checklist for any task. If a task is non-trivial or the cost of a missed bug is high, run it before declaring completion.
 
+## Token Discipline
+
+Models are not expensive; my habits are. As Mythos / next-gen models enter higher pricing tiers (vendor projections range from 5x to 10x current Opus cost), the cost of inefficient AI habits scales. Apply these defaults across all AI tooling (Claude Code, Claude Desktop, ChatGPT, Gemini):
+
+- **Markdown-first ingestion.** Convert any PDF, image, or formatted file to markdown BEFORE feeding it to an AI. A 4500-word PDF can be ~100K tokens raw vs ~5K markdown - 20x compression. Ask the agent to convert, or use a free web tool. Same rule applies on the way INTO Open Brain: `capture_thought` should receive markdown, not raw document bytes.
+- **Fresh conversation cadence.** End exploration conversations after 10-15 turns. Summarize. Start a fresh work-mode conversation with clear upfront instructions. Don't mix gather mode (sprawl OK, multi-tool, exploratory) and work mode (single-turn-heavy, clear instructions, AI does heavy work) in one chat. The Session Management section above covers task boundaries; this rule applies even WITHIN a task.
+- **Audit plugins / MCPs / connectors quarterly.** Every loaded one adds to context BEFORE I type. Run `/context` in Claude Code to see what's loaded. Drop unused. The MCP I added once for an experiment six months ago is paying tax on every conversation since.
+- **Cache stable context (API agents only).** Anthropic prompt caching = 90% discount on repeated content (Opus cache hits ~$0.50/M vs $5/M standard). Cache system prompts, tool definitions, persona instructions, large reference docs. Lowest-effort highest-impact optimization for any agent that runs > 10 times.
+- **Mix models by task complexity.** Opus for reasoning, Sonnet for execution, Haiku for polish. Don't bring a Ferrari to the grocery store. Single workflow may justifiably call all three.
+- **Smart tokens, not high tokens.** Burning tokens as a "doing real work" signal is the wrong frame. Ask: did this token spend produce a meaningful artifact, or was it sprawl? Be bold and audacious with smart tokens; ruthless with dumb tokens.
+
 ## Workspace Conventions
 
 - All project artifacts go in `workspace/<project>/`, never at repo root
