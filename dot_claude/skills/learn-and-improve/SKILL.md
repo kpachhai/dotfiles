@@ -155,7 +155,7 @@ Sort by Impact desc → Effort asc → Risk asc.
 Group recommendations:
 - **Quick Wins** (P1, Low effort) - do this conversation
 - **Projects** (P1-P2, Medium-High effort) - separate conversation/branch
-- **Backlog** (P3) - revisit later
+- **Backlog** (P3) - revisit later. **For every parked recommendation, also capture a `[Parked]` thought to Open Brain** with the recommendation summary, an explicit trigger condition for when to unpark, and a reference to this audit doc. Future Open Brain semantic search will surface the parked item when work matching the trigger arises. Audit docs in `<project>/.claude/audits/` are not always indexed by other tools, so Open Brain is the durable surfacing path. Format: `[Parked] <summary>. Trigger to unpark: <specific condition>. Source: <audit doc path> Rec <id>.`
 
 After individual recommendations, identify Cross-Cutting Themes that span multiple recommendations.
 
