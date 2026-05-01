@@ -139,9 +139,29 @@ For every pattern extracted in Phase 2, ask:
 
 1. **Could this seed a sample project?** Even small/throwaway. Hands-on building beats reading.
 2. **Hands-on value:** Would building it give meaningful experience with the new technique that captures alone don't provide?
-3. **Solutions Architect / client-applicability value:** Would the project demonstrate the technique usefully for the user's client/enterprise architecture work, internal tooling decisions, or knowledge-sharing with the teams the user supports (which may include DevRel collaborators, but is not limited to them)?
-4. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
-5. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
+3. **Audience fit (both/and):** Evaluate the project against BOTH axes - never collapse to one:
+   - **Client / enterprise architecture value:** Would the project demonstrate the technique usefully for the user's client/enterprise architecture work, internal tooling decisions, or knowledge-sharing with the teams the user supports (DevRel collaborators included, not the primary frame)?
+   - **Personal project value:** Would the project be a fun / interesting / educational personal build the user would actually want to maintain - something that solves their own problem, scratches an itch, or extends their personal stack (your-meta-repo, dotfiles, Open Brain, blog, side ideas)?
+   A project can be a strong fit on either axis OR both. The North Star and tutorial framing should reflect whichever fits - many project audiences are both/and rather than either/or. Do NOT exclude the personal-project angle when scoping unless the technique is genuinely client-only (e.g., a regulated-industry compliance pattern).
+4. **Form-factor survey (think outside the box):** Before defaulting to the smallest viable shape, explicitly survey shapes the project COULD take. The lens's natural tendency is to default to "personal Claude Code skill that fits an existing pattern" - that is the conservative shape, often correct but often a missed opportunity. Walk through these shapes and rank by reach:
+   - **Personal skill / config** (lowest effort, single user, highest ergonomics for self)
+   - **CLI tool** (npx-installable / brew-installable, multi-machine, still mostly personal but shareable)
+   - **Library / SDK** (importable into colleagues' or clients' code, programmatic)
+   - **Web app or hosted utility** (browser-accessible URL, colleagues paste/upload, no install friction - the highest-reach low-friction option)
+   - **Open-source repo** (public, reputational, community-driven, scales beyond direct relationships)
+   - **Service / API** (server-hosted, scales but you operate it)
+
+   Then ask explicitly: "What is the MAXIMUM useful shape, and what is the realistic version that captures most of that value?" Surface BOTH the maximal shape and the conservative shape as options - do not silently pick the conservative one. The user decides whether the marginal effort to go from "personal skill" to "shareable tool" is worth the marginal reach. Per the broadened audience lens (Q3), if a project has genuine client/colleague value, the form factor should reflect that - locking it into a personal skill nullifies the colleague-share story.
+
+5. **Shipped-vs-announced check (critical):** Verify each seed claim's status before treating it as actionable infrastructure. Categorize:
+   - **Shipped:** vendor SDK in production, official spec published, working library on npm/PyPI/GitHub with non-trivial commits and recent activity. Buildable today.
+   - **Proposal-stage:** RFC published, PR open and active, formal spec in draft. Buildable on the proposal but with explicit "track upstream" risk.
+   - **Announced-only:** blog post, talk, intent statement, "we're working on it." NOT buildable today. Park with explicit ship-trigger.
+
+   When external content (especially news, video summaries, vendor blog posts) describes a tool or capability that sounds shipped, verify by checking the actual repo / spec / npm before treating it as a project foundation. The audit's seed claim ("X contributed Y") often turns out to be announced-not-shipped on inspection. Apply this check to every project candidate that depends on third-party infrastructure. Document the verification result in the audit doc. Only Shipped/Proposal-stage warrant active project planning; Announced-only goes straight to `[Parked]` with a watch-trigger.
+
+6. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
+7. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
    - **Yes, existing skill fits** → use existing skill when project executes
    - **No, but small extension to existing skill suffices** → flag the existing skill for extension when project executes (per balance-modify-vs-create rule)
    - **No, and a genuinely new skill is needed** → flag as skill gap. Decide whether to create skill now (if confidence is high project will execute soon) or park skill creation alongside the project (linked via Open Brain `[Parked]` thoughts)
@@ -298,5 +318,9 @@ Use this global version when:
 - The audit target is the project's own files
 
 ## Version
+
+1.0.3 - Phase 3.6 lens gets two new questions: form-factor survey (Q4) and shipped-vs-announced check (Q5). Existing Q4-Q5 (your-meta-repo expansion, skill gap) renumbered to Q6-Q7. Reasons: lens defaulted to "smallest skill that fits existing patterns" without explicitly surveying maximum-useful-shape; and seed claims about third-party infrastructure ("X contributed Y") often turn out to be announced-not-shipped, leading to wasted project-planning effort.
+
+1.0.2 - Phase 3.6 lens question 3 broadened to both/and (client/enterprise + personal project). Earlier 1.0.1's "Solutions Architect / client-applicability" framing was too narrow on the other side - excluded the personal-project angle.
 
 1.0.1 - Phase 3.6 lens question 3 reframed from "DevRel value" to "Solutions Architect / client-applicability value." Reason: user is a Solutions Architect (not DevRel); recurring mis-framing in past audits.
