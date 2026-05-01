@@ -153,15 +153,25 @@ For every pattern extracted in Phase 2, ask:
 
    Then ask explicitly: "What is the MAXIMUM useful shape, and what is the realistic version that captures most of that value?" Surface BOTH the maximal shape and the conservative shape as options - do not silently pick the conservative one. The user decides whether the marginal effort to go from "personal skill" to "shareable tool" is worth the marginal reach. Per the broadened audience lens (Q3), if a project has genuine client/colleague value, the form factor should reflect that - locking it into a personal skill nullifies the colleague-share story.
 
-5. **Shipped-vs-announced check (critical):** Verify each seed claim's status before treating it as actionable infrastructure. Categorize:
+5. **Shipped-vs-announced check (critical - input availability):** Verify each seed claim's status before treating it as actionable infrastructure. Categorize:
    - **Shipped:** vendor SDK in production, official spec published, working library on npm/PyPI/GitHub with non-trivial commits and recent activity. Buildable today.
    - **Proposal-stage:** RFC published, PR open and active, formal spec in draft. Buildable on the proposal but with explicit "track upstream" risk.
    - **Announced-only:** blog post, talk, intent statement, "we're working on it." NOT buildable today. Park with explicit ship-trigger.
 
    When external content (especially news, video summaries, vendor blog posts) describes a tool or capability that sounds shipped, verify by checking the actual repo / spec / npm before treating it as a project foundation. The audit's seed claim ("X contributed Y") often turns out to be announced-not-shipped on inspection. Apply this check to every project candidate that depends on third-party infrastructure. Document the verification result in the audit doc. Only Shipped/Proposal-stage warrant active project planning; Announced-only goes straight to `[Parked]` with a watch-trigger.
 
-6. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
-7. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
+6. **Parallel-tool check (critical - output redundancy):** Distinct from Q5. Q5 asks "can we build this at all?" (substrate availability). Q6 asks "should we build this at all?" (output redundancy). A project can pass Q5 (substrate exists) and still fail Q6 (someone already shipped a working solution to the same problem). Search npm, GitHub, community channels for tools doing the same job. Decision tree:
+
+   1. Does an existing tool solve this problem? Search before designing.
+   2. If yes - try it personally first. Does it fit your needs?
+   3. If it fits - use it, recommend it to others, skip building.
+   4. If real gaps - can a PR / fork / contribution close the gap more cheaply than rebuild?
+   5. Only if (3) and (4) fail - build parallel, with an explicit "why not use / contribute" justification in the North Star.
+
+   Form-factor differences (CLI vs web app, plugin vs library) are NOT automatic justifications for building parallel - they are gap statements that should be tested by step 4 first. Surface this check BEFORE drafting a North Star or research brief; raising it after planning effort is sunk wastes the planning.
+
+7. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
+8. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
    - **Yes, existing skill fits** → use existing skill when project executes
    - **No, but small extension to existing skill suffices** → flag the existing skill for extension when project executes (per balance-modify-vs-create rule)
    - **No, and a genuinely new skill is needed** → flag as skill gap. Decide whether to create skill now (if confidence is high project will execute soon) or park skill creation alongside the project (linked via Open Brain `[Parked]` thoughts)
@@ -318,6 +328,8 @@ Use this global version when:
 - The audit target is the project's own files
 
 ## Version
+
+1.0.4 - Phase 3.6 lens gets a parallel-tool check (Q6, output redundancy). Distinct from Q5 (shipped-vs-announced, input availability). Q5 asks "can we build this at all?"; Q6 asks "should we build this at all?" Surfaced when claude-token-audit was being planned without checking that claude-token-analyzer (li195111) already shipped a solution to the same problem. Existing Q6-Q7 (your-meta-repo expansion, skill gap) renumbered to Q7-Q8.
 
 1.0.3 - Phase 3.6 lens gets two new questions: form-factor survey (Q4) and shipped-vs-announced check (Q5). Existing Q4-Q5 (your-meta-repo expansion, skill gap) renumbered to Q6-Q7. Reasons: lens defaulted to "smallest skill that fits existing patterns" without explicitly surveying maximum-useful-shape; and seed claims about third-party infrastructure ("X contributed Y") often turn out to be announced-not-shipped, leading to wasted project-planning effort.
 
