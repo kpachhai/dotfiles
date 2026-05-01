@@ -139,7 +139,7 @@ For every pattern extracted in Phase 2, ask:
 
 1. **Could this seed a sample project?** Even small/throwaway. Hands-on building beats reading.
 2. **Hands-on value:** Would building it give meaningful experience with the new technique that captures alone don't provide?
-3. **Demo / DevRel value:** Would the project demonstrate the technique usefully to community or enterprise audiences?
+3. **Solutions Architect / client-applicability value:** Would the project demonstrate the technique usefully for the user's client/enterprise architecture work, internal tooling decisions, or knowledge-sharing with the teams the user supports (which may include DevRel collaborators, but is not limited to them)?
 4. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
 5. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
    - **Yes, existing skill fits** → use existing skill when project executes
@@ -299,4 +299,4 @@ Use this global version when:
 
 ## Version
 
-1.0.0
+1.0.1 - Phase 3.6 lens question 3 reframed from "DevRel value" to "Solutions Architect / client-applicability value." Reason: user is a Solutions Architect (not DevRel); recurring mis-framing in past audits.
