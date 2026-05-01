@@ -8,6 +8,10 @@
 # Run this AFTER plugin install or AFTER /plugin update.
 # Idempotent - re-running just re-applies the same patches.
 #
+# IMPORTANT: Claude Code keeps TWO copies of the skill files - the version-pinned
+# cache copy AND a marketplace clone. Both must be patched; Claude Code loads from
+# the marketplace clone, so patching only the cache silently fails to take effect.
+#
 # Maintainer note: PINNED_VERSION below should match the upstream plugin version
 # we translated against. If the installed plugin's version differs, the script
 # warns rather than silently overwriting newer files we have not retranslated.
@@ -17,6 +21,7 @@ set -euo pipefail
 PINNED="$(cat "$(dirname "${BASH_SOURCE[0]}")/PINNED_VERSION")"
 PATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_BASE="${HOME}/.claude/plugins/cache/claude-token-analyzer/claude-token-analyzer"
+MARKETPLACE_DIR="${HOME}/.claude/plugins/marketplaces/claude-token-analyzer"
 
 if [[ ! -d "$PLUGIN_BASE" ]]; then
   cat >&2 <<EOF
@@ -59,35 +64,38 @@ EOF
   echo "FORCE=1 set - applying anyway." >&2
 fi
 
-INSTALL_SKILLS_DIR="$PLUGIN_BASE/$INSTALLED_VERSION/skills"
+# Both targets - the runtime-loaded marketplace clone is what actually matters,
+# but we patch the cache copy too so the two stay in sync (avoiding confusion
+# during debugging or partial re-patches).
+TARGETS=(
+  "$PLUGIN_BASE/$INSTALLED_VERSION/skills"
+  "$MARKETPLACE_DIR/skills"
+)
 
-if [[ ! -d "$INSTALL_SKILLS_DIR" ]]; then
-  echo "ERROR: expected skills dir not found: $INSTALL_SKILLS_DIR" >&2
-  exit 4
-fi
-
-# Apply each translated SKILL.md.
-COUNT=0
-for skill_dir in "$PATCH_DIR/skills"/*/; do
-  skill_name="$(basename "$skill_dir")"
-  src="$skill_dir/SKILL.md"
-  dst="$INSTALL_SKILLS_DIR/$skill_name/SKILL.md"
-
-  if [[ ! -f "$src" ]]; then
-    echo "skip: $skill_name (no source SKILL.md in patch dir)" >&2
-    continue
+apply_to_target() {
+  local target_dir="$1"
+  if [[ ! -d "$target_dir" ]]; then
+    echo "skip target (not present): $target_dir" >&2
+    return
   fi
+  local count=0
+  for skill_dir in "$PATCH_DIR/skills"/*/; do
+    local skill_name
+    skill_name="$(basename "$skill_dir")"
+    local src="$skill_dir/SKILL.md"
+    local dst="$target_dir/$skill_name/SKILL.md"
+    [[ -f "$src" && -d "$target_dir/$skill_name" ]] || continue
+    cp "$src" "$dst"
+    count=$((count + 1))
+  done
+  echo "patched $count file(s) in $target_dir"
+}
 
-  if [[ ! -d "$INSTALL_SKILLS_DIR/$skill_name" ]]; then
-    echo "skip: $skill_name (skill not present in installed plugin)" >&2
-    continue
-  fi
-
-  cp "$src" "$dst"
-  echo "patched: $skill_name/SKILL.md"
-  COUNT=$((COUNT + 1))
+for t in "${TARGETS[@]}"; do
+  apply_to_target "$t"
 done
 
 echo
-echo "Applied $COUNT English skill patches to plugin v$INSTALLED_VERSION."
-echo "Restart Claude Code or invoke a CTA command to use the patched skills."
+echo "Applied English skill patches to plugin v$INSTALLED_VERSION (cache + marketplace clones)."
+echo "Restart Claude Code or invoke a CTA command in a NEW session to use the patched skills."
+echo "(An already-running session may have the old skills loaded; restart to be sure.)"
