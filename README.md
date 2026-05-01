@@ -32,6 +32,33 @@ Optional (installed automatically by configs if missing):
 - **Zim** - Installed automatically by `.zshrc` on first shell launch
 - **chezmoi** - Can self-install during setup (see below)
 
+## Optional Add-Ons (After Setup)
+
+These are not required to use the dotfiles, but the dotfiles ship support for them:
+
+### CTA - Claude Token Analyzer (with English skill patches)
+
+[`claude-token-analyzer`](https://github.com/li195111/claude-token-analyzer) is a third-party Claude Code plugin that audits token usage across your sessions. Its skills default to 繁體中文 output; the dotfiles ship English-translated skill patches at `~/.claude/cta-english-patch/`.
+
+**Install order matters:**
+
+1. Install the plugin first - inside any Claude Code session, run:
+
+   ```
+   /plugin marketplace add li195111/claude-token-analyzer
+   /plugin install claude-token-analyzer@claude-token-analyzer
+   ```
+
+2. Apply English skill patches (from terminal, after the plugin is installed):
+
+   ```bash
+   ~/.claude/cta-english-patch/apply.sh
+   ```
+
+3. Re-apply after every `/plugin update`. The script is idempotent and warns if upstream version drifts from the pinned translation target. See `~/.claude/cta-english-patch/README.md` for details.
+
+If you skip step 2, the plugin works but reports are in 繁體中文.
+
 ## Setup on a New Machine
 
 Clone the repo to wherever you keep your repos, then run the setup script from inside it:

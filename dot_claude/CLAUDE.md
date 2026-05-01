@@ -142,10 +142,21 @@ Existing precedents: `dot_claude/settings.json` + `dot_claude/settings.local.jso
 ## Installing Third-Party Skills
 
 Two distribution surfaces exist:
-- **Plugin marketplace** (Claude Code native): `/plugin marketplace add <org>/<repo>` then `/plugin install <name>@<marketplace>`. Used for skills shipped as Claude Code plugins (e.g., `forrestchang/andrej-karpathy-skills`).
+- **Plugin marketplace** (Claude Code native): `/plugin marketplace add <org>/<repo>` then `/plugin install <name>@<marketplace>`. Used for skills shipped as Claude Code plugins (e.g., `forrestchang/andrej-karpathy-skills`, `li195111/claude-token-analyzer`).
 - **Skills protocol** (cross-tool, npm-packaged): `npx skills add <org>/<repo>` (e.g., `heygen-com/hyperframes`). Use `-g` for global, omit for project-local. List with `npx skills ls`.
 
 Both install into `~/.claude/skills/` and coexist with dotfiles-managed personal skills below.
+
+### Local plugin patches
+
+When a third-party plugin needs personal customization (e.g., language config, custom prompts), prefer **upstream PRs** before local patches per the parallel-tool check in `learn-and-improve` Phase 3.5/3.6 lens. When a local patch is genuinely warranted as a temporary workaround, follow the `cta-english-patch` pattern:
+
+- Patch source files live at `~/repos/.../dotfiles/dot_claude/<plugin>-patch/` (chezmoi-managed, sync across machines)
+- An `apply.sh` script copies patched files over the installed plugin's files
+- A `PINNED_VERSION` file tracks the upstream version the patches were translated against; the script warns if upstream drifts
+- Re-run after every `/plugin update`
+
+See `~/.claude/cta-english-patch/README.md` for the worked example (English skills for `claude-token-analyzer`).
 
 ## Global Skills
 
