@@ -139,7 +139,10 @@ For every pattern extracted in Phase 2, ask:
 
 1. **Could this seed a sample project?** Even small/throwaway. Hands-on building beats reading.
 2. **Hands-on value:** Would building it give meaningful experience with the new technique that captures alone don't provide?
-3. **Solutions Architect / client-applicability value:** Would the project demonstrate the technique usefully for the user's client/enterprise architecture work, internal tooling decisions, or knowledge-sharing with the teams the user supports (which may include DevRel collaborators, but is not limited to them)?
+3. **Audience fit (both/and):** Evaluate the project against BOTH axes - never collapse to one:
+   - **Client / enterprise architecture value:** Would the project demonstrate the technique usefully for the user's client/enterprise architecture work, internal tooling decisions, or knowledge-sharing with the teams the user supports (DevRel collaborators included, not the primary frame)?
+   - **Personal project value:** Would the project be a fun / interesting / educational personal build the user would actually want to maintain - something that solves their own problem, scratches an itch, or extends their personal stack (your-meta-repo, dotfiles, Open Brain, blog, side ideas)?
+   A project can be a strong fit on either axis OR both. The North Star and tutorial framing should reflect whichever fits - many project audiences are both/and rather than either/or. Do NOT exclude the personal-project angle when scoping unless the technique is genuinely client-only (e.g., a regulated-industry compliance pattern).
 4. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
 5. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
    - **Yes, existing skill fits** → use existing skill when project executes
@@ -298,5 +301,7 @@ Use this global version when:
 - The audit target is the project's own files
 
 ## Version
+
+1.0.2 - Phase 3.6 lens question 3 broadened to both/and (client/enterprise + personal project). Reason: 1.0.1's "Solutions Architect / client-applicability" framing was too narrow on the other side - excluded the personal-project angle. Many projects fit both axes; lens should reflect that.
 
 1.0.1 - Phase 3.6 lens question 3 reframed from "DevRel value" to "Solutions Architect / client-applicability value." Reason: user is a Solutions Architect (not DevRel); recurring mis-framing in past audits.
