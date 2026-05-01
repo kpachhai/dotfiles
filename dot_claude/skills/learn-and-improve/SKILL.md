@@ -316,4 +316,8 @@ Use this global version when:
 
 ## Version
 
+1.0.3 - Phase 3.6 lens gets two new questions: form-factor survey (Q4) and shipped-vs-announced check (Q5). Existing Q4-Q5 (your-meta-repo expansion, skill gap) renumbered to Q6-Q7. Reasons: lens defaulted to "smallest skill that fits existing patterns" without explicitly surveying maximum-useful-shape; and seed claims about third-party infrastructure ("X contributed Y") often turn out to be announced-not-shipped, leading to wasted project-planning effort.
+
+1.0.2 - Phase 3.6 lens question 3 broadened to both/and (client/enterprise + personal project). Earlier 1.0.1's "Solutions Architect / client-applicability" framing was too narrow on the other side - excluded the personal-project angle. (Note: corresponding version-footer bump was missed at original commit time; recorded retroactively here.)
+
 1.0.1 - Phase 3.6 lens question 3 reframed from "DevRel value" to "Solutions Architect / client-applicability value." Reason: user is a Solutions Architect (not DevRel); recurring mis-framing in past audits.
