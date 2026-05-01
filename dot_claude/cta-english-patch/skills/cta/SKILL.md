@@ -36,6 +36,8 @@ Route token analysis requests to the appropriate workflow skill, or provide a qu
 2. **Ambiguous intent** ("help me look at tokens", "analyze") — If latest data matters, run sync_db → analyze_global → output a one-page summary (format below) → ask which direction to explore.
 3. **Cross-domain** — Sub-skills may route to each other mid-workflow.
 
+**Execute silently.** Do not narrate the routing decision before executing (no "the user input is ambiguous, following the routing protocol..." preambles). Just run the steps and present the result. If the user wants to know why a particular sub-skill ran, they will ask.
+
 ## Shared Output Format
 
 | Element | Format |
