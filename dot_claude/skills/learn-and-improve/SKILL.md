@@ -131,6 +131,26 @@ When the enterprise lens surfaces opportunities, add them as first-class **"Ente
 
 The discipline: project-scope and enterprise-scope are independent audit targets. Always run both before declaring no recommendations. Keep this section generic - do not name specific companies or product ecosystems; focus on roles (Solutions Architect, developer advocate) and responsibilities.
 
+### Phase 3.6: Project / Demo Opportunity Lens (Mandatory)
+
+External content is not just a source of skill improvements - it's also a source of **sample project ideas**. The user wants to constantly learn by building hands-on demos with new techniques, growing the your-meta-repo project portfolio, even if execution is parked for later. Identify these opportunities explicitly.
+
+For every pattern extracted in Phase 2, ask:
+
+1. **Could this seed a sample project?** Even small/throwaway. Hands-on building beats reading.
+2. **Hands-on value:** Would building it give meaningful experience with the new technique that captures alone don't provide?
+3. **Demo / DevRel value:** Would the project demonstrate the technique usefully to community or enterprise audiences?
+4. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
+5. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
+   - **Yes, existing skill fits** → use existing skill when project executes
+   - **No, but small extension to existing skill suffices** → flag the existing skill for extension when project executes (per balance-modify-vs-create rule)
+   - **No, and a genuinely new skill is needed** → flag as skill gap. Decide whether to create skill now (if confidence is high project will execute soon) or park skill creation alongside the project (linked via Open Brain `[Parked]` thoughts)
+   - When creating new skills, always apply the Skill Authoring Blueprint in `~/.claude/skills/skill-improver/SKILL.md`
+
+When project opportunities surface, hand them off to `idea-refiner` to draft a project plan **in the same session if possible**. Even if execution is parked, the plan is the artifact - it sits in `workspace/<new-project-name>/` as a real project, not just a recommendation. Surface the project in Phase 4 under the new "Sample Project Opportunities" category.
+
+The discipline: not every audit produces a project opportunity. News content (market analysis, strategic forecasts, supply-chain reports) typically won't. Technique-rich content (frameworks, tools, code patterns) often will. Honestly evaluate per-pattern and don't force project opportunities into news audits.
+
 ### Phase 4: Recommend Changes
 
 For each gap:
@@ -154,7 +174,8 @@ Sort by Impact desc → Effort asc → Risk asc.
 
 Group recommendations:
 - **Quick Wins** (P1, Low effort) - do this conversation
-- **Projects** (P1-P2, Medium-High effort) - separate conversation/branch
+- **Projects** (P1-P2, Medium-High effort) - separate conversation/branch (skill development efforts, not your-meta-repo sample projects)
+- **Sample Project Opportunities** - your-meta-repo sample/demo projects to plan via `idea-refiner` from Phase 3.6 lens. Each entry names: project description, hands-on value, **skill situation** (existing skill X works / extends existing skill Y / new skill Z needed), trigger to execute (or "execute now" if quick). Plan goes in `workspace/<new-project-name>/` as a real project plan even if execution is parked. If a new skill is needed, decide create-now vs park-with-project per balance-modify-vs-create rule.
 - **Backlog** (P3) - revisit later. **For every parked recommendation, also capture a `[Parked]` thought to Open Brain** with the recommendation summary, an explicit trigger condition for when to unpark, and a reference to this audit doc. Future Open Brain semantic search will surface the parked item when work matching the trigger arises. Audit docs in `<project>/.claude/audits/` are not always indexed by other tools, so Open Brain is the durable surfacing path. Format: `[Parked] <summary>. Trigger to unpark: <specific condition>. Source: <audit doc path> Rec <id>.`
 
 After individual recommendations, identify Cross-Cutting Themes that span multiple recommendations.
