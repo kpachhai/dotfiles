@@ -108,6 +108,16 @@ For UI/frontend work, prefer local test runs and local screenshot/preview tools 
 
 The `verify-before-done` global skill produces an explicit verification checklist for any task. If a task is non-trivial or the cost of a missed bug is high, run it before declaring completion.
 
+## Dark Code Discipline
+
+Dark code = code shipped to production that no human fully understands. AI-generated code is dark by default unless comprehension is forced. Multiplies with velocity (AI wrote it = structural reason; pressure to ship = velocity reason).
+
+- **Spec becomes the eval.** Before generating non-trivial code, write a clear spec - even one paragraph. The spec IS the eval the agent passes (or doesn't). Skip-the-spec is skip-the-eval is dark code.
+- **Comprehension gate before merge.** "Tests pass" answers correctness, not comprehension. Before merging AI-generated code, ask: why was this dependency chosen? Why was it structured this way? Where does state live? What's the failure mode? If I cannot answer, it's dark. The `comprehension-gate` global skill operationalizes this; invoke it on any non-trivial AI-generated change before merging.
+- **Don't outsource comprehension to the AI.** Asking the AI to explain its own code re-runs the same training distribution - sometimes correct, sometimes plausibly confabulating. The accountable human must understand it.
+- **Distributed authorship needs concentrated ownership.** Vibe-coding by anyone is fine. "Nobody owns the sustained total package" is not. Each shipped artifact has a single accountable human.
+- **Risk surface.** Dark code is a regulatory + board-level risk (SOC 2, encryption-at-rest, PCI). "AI generated it" is not a defensible answer to a regulator. Any client work in regulated domains: comprehension is a compliance obligation.
+
 ## Token Discipline
 
 Models are not expensive; my habits are. As Mythos / next-gen models enter higher pricing tiers (vendor projections range from 5x to 10x current Opus cost), the cost of inefficient AI habits scales. Apply these defaults across all AI tooling (Claude Code, Claude Desktop, ChatGPT, Gemini):
