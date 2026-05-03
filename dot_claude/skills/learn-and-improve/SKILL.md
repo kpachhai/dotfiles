@@ -124,14 +124,32 @@ Discipline:
 
 **Do not dismiss content purely because it doesn't fit the current project.** The user is a Solutions Architect working across multiple clients and enterprise customers. Many articles cover patterns that apply to internal tooling, day-job architecture decisions, or developer-advocacy content even when they don't fit the project being audited.
 
-For every pattern extracted in Phase 2, run a second-pass enterprise audit:
+**A learning session that produces ONLY in-project tweaks is incomplete.** It under-uses the user's role and the multiplication channels available to a Solutions Architect. Walk through ALL three lenses below for every Phase 2 pattern, not just the convenient one.
 
-- **Internal tooling fit:** Could this pattern improve internal tools the user builds for clients or enterprises? (e.g., MCP server design, agent-tool integration, AI-tooling rubrics)
-- **Work-context architecture:** Does this pattern inform decisions the user makes at work even if no code ships in this project?
-- **Developer-advocacy content opportunity:** Worth a blog post, talk, or demo for community or enterprise audiences?
-- **New artifact opportunity:** Could a new skill, MCP, repo, or tool justify itself based on client/enterprise need?
+#### Lens A: Internal Company AI Tooling Repo (Mandated Contribution Channel)
 
-When the enterprise lens surfaces opportunities, add them as first-class **"Enterprise / Work-Context"** recommendations in Phase 4 - equal priority to project-scope recs. Don't fold them into "Backlog" or "diminishing returns."
+The user has a workplace mandate to share AI knowledge / practices / developer tooling with the rest of the company via an internal GitHub repo (a centralized AI-tooling library accessible to all internal teams). For each pattern:
+- Could a redacted, employer-generic version contribute to the internal repo? Strip employer-specific examples and Solutions-Architect-specific framing; generalize to "any knowledge worker."
+- What's the bundle? Often the contribution is skill + framework explainer + discipline doc + how-to-use guide together.
+- Does this multiply the discipline across the org?
+
+#### Lens B: External Advisory / Content / Talks
+
+The user does Solutions-Architect advisory and writes/talks publicly. Per pattern:
+- **Blog post / writeup:** 1500-3000 word post for the user's blog or a publication (audience: enterprise IT / AI procurement / tech executives / developer community).
+- **Conference talk / lunch-and-learn / panel:** 20-45 minute talk. Internal or external.
+- **Client advisory deliverable:** Vendor evaluation rubric, procurement criterion, compliance pattern, architecture decision template - useful in client diligence reports.
+- **Internal-comms doc:** Internal-facing explainer for the user's team or company.
+
+#### Lens C: New Artifact / Project Opportunity
+
+(See Phase 3.6 for the full eight-question lens including form-factor survey, shipped-vs-announced check, parallel-tool check, skill-gap check.)
+
+#### Multiplication Channel Discipline
+
+Every Phase 4 recommendation should surface from at least one of Lenses A, B, or C, not only "modify existing in-project files." A learning session that produces zero outputs in Lenses A or B is a signal to walk through them again - the user's role demands it.
+
+When the enterprise lenses surface opportunities, add them as first-class **"Enterprise / Work-Context"** recommendations in Phase 4 - equal priority to project-scope recs. Don't fold them into "Backlog" or "diminishing returns." Keep this section generic - do not name specific companies or product ecosystems; focus on roles (Solutions Architect, developer advocate) and responsibilities.
 
 The discipline: project-scope and enterprise-scope are independent audit targets. Always run both before declaring no recommendations. Keep this section generic - do not name specific companies or product ecosystems; focus on roles (Solutions Architect, developer advocate) and responsibilities.
 
@@ -332,6 +350,8 @@ Use this global version when:
 - The audit target is the project's own files
 
 ## Version
+
+1.0.5 - Phase 3.5 expanded into three explicit lenses (Internal Company AI Tooling Repo / External Advisory & Content / New Artifact & Project) plus a "Multiplication Channel Discipline" rule. A learning session producing ONLY in-project tweaks is incomplete - it under-uses the user's Solutions Architect role. Surfaced from Nate Jones BYOC audit where initial pass was too internal; user correction was explicit that "if we're just updating what we have, that's not a very comprehensive learning session." Source: `your-meta-repo/workspace/your-meta-repo-meta/nate-jones-byoc-portable-context-learn-improve-v1.md`. Mirrors your-meta-repo local skill v1.4.5.
 
 1.0.4 - Phase 3.6 lens gets a parallel-tool check (Q6, output redundancy). Distinct from Q5 (shipped-vs-announced, input availability). Q5 asks "can we build this at all?"; Q6 asks "should we build this at all?" Surfaced when claude-token-audit was being planned without checking that claude-token-analyzer (li195111) already shipped a solution to the same problem. Existing Q6-Q7 (your-meta-repo expansion, skill gap) renumbered to Q7-Q8.
 

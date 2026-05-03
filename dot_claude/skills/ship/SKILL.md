@@ -81,6 +81,21 @@ If the user wants a PR, draft `gh pr create` with title and body. Body should re
 
 Show the draft. Do NOT push or open the PR yet.
 
+### Step 5.5: `[Artifact]` capture (optional - opt-in for shipped artifacts)
+
+If the change being shipped is non-trivial - a new feature, new skill, new demo, finished doc - and the `capture_thought` MCP tool is available, ask the user once: "Capture an `[Artifact]` thought for this ship? Project path + 2-3 key tradeoffs + what this would tell a future employer about how you think."
+
+Skip this step for: bug fixes, refactors of existing code, docs-only changes, config tweaks. The threshold is "would a future employer learn something about my thinking from this?" - not every commit qualifies.
+
+If the user agrees, capture in this format:
+```
+[Artifact] <project name>: **Path:** <canonical location>. **What:** <one-line summary>. **Tradeoffs:** <2-3 key tradeoffs>. **Demonstrated capability:** <what this tells a future employer about how I think>. Portability: <portable|sensitive>
+```
+
+Default Portability is `portable` for the rationale (transferable across employers); use `sensitive` if the project itself is employer-confidential. Per the BYOC Layer 4 framework in CLAUDE.md "Working Identity (BYOC)" section.
+
+If `capture_thought` is unavailable, skip silently.
+
 ### Step 6: Hand off to user
 
 Summarize:

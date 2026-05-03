@@ -114,9 +114,15 @@ If the `capture_thought` MCP tool is available (Open Brain is connected):
    [Action Item] <what> - <why> - Next step: <next step>
    ```
 
-3. **Do not capture PARKED items** - they are low-priority and would add noise.
+3. **Do not capture PARKED items** as `[Action Item]` - capture them as `[Parked]` with explicit unpark triggers. See "How to Capture" in `~/.claude/CLAUDE.md` for the format.
 
-If the `capture_thought` tool is NOT available, skip this step silently. Do not warn the user or suggest they set up Open Brain.
+4. **`[Artifact]` capture (optional - for shipped artifacts only).** If the session shipped a non-trivial artifact - a finished doc, demo, skill, blog post, presentation, or code feature that a future employer might want to know you can build - ask the user once: "Capture an `[Artifact]` thought for this? Project path + 2-3 key tradeoffs + what this would tell a future employer." Only ask when something genuinely shipped (not for routine session work). If the user agrees, capture in this format:
+   ```
+   [Artifact] <project name>: **Path:** <canonical location>. **What:** <one-line summary>. **Tradeoffs:** <2-3 key tradeoffs>. **Demonstrated capability:** <what this tells a future employer about how I think>. Portability: <portable|sensitive>
+   ```
+   Default Portability is `portable` for the rationale (the *thinking* transfers across employers); the artifact CONTENT is often sensitive but here we are capturing rationale, not content. Per the BYOC Layer 4 framework in CLAUDE.md "Working Identity (BYOC)" section.
+
+If the `capture_thought` tool is NOT available, skip Step 5.5 silently. Do not warn the user or suggest they set up Open Brain.
 
 ### Step 6: Skill Improvement Check (Optional)
 
