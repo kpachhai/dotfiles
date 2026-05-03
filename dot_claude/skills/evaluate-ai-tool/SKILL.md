@@ -98,6 +98,15 @@ If the user adopts this tool and later wants to leave, what's the exit cost?
 
 For client/enterprise recommendations, lock-in is usually a deal-breaker unless the vendor relationship is already strategic.
 
+**Durability check (AI-resilience):** Which of the 5 durable verticals does this tool's value proposition rest on?
+- **Trust** (verification, compliance, identity-to-real-world)
+- **Context** (proprietary data + permissions over it)
+- **Distribution** (curation when supply is infinite)
+- **Taste** (editorial / design judgment, orchestration quality)
+- **Liability** (accountability before regulators / courts)
+
+If the answer is **none of the above** - the tool's value is "we wrap a model nicely" or "we have a slicker UI" - expect erosion as base models improve. The "doomed middle" between model providers and the 5 verticals is the casualty zone. Adopt anyway if the time-bounded value justifies the migration cost when the tool dies, but flag the expiry risk explicitly.
+
 ## Sub-Rubric: Runtime Guardrail Risk Profile (apply when the tool runs autonomous actions)
 
 When the tool will execute actions in production without per-action human approval (autonomous agents, scheduled jobs, agentic workflows), score each class of action this tool would take on four axes. The four axes determine where to draw the human-in-the-loop line.
@@ -186,6 +195,8 @@ This rubric is derived from patterns captured in Open Brain, primarily:
 Future patterns captured by `learn-and-improve` should feed back into this rubric. When you find a recurring tool-evaluation lens, add it as a new dimension.
 
 ## Version
+
+1.2.0 - Lock-in / Exit Cost dimension extended with durability check (5 durable verticals: trust / context / distribution / taste / liability + the doomed-middle pattern). Source: Nate B Jones "5 Things AI Cannot Replace" video 2026-05.
 
 1.1.0 - Layering / Pluggability dimension extended with the 6-layer agent infrastructure stack positioning question + shim-vs-native framework + swap-out trigger requirement. Source: Nate B Jones agent infra stack video 2026-05.
 
