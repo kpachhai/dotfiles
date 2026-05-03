@@ -107,6 +107,38 @@ For client/enterprise recommendations, lock-in is usually a deal-breaker unless 
 
 If the answer is **none of the above** - the tool's value is "we wrap a model nicely" or "we have a slicker UI" - expect erosion as base models improve. The "doomed middle" between model providers and the 5 verticals is the casualty zone. Adopt anyway if the time-bounded value justifies the migration cost when the tool dies, but flag the expiry risk explicitly.
 
+### 7. Agent-Native Affordances
+
+The tool surface that the agent actually touches. Wrapping a human-friendly API in MCP does not make it agent-native - the agent still pays human-pacing tax on every call. Score each dimension:
+
+| Dimension | Agent-native | Mixed | Human-veneer |
+|-----------|--------------|-------|--------------|
+| **Pagination** | Returns everything; streams for big datasets | Configurable; large default page size | Small page size; agent must loop |
+| **Auth** | Pre-issued credentials / service-account-style | Token-based, no redirect | OAuth-flow / SSO / interactive auth |
+| **Rate limits** | Agent-scale (10K/sec) or unlimited internal | Mixed (per-action limits but not punitive) | Human-scale (100/hour, calibrated for human use cases) |
+| **Response shape** | Tool-composable structured data | Verbose-but-structured JSON | HTML / rich-text / dashboard-formatted |
+| **Startup time** | Persistent or warmed (sub-100ms) | Cold-start under 1 second | Cold-start every call (1-10s+) |
+
+A tool with 4+ human-veneer dimensions has structural agent-readiness gaps regardless of marketing. **Wrapping a human-API in MCP and shipping it as "agent-ready" is the most common form of this anti-pattern.** Document the tax in the adoption decision so we don't pretend the problem doesn't exist.
+
+This dimension is critical for any tool the agent calls in autonomous loops, less critical for tools called once-per-conversation in interactive Claude Code use.
+
+### 8. Layer Durability (L1 / L2 / L3)
+
+Per Nate B Jones' three-layer rebuild model, every agent-infrastructure investment lives at one of three layers, with very different half-lives:
+
+| Layer | What it does | Half-life | Examples |
+|-------|--------------|-----------|----------|
+| **L1** | Optimizes existing human-paced tools | Next model release (~quarterly) | Faster compilers, language migrations (TS-in-Go, Rust toolchains), API speedups |
+| **L2** | Replaces human primitives with agent-native ones | 1-2 model generations | Persistent containers, BranchFS, agent-native MCPs, KV-cache multi-agent coordination |
+| **L3** | Replaces human scaffolding entirely with general computation | Bitter-lesson-aligned, durable | Computation-native general methods that scale with model capability rather than fight it |
+
+**Decision implication:** L1 work is perishable - effort gets erased when the next model ships and the relative overhead ratio shifts. L2 work is durable for 1-2 generations. L3 work is the most durable but rare. When evaluating a tool, ask which layer the tool's value lives at; weight effort-investment accordingly.
+
+**The standing-still trap:** Optimizing existing scaffolding (L1) feels productive but loses ground. A scaffolding optimization that takes overhead from 30% to 25% gets reverted in *relative* terms when the next model doubles inference speed - now 25% of fast-model time is a bigger piece of the pie. Prefer L3 > L2 > L1 unless L1 is small and obvious.
+
+Use this dimension alongside (not instead of) Section 2's 6-layer agent infrastructure stack: that stack tells you *what* the tool does (compute / identity / memory / tools / provisioning / orchestration); L1/L2/L3 tells you *how durable* the investment is.
+
 ## Sub-Rubric: Runtime Guardrail Risk Profile (apply when the tool runs autonomous actions)
 
 When the tool will execute actions in production without per-action human approval (autonomous agents, scheduled jobs, agentic workflows), score each class of action this tool would take on four axes. The four axes determine where to draw the human-in-the-loop line.
@@ -159,6 +191,8 @@ The evaluation is delivered inline in the conversation as a structured response.
 | Configurability | <S/M/W> | <one-line> |
 | Scale Economics | <S/M/W> | <one-line> |
 | Lock-in / Exit Cost | <S/M/W> | <one-line> |
+| Agent-Native Affordances | <S/M/W> | <one-line> |
+| Layer Durability (L1/L2/L3) | L1 / L2 / L3 | <one-line> |
 
 ## Recommendation
 
@@ -195,6 +229,8 @@ This rubric is derived from patterns captured in Open Brain, primarily:
 Future patterns captured by `learn-and-improve` should feed back into this rubric. When you find a recurring tool-evaluation lens, add it as a new dimension.
 
 ## Version
+
+1.3.0 - Two new dimensions added: Section 7 "Agent-Native Affordances" (5-question checklist scoring pagination/auth/rate-limits/response-shape/startup-time) and Section 8 "Layer Durability (L1/L2/L3)" (perishable / durable-1-2-gens / bitter-lesson-aligned). Output table extended with both rows. Reframes adoption decisions to weigh durability of effort-investment, not just current functional fit. Source: Nate B Jones "the rebuilt agentic web" video 2026-05.
 
 1.2.0 - Lock-in / Exit Cost dimension extended with durability check (5 durable verticals: trust / context / distribution / taste / liability + the doomed-middle pattern). Source: Nate B Jones "5 Things AI Cannot Replace" video 2026-05.
 
