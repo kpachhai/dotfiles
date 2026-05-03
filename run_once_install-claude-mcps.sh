@@ -44,11 +44,6 @@ add_user_http() {
   fi
 }
 
-# --- youtube-transcript ----------------------------------------------------
-# Pinned to a verified version. Audit verdict: SAFE-WITH-RESTRICTIONS.
-# Re-audit index.js and yt-lib/src/fetcher.js before bumping.
-add_user youtube-transcript npx -y @fabriqa.ai/youtube-transcript-mcp@1.0.3
-
 # --- open-brain (optional, secret-gated) -----------------------------------
 # Set OPEN_BRAIN_MCP_URL in your shell env (NOT in dotfiles) to enable.
 # The URL embeds a Supabase access key, which is why it is not committed.

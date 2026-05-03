@@ -62,7 +62,7 @@ If MCP unavailable, skip silently.
 
 Accept URLs, file paths, pasted text, or topic references. For each source:
 
-1. Fetch via the URL retrieval fallback chain (WebFetch → firecrawl → research agent → Chrome MCP). For YouTube specifically, try the `youtube-transcript` MCP first; if it returns "Video unavailable" that means transcript-unavailable not video-deleted - verify via Chrome MCP, then ask the user how to proceed if no captions exist.
+1. Fetch via the URL retrieval fallback chain (WebFetch → firecrawl → research agent → Chrome MCP). For YouTube videos, the user pastes the transcript manually - do not attempt automated transcript fetching.
 2. Extract metadata: title, author, date, URL, type (engineering blog / docs / research / tutorial / opinion / case study).
 3. Verify recency - flag sources older than 12 months.
 
