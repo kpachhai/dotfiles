@@ -45,6 +45,22 @@ Is the tool's architecture layered (transport, format, semantics separated) so i
 
 Layered tools age better. Monolithic tools become technical debt when one layer (e.g., transport) needs to change.
 
+**Layer positioning (agent infrastructure stack):** Which of the 6 agent infrastructure layers does this tool sit in?
+
+1. **Compute / Sandbox** (E2B, Daytona, Modal, browser base) - safe execution
+2. **Identity / Communication** (Agent Mail, agent-native protocols) - how agents authenticate / message
+3. **Memory / State** (Mem0, platform built-ins) - persistence across sessions
+4. **Tools / Integration** (Composio, MCP) - access to external systems
+5. **Provisioning / Billing** (Stripe Projects) - acquire and pay for services
+6. **Orchestration / Coordination** (LangChain framework only; no infra-grade winner) - multi-agent reliability
+
+For each candidate tool, ask:
+- **Which layer does it sit in?** (Cleanly one layer? Spans layers? Layer N+1 / N-1 also touched?)
+- **Native or shim?** A shim is a temporary fit that works because the substrate is everywhere, not because it is the right protocol (e.g., email-as-agent-identity). A native tool was designed for the layer's role from day one.
+- **If shim: what is the swap-out trigger?** Document explicitly. Track in Open Brain or in a per-tool note. Without an explicit trigger, shims silently become permanent dependencies.
+
+Position-aware evaluation matters because each layer has different maturity (compute is mature, orchestration is open) and different competitive dynamics (model labs are absorbing memory; tools layer is fragmenting). A "good tool in a bad layer" can still be a wrong adoption.
+
 ### 3. Semantic Surface for LLMs
 
 Does the tool carry semantic context that LLMs need (when-to-use, what-it-does), or does it only expose structure (types, signatures)?
@@ -171,4 +187,6 @@ Future patterns captured by `learn-and-improve` should feed back into this rubri
 
 ## Version
 
-1.0.0
+1.1.0 - Layering / Pluggability dimension extended with the 6-layer agent infrastructure stack positioning question + shim-vs-native framework + swap-out trigger requirement. Source: Nate B Jones agent infra stack video 2026-05.
+
+1.0.0 - Initial six-dimension rubric.
