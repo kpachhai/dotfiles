@@ -195,6 +195,7 @@ Automatically capture to Open Brain during sessions when you encounter:
 - **Workarounds** - non-obvious fixes for tools, libraries, or APIs (prefix with `[Lesson]`)
 - **Key project context** - important decisions or constraints that future sessions need (prefix with `[Decision]`)
 - **User corrections (friction)** - any time the user pushes back on Claude's output: factual error caught, scope overstated, surface-level test missed a real bug, UI shipped with visible issues, premature completion claim, missed verification step, fabricated citation, wrong approach taken (prefix with `[Friction]`). Capture friction as soon as the correction lands, not at session-wrap. Format: `[Friction] <one-line description of what went wrong> - <what the correct approach was> - <which skill or workflow should be updated>`. These thoughts feed `learn-and-improve` to drive skill audits.
+  - **Dual-write for portability:** Friction thoughts ALSO get appended as one line to the machine-local file `~/.claude/friction-log.md`, regardless of whether Open Brain is available. This is the work-machine fallback (Open Brain is personal-machine only; work data must not leave the work computer). The dual-write keeps the friction-feedback loop functional on both machines. See "How to Capture" below for the exact append.
 
 ### Do NOT Capture
 
@@ -207,7 +208,12 @@ Automatically capture to Open Brain during sessions when you encounter:
 
 1. Call `capture_thought` with a clear, standalone statement that will make sense when retrieved months later by any AI
 2. Include enough context that the thought is useful without the original conversation
-3. Use the appropriate prefix: `[Lesson]`, `[Pattern]`, `[Decision]`, `[Meta]`, `[Action Item]`
+3. Use the appropriate prefix: `[Lesson]`, `[Pattern]`, `[Decision]`, `[Meta]`, `[Action Item]`, `[Friction]`
+4. **For `[Friction]` only - also append to local log.** Run a Bash one-liner to append the same friction one-liner to `~/.claude/friction-log.md`:
+   ```
+   mkdir -p ~/.claude && printf '%s | %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '<friction-one-liner>' >> ~/.claude/friction-log.md
+   ```
+   This survives on machines without Open Brain (e.g., work computer). Do this in addition to `capture_thought`, not instead of it. If `capture_thought` is unavailable, still do the local append.
 
 ### Proactive Search
 
@@ -219,6 +225,8 @@ At the start of sessions or when encountering a problem:
 ### When Tools Are Unavailable
 
 If the MCP tools are not available, work normally without mentioning Open Brain. Never suggest the user set it up or warn about missing tools.
+
+**Exception for `[Friction]`:** continue to append friction one-liners to `~/.claude/friction-log.md` even when Open Brain is unavailable. The local log is machine-local and gitignored; it does not touch external servers and is safe to use on work computers. This keeps the friction-feedback loop alive on every machine.
 
 ## Subagents Available
 

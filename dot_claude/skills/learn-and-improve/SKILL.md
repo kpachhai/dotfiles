@@ -49,14 +49,18 @@ The user can stop after any phase. Each phase appends to a single versioned doc.
 
 Run when the user invokes friction mode ("audit recent friction") or when articles are scarce and you want to drive improvement from real session data.
 
-If the `capture_thought` / `search_thoughts` MCP is available:
-1. Search Open Brain with query `[Friction]` (limit 15-25)
-2. Optionally filter by recency (last 30-60 days) or topic
-3. Cluster by theme: verification failures, factual/scope errors, UI/visual issues, workflow misuse, other
-4. Treat each cluster as an Anti-Pattern for downstream phases. Cluster size = priority signal (5+ thoughts → high-priority).
-5. If only friction is being audited (no external article), skip Phase 1-2 and go to Phase 3.
+**Two friction sources, both consulted:**
 
-If MCP unavailable, skip silently.
+1. **Open Brain** (`capture_thought` / `search_thoughts` MCP) - personal machine only. Search with query `[Friction]` (limit 15-25), optionally filter by recency (30-60 days) or topic.
+2. **Local friction log** (`~/.claude/friction-log.md`) - both machines. Read the file if present; each line is `<ISO date> | <one-line friction>`. Filter by date prefix to match the same recency window as Open Brain.
+
+**Then:**
+1. **Merge** results from both sources. De-duplicate near-identical entries (same wording within ~7 days).
+2. **Cluster** by theme: verification failures, factual/scope errors, UI/visual issues, workflow misuse, other.
+3. **Treat each cluster as an Anti-Pattern** for downstream phases. Cluster size = priority signal (5+ entries → high-priority).
+4. **If only friction is being audited** (no external article), skip Phase 1-2 and go to Phase 3.
+
+If neither source returns anything, skip Phase 0 silently. If only one source is available (e.g., work machine has only the local log), use that one - do not warn about missing Open Brain.
 
 ### Phase 1: Ingest Sources
 
