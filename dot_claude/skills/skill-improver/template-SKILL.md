@@ -39,7 +39,7 @@ Description rules (80% of skill quality - get these right before writing the bod
 <One-paragraph purpose statement. What does this skill do? Why does it exist as a separate artifact rather than living in another skill? What's the differentiator from adjacent skills?>
 
 **This is a global skill** - it works across any project.
-<!-- DELETE the line above if this is project-scoped (your-meta-repo) instead of global -->
+<!-- DELETE the line above if this is project-scoped (e.g. lives in a specific repo's `skills/` dir) instead of global -->
 
 ## When To Use
 
@@ -114,7 +114,7 @@ The <artifact> is delivered <where: inline in conversation / saved to file path 
 
 ## Source
 
-<If the skill was inspired by an external source - blog post, video, repo, paper - cite it. If it emerged from internal session work, point to the relevant `workspace/your-meta-repo-meta/` audit doc.>
+<If the skill was inspired by an external source - blog post, video, repo, paper - cite it. If it emerged from internal session work, point to the relevant audit doc in your meta-stack workspace.>
 
 Inspired by <source>. See <reference path or URL>.
 

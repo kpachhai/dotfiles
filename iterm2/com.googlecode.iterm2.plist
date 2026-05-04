@@ -1899,7 +1899,7 @@
 			<key>Window Type</key>
 			<integer>0</integer>
 			<key>Working Directory</key>
-			<string>$HOME</string>
+			<string>__HOME_PLACEHOLDER__</string>
 		</dict>
 	</array>
 	<key>NoSyncAllAppVersions</key>

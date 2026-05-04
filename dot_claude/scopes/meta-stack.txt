@@ -1,4 +1,6 @@
-~/repos/github.com/your-org/platform-skills
-~/repos/github.com/your-org/your-org-work-plugins
-~/repos/github.com/kpachhai/your-meta-repo
-~/repos/github.com/kpachhai/dotfiles
+# meta-stack scope — committed, generic.
+# This is the cross-project scope for `learn-and-improve` and similar audit
+# skills. The committed file is intentionally empty: any user-specific repo
+# paths belong in ~/.claude/scopes/meta-stack.local.txt (gitignored).
+#
+# See ~/.claude/scopes/README.md for the full convention.

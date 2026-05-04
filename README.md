@@ -8,7 +8,7 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 |----------|------|------------|
 | **Claude Code** | Settings, 17 subagents, 3 skills | Opus default, auto-permissions, desktop notifications |
 | **Zsh** | Zim framework, autosuggestions, syntax highlighting | Fish-like experience with history substring search |
-| **Git** | GPG signing, per-machine email | DCO sign-off ready, work email auto-set for your-org/platform/your-org repos |
+| **Git** | GPG signing, per-machine email | DCO sign-off ready, work email auto-set for configured org repos |
 | **iTerm2** | Catppuccin Mocha, MesloLGS Nerd Font | True color, auto-installed profile, 14pt font |
 | **Tmux** | Catppuccin theme, easy splits, Claude Code agent teams | Alt+arrow pane nav, top status bar, vi copy mode |
 | **macOS** | Developer defaults | Fast key repeat, Finder tweaks, Dock auto-hide, no smart quotes |
@@ -102,7 +102,7 @@ The correct direction on your main machine is **local -> repo**:
 # 2. Commit and push from the dotfiles repo
 #    The pre-push hook runs `chezmoi re-add` automatically before pushing,
 #    syncing all modified local files to source so nothing is lost.
-cd ~/repos/github.com/kpachhai/dotfiles
+cd ~/repos/github.com/<your-username>/dotfiles
 git add -p
 git commit -S -s -m "your message"
 git push
@@ -131,7 +131,7 @@ chezmoi diff      # see what source differs from local (should be empty after re
 | `writer` | inherit | Technical documentation |
 | `security-auditor` | inherit | General security audit, threat modeling, OWASP |
 | `blockchain-security-auditor` | inherit | Adversarial Solidity audit, DeFi exploit analysis |
-| `solidity-engineer` | inherit | Smart contracts, EVM smart contracts |
+| `solidity-engineer` | inherit | Smart contracts (EVM) |
 | `dev-advocate` | inherit | Tutorials, demos, talks |
 | `architect` | inherit | System design, ADRs |
 | `frontend-developer` | inherit | React/Vue/Angular, UI, accessibility, performance |
@@ -200,19 +200,65 @@ The `run_once_macos-defaults.sh` script runs automatically on first `chezmoi app
 
 To re-run: `chezmoi state delete-bucket --bucket=scriptState && chezmoi apply`
 
+## Identity Setup
+
+This repo holds no PII. Personal data (your name, emails, GPG key, GitHub username, work GitHub orgs) lives in a single file outside the repo: **`~/.config/devkit/identity.json`**. All templated configs (gitconfig and friends) read from it at apply time.
+
+Schema (see `devkit-identity.example.json` at repo root for the canonical example):
+
+```json
+{
+  "full_name": "Your Name",
+  "email_personal": "you@example.com",
+  "email_work": "",
+  "github_username": "your-gh-username",
+  "gpg_signing_key": "",
+  "work_gh_orgs": ["org-1", "org-2"]
+}
+```
+
+**Required fields:** `full_name`, `email_personal`, `github_username`. Others are optional.
+
+**Three ways to create the file:**
+
+1. **chezmoi prompts (default).** On first `chezmoi apply` the run-once bootstrap script prompts for each field and writes the JSON. Edit the file later to change values.
+2. **Interactive script (no chezmoi):** run `~/.claude/scripts/setup-identity.sh` after the dotfiles `setup.sh` completes. Same prompts, no chezmoi dependency.
+3. **Copy and edit:** `cp devkit-identity.example.json ~/.config/devkit/identity.json` and edit by hand.
+
+After any edit to `~/.config/devkit/identity.json`, run `chezmoi apply` to regenerate gitconfig and other dependent files.
+
 ## Machine-Specific Config
 
-`chezmoi init` prompts for a machine type (`personal` or `work`) and stores the choice in `~/.config/chezmoi/chezmoi.toml`. This controls:
-- **Default git email** - `gmail.com` on personal, `example.com` on work
-- **includeIf directives** - On personal machines, repos under `your-org/`, `your-org/`, and `your-org/` use the work email; on work machines, repos under `kpachhai/` use the personal email
+`chezmoi init` prompts for a machine type (`personal` or `work`) and stores it in `~/.config/chezmoi/chezmoi.toml`. This drives:
+- **Default git email** - `email_personal` on personal machines, `email_work` on work machines (both pulled from `~/.config/devkit/identity.json`)
+- **includeIf directives** - On personal machines, repos under any org listed in `work_gh_orgs` use the work email; on work machines, repos under `<github_username>/` use the personal email
 
 To change the machine type later, edit `~/.config/chezmoi/chezmoi.toml` and re-run `chezmoi apply`.
 
-Not synced (use for per-machine overrides):
-- `~/.config/chezmoi/chezmoi.toml` - Machine type and chezmoi template data
-- `~/.claude/settings.json` - AIM hooks, machine-managed (chezmoi ignores this)
-- `~/.claude/projects/` - Auto-memory (machine-specific paths)
+**Local extensions (gitignored, machine-specific):**
+- `~/.config/devkit/identity.json` - your identity (lives outside any repo)
+- `~/.config/chezmoi/chezmoi.toml` - machine type
+- `~/.claude/settings.local.json` - per-machine Claude permissions
+- `~/.claude/scopes/<name>.local.txt` - private repo paths for cross-project audit skills
+- `~/.claude/projects/` - auto-memory (machine-specific paths)
 - `~/.zim/` - Zim modules (installed per-machine)
+
+## Personal Skills That Couple to Other Repos
+
+The committed dotfiles repo is intentionally **standalone** — no skill in `dot_claude/skills/` requires you to also clone another repo (project workspace, persistent-memory recipe repo, etc.) for it to work. Skill prose uses generic terms like "your meta-stack repo" / "your persistent-memory MCP" / "your project workspace"; if you have those, the references are meaningful, otherwise just ignore them.
+
+If you maintain personal skills that *structurally couple* to a separate repo (e.g. a skill whose entire purpose is the maintainer-side of a 2-repo workflow with a paired data-layer recipe in another repo), the recommended pattern is to keep them **outside chezmoi management on each machine**:
+
+```bash
+# Move the skill out of chezmoi management without deleting the live files:
+chezmoi forget --force ~/.claude/<your-private-skill>
+
+# Live files at ~/.claude/<your-private-skill>/ remain functional.
+# Sync them across machines via your own private mechanism (e.g. a private
+# dotfiles-personal git repo, rsync, etc.) — whatever fits your threat model.
+```
+
+Why outside chezmoi: a public dotfiles fork shouldn't ship references to your private companion repos. The `chezmoi forget` pattern keeps the personal skill working on your machine without leaking into the public source.
 
 ## File Layout (chezmoi source)
 
@@ -225,9 +271,11 @@ dot_claude/                   -> ~/.claude/
   rules/                      -> ~/.claude/rules/
   settings.local.json         -> ~/.claude/settings.local.json
   CLAUDE.md                   -> ~/.claude/CLAUDE.md
-dot_gitconfig.tmpl            -> ~/.gitconfig (templated per machine type)
-dot_gitconfig-work            -> ~/.gitconfig-work (your-org email override)
-dot_gitconfig-personal        -> ~/.gitconfig-personal (gmail email override)
+devkit-identity.example.json     Schema example for ~/.config/devkit/identity.json
+dot_gitconfig.tmpl            -> ~/.gitconfig (rendered from identity.json)
+dot_gitconfig-work.tmpl       -> ~/.gitconfig-work (work email from identity.json)
+dot_gitconfig-personal.tmpl   -> ~/.gitconfig-personal (personal email from identity.json)
+run_once_before_bootstrap-identity.sh.tmpl  First-apply hook: prompts for identity values
 dot_tmux.conf                 -> ~/.tmux.conf
 dot_zshrc                     -> ~/.zshrc
 dot_zsh_profile               -> ~/.zsh_profile

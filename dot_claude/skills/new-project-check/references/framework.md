@@ -180,4 +180,4 @@ For the user (Solutions Architect): use this grid in client architecture convers
 
 The `new-project-check` skill (parent of this reference file) operationalizes the framework as a 5-step workflow ending in GO / RECONSIDER / KILL. The framework is the lens; the skill is the procedure.
 
-For YOUR_NAME's personal application of the framework to the meta-stack today (where I sit per layer + per vertical), see `your-meta-repo/workspace/your-meta-repo-meta/agent-stack-literacy.md`. That's a state document; this is a framework document.
+For your personal application of the framework to your meta-stack (where you sit per layer + per vertical), keep a separate state doc in your project workspace. That's a state document; this is a framework document.

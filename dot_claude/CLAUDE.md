@@ -2,7 +2,7 @@
 
 ## Identity
 
-I'm YOUR_NAME - **Solutions Architect** by role. I work across multiple clients and enterprise customers on architecture review, integration design, AI tooling adoption decisions, and internal MCP/agent design. I also help with developer advocacy tasks (community + enterprises) when relevant. I have personal projects unrelated to work. Tooling should serve both contexts: client/enterprise architecture work AND personal development. I work across Solidity, Go, TypeScript, Python, and Rust.
+I'm a Solutions Architect by role. I work across multiple clients and enterprise customers on architecture review, integration design, AI tooling adoption decisions, and internal MCP/agent design. I also help with developer advocacy tasks (community + enterprises) when relevant. I have personal projects unrelated to work. Tooling should serve both contexts: client/enterprise architecture work AND personal development. I work across Solidity, Go, TypeScript, Python, and Rust.
 
 Keep skills and CLAUDE.md generic - focus on roles and responsibilities, never specific company names or product ecosystems. The existing project memory rule about not naming employer-companies in strategic documents extends here to skills and CLAUDE.md as well.
 
@@ -58,7 +58,7 @@ Keep skills and CLAUDE.md generic - focus on roles and responsibilities, never s
 
 ## Skill Discipline
 
-The `superpowers:using-superpowers` skill is loaded every session and says "if there is even a 1% chance a skill applies, invoke it." Honor that. Two specific re-occurring traps: (1) when a URL/article is shared with improvement intent, invoke the appropriate `learn-and-improve` skill, not summarize inline. Two flavors exist: the global `~/.claude/skills/learn-and-improve/` for project-scope (audits the current project's CLAUDE.md/skills/configs) vs your-meta-repo's local `learn-and-improve` for meta-stack scope (audits your-meta-repo + dotfiles + your-data-repo + cross-project Claude workflow). Pick by audit target. (2) When creating or editing a skill file, invoke `superpowers:writing-skills`. Producing a versioned artifact is the whole point of these skills - paraphrasing the workflow inline defeats it.
+The `superpowers:using-superpowers` skill is loaded every session and says "if there is even a 1% chance a skill applies, invoke it." Honor that. Two specific re-occurring traps: (1) when a URL/article is shared with improvement intent, invoke the appropriate `learn-and-improve` skill, not summarize inline. Two flavors exist: the global `~/.claude/skills/learn-and-improve/` for project-scope (audits the current project's CLAUDE.md/skills/configs) vs your meta-stack repo's local `learn-and-improve` (if you maintain one) for meta-stack scope (audits dotfiles + project workspace + persistent-memory repo + cross-project Claude workflow). Pick by audit target. (2) When creating or editing a skill file, invoke `superpowers:writing-skills`. Producing a versioned artifact is the whole point of these skills - paraphrasing the workflow inline defeats it.
 
 ## Session Management
 
@@ -175,7 +175,7 @@ Available across all projects via `~/.claude/skills/`:
 - `verify-before-done` - Produces a verification checklist (stderr check, bounds-checks, edge cases, scope honesty, gaps) before claiming a non-trivial task is complete. Triggers on completion claims for code/UI/bug-fix tasks. Counters the premature-completion failure mode.
 - `deep-plan` - Multi-sub-agent planning skill for non-trivial work. Dispatches code-analysis + risk + edge-case sub-agents in parallel during plan construction, then runs a critique pass. Use BEFORE writing code on multi-file or architecturally-significant changes. Counterpart to `verify-before-done` - one runs at start-of-task, the other at end-of-task. Together they bracket non-trivial work.
 - `evaluate-ai-tool` - Structured rubric for evaluating new AI tools (MCP servers, agent frameworks, models, platforms) against six dimensions: infrastructure fit, layering/pluggability, semantic surface, configurability, scale economics, lock-in. Use for personal adoption decisions, internal tooling choices, or client/enterprise recommendations. Prevents shallow "this looks cool" decisions.
-- `learn-and-improve` - Project-scope version: ingest external articles/URLs/videos with improvement intent, extract patterns, audit current project, produce versioned recommendations doc at `<project>/.claude/audits/<slug>-learn-improve-v<N>.md`. Use in any project. For meta-stack improvements (your-meta-repo + dotfiles + your-data-repo + workflow), use your-meta-repo's local `learn-and-improve` skill instead.
+- `learn-and-improve` - Project-scope version: ingest external articles/URLs/videos with improvement intent, extract patterns, audit current project, produce versioned recommendations doc at `<project>/.claude/audits/<slug>-learn-improve-v<N>.md`. Use in any project. For meta-stack improvements (dotfiles + project workspace + persistent-memory repo + cross-project workflow), use the corresponding local `learn-and-improve` skill in your meta-stack repo (if you maintain one).
 - `ship` - Active completion workflow. Detects project type, runs tests with stderr discipline, optionally `/simplify`s, drafts a scope-honest commit message and PR. Counterpart to `verify-before-done` (passive checklist) - this one executes. Never commits/pushes; always hands off draft to user.
 - `review-pr` - PR review with structured checklist
 - `debug` - Systematic debugging workflow
@@ -185,7 +185,7 @@ Available across all projects via `~/.claude/skills/`:
 
 ## Open Brain - Persistent Memory
 
-Open Brain is my persistent AI memory system (Supabase + pgvector + MCP). When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
+Open Brain is the maintainer's name for their persistent AI memory layer — typically backed by a vector DB (Supabase + pgvector) and exposed to AI tools via an MCP server with `capture_thought` and `search_thoughts` tools. Forkers can wire up any compatible persistent-memory MCP (or skip this section entirely if not using one). When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
 
 ### Proactive Capture
 
@@ -255,7 +255,7 @@ If the MCP tools are not available, work normally without mentioning Open Brain.
 My personal stack is a world model of my work life - and it runs all three architectures the field tends to talk about, each with a different boundary failure (per Nate Jones' world-models framing). Naming them explicitly so I think with the frame:
 
 - **Vector DB layer** - Open Brain (`search_thoughts` semantic similarity). Failure mode: never draws the line between surfacing and interpreting. Ranked retrieval IS interpretation; nothing in the architecture says it knows what matters. Mitigation: when relying on retrieved thoughts, treat them as "top retrieved by similarity" not "the relevant past lesson is X." Be explicit when ranking is doing work.
-- **Structured ontology layer** - your-meta-repo skill schemas (when-to-use, workflow phases, output contracts) + Open Brain prefix taxonomy. Failure mode: precise about what it knows, silent about what it does not. Emergent patterns have no slot. Mitigation: `[Notice]` prefix for half-formed observations + quarterly Skill Health Audit reviews them and either promotes or removes.
+- **Structured ontology layer** - your meta-stack skill schemas (when-to-use, workflow phases, output contracts) + Open Brain prefix taxonomy. Failure mode: precise about what it knows, silent about what it does not. Emergent patterns have no slot. Mitigation: `[Notice]` prefix for half-formed observations + quarterly Skill Health Audit reviews them and either promotes or removes.
 - **Signal fidelity layer** - `~/.claude/friction-log.md` (real-time corrections, the highest-fidelity input). Failure mode: clean inputs feel authoritative; the inference drawn FROM them is still inference. Mitigation: distinguish friction (fact - the correction happened) from skill-change recommendations derived from it (interpretation).
 
 The interpretive boundary - the line between "act on this" and "interpret this first" - is the discipline that ties all three together. Per the Outcomes Loop: capture must compound. `[Friction]` without `[Resolution]` is a knowledge base, not a world model.
@@ -277,7 +277,7 @@ Use these when the task matches their specialty:
 - `writer` - Technical documentation
 - `security-auditor` - General security audit and threat modeling
 - `blockchain-security-auditor` - Adversarial Solidity audit, DeFi exploit analysis
-- `solidity-engineer` - Smart contracts and EVM smart contracts
+- `solidity-engineer` - Smart contracts (EVM)
 - `dev-advocate` - Tutorials, demos, conference content
 - `architect` - System design and ADRs
 - `frontend-developer` - React/Vue/Angular, UI, accessibility, performance

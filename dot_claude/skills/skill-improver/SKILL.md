@@ -9,7 +9,7 @@ description: Detects when something reusable was learned during a work session a
 
 Extract reusable knowledge from work sessions into skill improvements or new skills. This is the "learning from doing" complement to learn-and-improve (which learns from external articles).
 
-**This is a global skill** - it works across any project, not just your-meta-repo.
+**This is a global skill** - it works across any project.
 
 ## When To Use
 
@@ -105,7 +105,7 @@ For **new skills**, follow the Skill Authoring Blueprint below. A starter templa
 
 ## Skill Authoring Blueprint
 
-This blueprint consolidates patterns learned from authoring 15+ skills across dotfiles and your-meta-repo. Apply every rule when creating a new skill or substantially editing an existing one.
+This blueprint consolidates patterns learned from authoring 15+ skills across multiple repos. Apply every rule when creating a new skill or substantially editing an existing one.
 
 ### Frontmatter Discipline
 
@@ -188,7 +188,7 @@ The contract semantics matter more than the exact wording - it tells downstream 
 └── reference.md       # Optional - heavy reference material the body cites
 ```
 
-For your-meta-repo project-local skills: `your-meta-repo/skills/<category>/<skill-name>/SKILL.md` with the same internal structure.
+For project-local skills (e.g. inside a meta-stack repo): `<your-repo>/skills/<category>/<skill-name>/SKILL.md` with the same internal structure.
 
 ### Quality Gates Before Shipping a New Skill
 

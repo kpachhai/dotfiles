@@ -20,10 +20,14 @@ if ! ls ~/Library/Fonts/MesloLGSNerdFont* >/dev/null 2>&1 && \
   brew install --cask font-meslo-lg-nerd-font
 fi
 
-# Copy exported iTerm2 preferences to the custom prefs folder
+# Copy exported iTerm2 preferences to the custom prefs folder, substituting
+# the __HOME_PLACEHOLDER__ token with the actual $HOME so the plist is
+# portable across machines/usernames.
 ITERM2_PREFS_DIR="$HOME/.config/iterm2"
 mkdir -p "$ITERM2_PREFS_DIR"
-cp "$DOTFILES_DIR/iterm2/com.googlecode.iterm2.plist" "$ITERM2_PREFS_DIR/"
+sed "s|__HOME_PLACEHOLDER__|$HOME|g" \
+  "$DOTFILES_DIR/iterm2/com.googlecode.iterm2.plist" \
+  > "$ITERM2_PREFS_DIR/com.googlecode.iterm2.plist"
 
 # Tell iTerm2 to load preferences from the custom folder
 defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.config/iterm2"

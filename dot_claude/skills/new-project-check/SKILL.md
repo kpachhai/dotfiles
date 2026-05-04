@@ -97,7 +97,7 @@ If the distribution plan is in the unacceptable list, surface as **the most like
 
 Format the response as a structured report ending in one of three verdicts:
 
-**GO** - Project owns at least 1 vertical OR one mature infrastructure layer with a clear distribution plan AND a defensible answer to the AI-10x diagnostic. Proceed; route to `north-star-builder` (your-meta-repo) or `idea-refiner` for next steps.
+**GO** - Project owns at least 1 vertical OR one mature infrastructure layer with a clear distribution plan AND a defensible answer to the AI-10x diagnostic. Proceed; route to your project-planning skill (e.g. `north-star-builder` or `idea-refiner` in your meta-stack repo) for next steps.
 
 **RECONSIDER** - Project has gaps in 1-2 of the above but is fixable. Surface the specific gaps and what would close them. User decides whether to invest the closing work or pivot.
 
@@ -136,7 +136,7 @@ The viability report is delivered **inline in conversation**. Optional: save to 
 
 **Consumed by (downstream chain):**
 - User makes the decision; this skill informs, does not bind
-- If GO: route to `idea-refiner` (your-meta-repo) or `north-star-builder` for project planning
+- If GO: route to your project-planning skill (e.g. `idea-refiner` or `north-star-builder` in your meta-stack repo)
 - If RECONSIDER: user iterates on the gaps and re-runs this skill
 - If KILL: capture as `[Parked]` thought in Open Brain with the kill-reasons; useful future signal
 
@@ -169,9 +169,9 @@ Combined framework from two Nate B Jones videos (2026-05):
 - "The Agent Infrastructure Stack: 6 Layers" (https://www.youtube.com/watch?v=7HP1jFJ9W1c) - bottom-up infrastructure
 - "5 Things AI Cannot Replace" (https://www.youtube.com/watch?v=ib2m9HVX7as) - top-down business defensibility
 
-Audit docs: `your-meta-repo/workspace/your-meta-repo-meta/nate-jones-agent-infra-stack-learn-improve-v1.md` and `nate-jones-five-durable-verticals-learn-improve-v1.md`.
+Audit docs: keep these in your meta-stack workspace (e.g. `<your-meta-repo>/workspace/<meta-folder>/<topic>-learn-improve-v1.md`).
 
-Companion personal reference: `your-meta-repo/workspace/your-meta-repo-meta/agent-stack-literacy.md` (where I sit in the framework today).
+Companion personal reference: a state document in the same workspace tracking where you sit in the framework today.
 
 ## Version
 

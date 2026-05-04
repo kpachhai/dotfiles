@@ -17,7 +17,7 @@ This pattern is identical to Claude Code's own `settings.json` + `settings.local
 
 ## Existing Scopes
 
-- `meta-stack.txt` - the user's cross-project Claude tooling. Committed defaults are the repos that should be audited on every machine (e.g., the user's your-meta-repo + dotfiles plus shared work repos available across machines). Machine-specific extras (personal-only, this-machine-only, or repos not present on every machine) go in `meta-stack.local.txt`. The combined audit target is the union of both files, deduplicated and tilde-expanded.
+- `meta-stack.txt` - the user's cross-project Claude tooling scope. The committed file is intentionally empty (no user-specific paths leak into a public dotfiles repo). All actual repo paths — your dotfiles, project workspace, persistent-memory repo, work repos, etc. — go in `meta-stack.local.txt` (gitignored, machine-local). The combined audit target is the union of both files, deduplicated and tilde-expanded.
 
 ## Adding a New Scope
 
@@ -35,8 +35,8 @@ Create both `<scope-name>.txt` (public) and `<scope-name>.local.txt` (extras). T
 Example layout for a Solutions Architect across multiple machines:
 ```
 ~/.claude/scopes/
-├── meta-stack.txt           # committed: your-meta-repo + dotfiles + your-data-repo
-├── meta-stack.local.txt     # personal machine: + private personal repos
+├── meta-stack.txt           # committed: empty (header-only stub)
+├── meta-stack.local.txt     # personal machine: dotfiles + project workspace + persistent-memory repo
 ├── client-projects.local.txt  # work machine only: + client repos
 └── work-internal.local.txt    # work machine only: + employer-internal repos
 ```

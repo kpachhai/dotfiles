@@ -10,7 +10,6 @@ description: |
   `[Style]` / `[Artifact]` prefixes (personal machine) AND to the local file
   `~/.claude/working-identity.md` (cross-machine fallback - canonical store on
   work machine, export target on personal machine).
-author: YOUR_NAME
 version: 1.0.0
 ---
 

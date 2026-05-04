@@ -19,7 +19,7 @@ The skill does NOT replace test suites, code review, or static analysis. It runs
 
 This is a thin v1 designed to be **swap-replaced** when Nate B Jones (or others) ships a more comprehensive comprehension-gate skill upstream. Per the shim-vs-native discipline:
 
-- **Tracked at:** `your-meta-repo/workspace/your-meta-repo-meta/agent-stack-literacy.md` "Active Shims I Track" table.
+- **Tracked at:** an "Active Shims" table in your meta-stack workspace (if you maintain one).
 - **Swap-out trigger:** A comprehension-gate skill ships in `github.com/NateBJones-Projects/OB1/skills/` OR a comparable, well-designed alternative ships in another community repo. Adopt that instead of maintaining ours.
 - **Watch-trigger date:** Re-check upstream every ~30 days starting 2026-06-03.
 - **Not a placeholder:** v1 is functional and useful today. The shim framing is honest about long-term ownership, not about quality.
@@ -211,11 +211,11 @@ The comprehension report is delivered **inline in conversation**. Optional: save
 
 Nate B Jones, "Dark Code: AI-Generated Code Nobody Understands" (2026-05-03).
 URL: https://www.youtube.com/watch?v=E1idsrv79tI
-Audit doc: `your-meta-repo/workspace/your-meta-repo-meta/nate-jones-dark-code-learn-improve-v1.md`
+Audit doc: maintained in the maintainer's meta-stack workspace.
 
 This skill operationalizes the 3-layer context engineering pattern Nate describes (structural, semantic, comprehension) as a pre-merge filter. The skill itself is a thin v1 shim; if Nate ships a comprehensive comprehension-gate skill in OB1 (or comparable), swap to it.
 
-The artifact output mode (Step 5) was added in v1.1.0 from Nate B Jones, "Five Principles for Proving Your Worth in 2026" (2026-05). URL: https://www.youtube.com/watch?v=-dJ9WrTG6zQ. Audit doc: `your-meta-repo/workspace/your-meta-repo-meta/nate-jones-proving-worth-learn-improve-v1.md`. The 4-question format ports Nate's "commit message for AI" framing as the public-facing counterpart to the private gate.
+The artifact output mode (Step 5) was added in v1.1.0 from Nate B Jones, "Five Principles for Proving Your Worth in 2026" (2026-05). URL: https://www.youtube.com/watch?v=-dJ9WrTG6zQ. Audit doc: maintained in the maintainer's meta-stack workspace. The 4-question format ports Nate's "commit message for AI" framing as the public-facing counterpart to the private gate.
 
 ## Version
 

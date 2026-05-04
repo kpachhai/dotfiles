@@ -21,7 +21,7 @@ This skill improves the project the user is currently working in (`$CWD` or its 
 - Any reusable code patterns, scripts, or tools the project ships
 
 **When NOT to use this skill - scope mismatch:**
-- If the article is about YOUR_NAME's personal Claude workflow / dotfiles / Open Brain / cross-repo patterns AND the user is in `your-meta-repo`, defer to `your-meta-repo/skills/intake/learn-and-improve/SKILL.md` (the meta-stack version). That skill audits your-meta-repo + dotfiles + your-data-repo together.
+- If the article is about your personal Claude workflow / dotfiles / persistent memory / cross-repo patterns AND the user is in their meta-stack repo, defer to that repo's local `learn-and-improve` skill (the meta-stack version). That skill audits the maintainer's full meta-stack (e.g. dotfiles + project workspace + persistent-memory repo) together. If you don't maintain a separate meta-stack repo, ignore this guidance.
 - If the article is purely a reference share with no improvement intent, do not invoke this skill. Just discuss inline.
 
 ## When To Use
@@ -155,7 +155,7 @@ The discipline: project-scope and enterprise-scope are independent audit targets
 
 ### Phase 3.6: Project / Demo Opportunity Lens (Mandatory)
 
-External content is not just a source of skill improvements - it's also a source of **sample project ideas**. The user wants to constantly learn by building hands-on demos with new techniques, growing the your-meta-repo project portfolio, even if execution is parked for later. Identify these opportunities explicitly.
+External content is not just a source of skill improvements - it's also a source of **sample project ideas**. The user wants to constantly learn by building hands-on demos with new techniques, growing their personal project portfolio, even if execution is parked for later. Identify these opportunities explicitly.
 
 For every pattern extracted in Phase 2, ask:
 
@@ -163,7 +163,7 @@ For every pattern extracted in Phase 2, ask:
 2. **Hands-on value:** Would building it give meaningful experience with the new technique that captures alone don't provide?
 3. **Audience fit (both/and):** Evaluate the project against BOTH axes - never collapse to one:
    - **Client / enterprise architecture value:** Would the project demonstrate the technique usefully for the user's client/enterprise architecture work, internal tooling decisions, or knowledge-sharing with the teams the user supports (DevRel collaborators included, not the primary frame)?
-   - **Personal project value:** Would the project be a fun / interesting / educational personal build the user would actually want to maintain - something that solves their own problem, scratches an itch, or extends their personal stack (your-meta-repo, dotfiles, Open Brain, blog, side ideas)?
+   - **Personal project value:** Would the project be a fun / interesting / educational personal build the user would actually want to maintain - something that solves their own problem, scratches an itch, or extends their personal stack (project workspace, dotfiles, persistent memory, blog, side ideas)?
    A project can be a strong fit on either axis OR both. The North Star and tutorial framing should reflect whichever fits - many project audiences are both/and rather than either/or. Do NOT exclude the personal-project angle when scoping unless the technique is genuinely client-only (e.g., a regulated-industry compliance pattern).
 4. **Form-factor survey (think outside the box):** Before defaulting to the smallest viable shape, explicitly survey shapes the project COULD take. The lens's natural tendency is to default to "personal Claude Code skill that fits an existing pattern" - that is the conservative shape, often correct but often a missed opportunity. Walk through these shapes and rank by reach:
    - **Personal skill / config** (lowest effort, single user, highest ergonomics for self)
@@ -192,8 +192,8 @@ For every pattern extracted in Phase 2, ask:
 
    Form-factor differences (CLI vs web app, plugin vs library) are NOT automatic justifications for building parallel - they are gap statements that should be tested by step 4 first. Surface this check BEFORE drafting a North Star or research brief; raising it after planning effort is sunk wastes the planning.
 
-7. **your-meta-repo expansion:** Could the project become a reusable demo template or starter for future projects of this type?
-8. **Skill gap check (critical):** Does your-meta-repo already have a builder/intake skill that would handle this project type?
+7. **Portfolio expansion:** Could the project become a reusable demo template or starter for future projects of this type?
+8. **Skill gap check (critical):** Does your meta-stack already have a builder/intake skill that would handle this project type?
    - **Yes, existing skill fits** → use existing skill when project executes
    - **No, but small extension to existing skill suffices** → flag the existing skill for extension when project executes (per balance-modify-vs-create rule)
    - **No, and a genuinely new skill is needed** → flag as skill gap. Decide whether to create skill now (if confidence is high project will execute soon) or park skill creation alongside the project (linked via Open Brain `[Parked]` thoughts)
@@ -226,8 +226,8 @@ Sort by Impact desc → Effort asc → Risk asc.
 
 Group recommendations:
 - **Quick Wins** (P1, Low effort) - do this conversation
-- **Projects** (P1-P2, Medium-High effort) - separate conversation/branch (skill development efforts, not your-meta-repo sample projects)
-- **Sample Project Opportunities** - your-meta-repo sample/demo projects to plan via `idea-refiner` from Phase 3.6 lens. Each entry names: project description, hands-on value, **skill situation** (existing skill X works / extends existing skill Y / new skill Z needed), trigger to execute (or "execute now" if quick). Plan goes in `workspace/<new-project-name>/` as a real project plan even if execution is parked. If a new skill is needed, decide create-now vs park-with-project per balance-modify-vs-create rule.
+- **Projects** (P1-P2, Medium-High effort) - separate conversation/branch (skill development efforts, not portfolio sample projects)
+- **Sample Project Opportunities** - hands-on demo/sample projects to plan via your portfolio's planning skill (e.g. `idea-refiner`) from Phase 3.6 lens. Each entry names: project description, hands-on value, **skill situation** (existing skill X works / extends existing skill Y / new skill Z needed), trigger to execute (or "execute now" if quick). Plan goes in `workspace/<new-project-name>/` of your portfolio repo as a real project plan even if execution is parked. If a new skill is needed, decide create-now vs park-with-project per balance-modify-vs-create rule.
 - **Backlog** (P3) - revisit later. **For every parked recommendation, also capture a `[Parked]` thought to Open Brain** with the recommendation summary, an explicit trigger condition for when to unpark, and a reference to this audit doc. Future Open Brain semantic search will surface the parked item when work matching the trigger arises. Audit docs in `<project>/.claude/audits/` are not always indexed by other tools, so Open Brain is the durable surfacing path. Format: `[Parked] <summary>. Trigger to unpark: <specific condition>. Source: <audit doc path> Rec <id>.`
 
 After individual recommendations, identify Cross-Cutting Themes that span multiple recommendations.
@@ -266,7 +266,7 @@ The audit is delivered as a versioned Markdown file at `<project-root>/.claude/a
 **Out of scope (this skill does NOT produce):**
 - The actual skill/file modifications themselves (Phase 5 produces those; the audit doc only tracks them)
 - Open Brain captures (Phase 2.5 produces those; the audit doc only references them)
-- Multi-project audits (one project per audit file; meta-stack lives in your-meta-repo-local skill)
+- Multi-project audits (one project per audit file; meta-stack scope handled by your meta-stack repo's local skill if you maintain one)
 - Recommendations for skills marked DO NOT MODIFY (per Audit Rules)
 
 **Format guarantees:**
@@ -279,7 +279,6 @@ The audit is delivered as a versioned Markdown file at `<project-root>/.claude/a
 # Learn and Improve: <Topic or Article Title>
 
 **Date:** <YYYY-MM-DD>
-**Author:** YOUR_NAME
 **Status:** Draft | Reviewed | Applied
 **Project:** <project name from CWD>
 
@@ -337,25 +336,25 @@ The audit is delivered as a versioned Markdown file at `<project-root>/.claude/a
 - **Reading from memory instead of disk.** Always Read the actual current state of project files before judging gaps. Skills and configs evolve.
 - **Inflating recommendations.** Not every article applies. "Diminishing returns" is a valid honest finding when supported by the audit.
 
-## Differences from Idea-Forge Local Version
+## Differences from a Meta-Stack Local Version
 
-This global skill is for **project-improvement** scope. The your-meta-repo-local version (`your-meta-repo/skills/intake/learn-and-improve/`) is for **workflow/meta-stack** scope (your-meta-repo + dotfiles + your-data-repo + Claude workflow).
+This global skill is for **project-improvement** scope. If you maintain a separate meta-stack repo (e.g. one that holds your cross-project Claude workflow tooling), it can host its own local `learn-and-improve` skill at `<your-meta-repo>/skills/intake/learn-and-improve/` for **workflow/meta-stack** scope (cross-project Claude experience: dotfiles + project workspace + persistent memory + workflow).
 
-Use your-meta-repo's local version when:
+Use your meta-stack repo's local version when:
 - The article is about Claude Code workflow, skill design, prompt engineering, agent orchestration, or anything that improves the user's cross-project Claude experience
 - The audit target is the meta-stack, not a specific project
 
 Use this global version when:
-- The user is in any project (including your-meta-repo) and wants to improve THAT project specifically
+- The user is in any project (including their meta-stack repo) and wants to improve THAT project specifically
 - The audit target is the project's own files
 
 ## Version
 
-1.0.5 - Phase 3.5 expanded into three explicit lenses (Internal Company AI Tooling Repo / External Advisory & Content / New Artifact & Project) plus a "Multiplication Channel Discipline" rule. A learning session producing ONLY in-project tweaks is incomplete - it under-uses the user's Solutions Architect role. Surfaced from Nate Jones BYOC audit where initial pass was too internal; user correction was explicit that "if we're just updating what we have, that's not a very comprehensive learning session." Source: `your-meta-repo/workspace/your-meta-repo-meta/nate-jones-byoc-portable-context-learn-improve-v1.md`. Mirrors your-meta-repo local skill v1.4.5.
+1.0.5 - Phase 3.5 expanded into three explicit lenses (Internal Company AI Tooling Repo / External Advisory & Content / New Artifact & Project) plus a "Multiplication Channel Discipline" rule. A learning session producing ONLY in-project tweaks is incomplete - it under-uses the user's Solutions Architect role. Surfaced from Nate Jones BYOC audit where initial pass was too internal; user correction was explicit that "if we're just updating what we have, that's not a very comprehensive learning session." Sourced from a meta-stack BYOC audit doc. Mirrors a corresponding meta-stack local skill at v1.4.5.
 
-1.0.4 - Phase 3.6 lens gets a parallel-tool check (Q6, output redundancy). Distinct from Q5 (shipped-vs-announced, input availability). Q5 asks "can we build this at all?"; Q6 asks "should we build this at all?" Surfaced when claude-token-audit was being planned without checking that claude-token-analyzer (li195111) already shipped a solution to the same problem. Existing Q6-Q7 (your-meta-repo expansion, skill gap) renumbered to Q7-Q8.
+1.0.4 - Phase 3.6 lens gets a parallel-tool check (Q6, output redundancy). Distinct from Q5 (shipped-vs-announced, input availability). Q5 asks "can we build this at all?"; Q6 asks "should we build this at all?" Surfaced when claude-token-audit was being planned without checking that claude-token-analyzer (li195111) already shipped a solution to the same problem. Existing Q6-Q7 (portfolio expansion, skill gap) renumbered to Q7-Q8.
 
-1.0.3 - Phase 3.6 lens gets two new questions: form-factor survey (Q4) and shipped-vs-announced check (Q5). Existing Q4-Q5 (your-meta-repo expansion, skill gap) renumbered to Q6-Q7. Reasons: lens defaulted to "smallest skill that fits existing patterns" without explicitly surveying maximum-useful-shape; and seed claims about third-party infrastructure ("X contributed Y") often turn out to be announced-not-shipped, leading to wasted project-planning effort.
+1.0.3 - Phase 3.6 lens gets two new questions: form-factor survey (Q4) and shipped-vs-announced check (Q5). Existing Q4-Q5 (portfolio expansion, skill gap) renumbered to Q6-Q7. Reasons: lens defaulted to "smallest skill that fits existing patterns" without explicitly surveying maximum-useful-shape; and seed claims about third-party infrastructure ("X contributed Y") often turn out to be announced-not-shipped, leading to wasted project-planning effort.
 
 1.0.2 - Phase 3.6 lens question 3 broadened to both/and (client/enterprise + personal project). Earlier 1.0.1's "Solutions Architect / client-applicability" framing was too narrow on the other side - excluded the personal-project angle.
 

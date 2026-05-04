@@ -53,7 +53,7 @@ If upstream ships a new plugin version, the patch directory will be out of sync.
 3. Bump `PINNED_VERSION` to the new upstream version.
 4. Re-run `apply.sh`.
 
-The maintainer-friendly long-term fix is to land an upstream config option (`CTA_LANG=en` env var or skill flag). See the workspace doc at `~/repos/github.com/kpachhai/your-meta-repo/workspace/your-meta-repo-meta/cta-upstream-issue.md` for the issue draft to file.
+The maintainer-friendly long-term fix is to land an upstream config option (`CTA_LANG=en` env var or skill flag). File an upstream issue when you have time.
 
 ## Why This Exists
 
