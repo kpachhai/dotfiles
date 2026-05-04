@@ -1,24 +1,29 @@
+{{- $identity := include (joinPath .chezmoi.homeDir ".config" "devkit" "identity.json") | fromJson -}}
 [user]
-	name = YOUR_NAME
-	signingkey = REMOVED-GPG-KEY
+	name = {{ $identity.full_name }}
+{{- if $identity.gpg_signing_key }}
+	signingkey = {{ $identity.gpg_signing_key }}
+{{- end }}
 {{- if eq .machine_type "work" }}
-	email = REMOVED-EMAIL
+	email = {{ $identity.email_work }}
 {{- else }}
-	email = REMOVED-EMAIL
+	email = {{ $identity.email_personal }}
 {{- end }}
 [commit]
+{{- if $identity.gpg_signing_key }}
 	gpgsign = true
+{{- else }}
+	gpgsign = false
+{{- end }}
 [pull]
 	rebase = false
 {{- if eq .machine_type "personal" }}
-[includeIf "gitdir:~/repos/github.com/your-org/"]
-	path = ~/.gitconfig-work
-[includeIf "gitdir:~/repos/github.com/your-org/"]
-	path = ~/.gitconfig-work
-[includeIf "gitdir:~/repos/github.com/your-org/"]
+{{- range $org := $identity.work_gh_orgs }}
+[includeIf "gitdir:~/repos/github.com/{{ $org }}/"]
 	path = ~/.gitconfig-work
 {{- end }}
+{{- end }}
 {{- if eq .machine_type "work" }}
-[includeIf "gitdir:~/repos/github.com/kpachhai/"]
+[includeIf "gitdir:~/repos/github.com/{{ $identity.github_username }}/"]
 	path = ~/.gitconfig-personal
 {{- end }}

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# chezmoi run_once_before hook: bootstraps ~/.config/devkit/identity.json on
+# first apply. If the file exists, this is a no-op. Idempotent.
+
+set -euo pipefail
+
+target="${HOME}/.config/devkit/identity.json"
+
+if [[ -f "$target" ]]; then
+    echo "[bootstrap-identity] $target already exists; skipping."
+    exit 0
+fi
+
+echo "[bootstrap-identity] Creating $target"
+echo "                     (you can edit it directly later; chezmoi will not overwrite it)"
+echo
+
+machine_type="{{ .machine_type }}"
+
+mkdir -p "$(dirname "$target")"
+
+prompt() {
+    local var="$1" question="$2" default="${3:-}"
+    local answer
+    if [[ -n "$default" ]]; then
+        read -r -p "$question [$default]: " answer
+        answer="${answer:-$default}"
+    else
+        read -r -p "$question: " answer
+    fi
+    printf -v "$var" '%s' "$answer"
+}
+
+while [[ -z "${full_name:-}" ]]; do prompt full_name "Full name"; done
+while [[ -z "${email_personal:-}" ]]; do prompt email_personal "Personal email"; done
+prompt email_work "Work email (blank if none)" ""
+while [[ -z "${github_username:-}" ]]; do prompt github_username "GitHub username"; done
+prompt gpg_signing_key "GPG signing key (blank if none)" ""
+
+cat > "$target" <<JSON
+{
+  "full_name": "$full_name",
+  "email_personal": "$email_personal",
+  "email_work": "$email_work",
+  "github_username": "$github_username",
+  "gpg_signing_key": "$gpg_signing_key",
+  "work_gh_orgs": []
+}
+JSON
+
+echo "[bootstrap-identity] Wrote $target"

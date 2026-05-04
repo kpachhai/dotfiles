@@ -1,0 +1,3 @@
+{{- $identity := include (joinPath .chezmoi.homeDir ".config" "devkit" "identity.json") | fromJson -}}
+[user]
+	email = {{ $identity.email_personal }}
