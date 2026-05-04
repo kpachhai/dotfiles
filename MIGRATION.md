@@ -27,20 +27,40 @@ PII that was committed by accident at any point in history.
 
 2. **Note which machine has the latest commits.** Run the scrub on that machine.
 
-3. **In the repo on the chosen machine:**
+3. **In the repo on the chosen machine — fill in scrub config:**
+
+   **`.scrub/replacements.txt`** is required (file-content rules):
    ```bash
    cd <repo>
    cp .scrub/replacements.example.txt .scrub/replacements.txt
    # Edit replacements.txt — fill in your literal PII strings on the LEFT side.
-   # The example file shows the shape; you replace the placeholders with
-   # actual strings from your repo.
    ```
+
+   **`.scrub/mailmap`** is optional (rewrites Author/Committer email + name):
+   ```bash
+   cp .scrub/mailmap.example.txt .scrub/mailmap
+   # Edit mailmap — one line per identity to collapse:
+   #   New Name <new@email> <old@email>
+   ```
+
+   **`.scrub/message-replacements.txt`** is optional (rewrites commit-message
+   text — most commonly Signed-off-by trailers, which `--mailmap` does NOT
+   touch on its own):
+   ```bash
+   cp .scrub/message-replacements.example.txt .scrub/message-replacements.txt
+   # Edit — one line per rule:
+   #   old@email==>new@email
+   ```
+
+   All three files are gitignored. Only the `.example.txt` siblings are
+   committed.
 
 4. **Dry run first** to validate setup:
    ```bash
    ~/.claude/scripts/scrub-pii-history.sh . --dry-run
    ```
-   Verify the LEFT-side strings reported match what you intend to scrub.
+   The dry-run reports: LEFT-side content rules, mailmap email mappings (if
+   present), message-replacement rules (if present). Verify each looks right.
 
 5. **Run the scrub:**
    ```bash
@@ -48,8 +68,11 @@ PII that was committed by accident at any point in history.
    ```
    The script:
    - Creates `backup/pre-scrub-YYYYMMDD-HHMM` branch
-   - Runs `git filter-repo --replace-text .scrub/replacements.txt --force`
-   - Verifies no LEFT-side string remains in history or working tree
+   - Runs `git filter-repo --replace-text .scrub/replacements.txt`
+     plus `--mailmap` and `--replace-message` if those files exist
+   - Verifies no LEFT-side content string remains in working tree or history
+   - Verifies no OLD email from mailmap/message-replacements survives in
+     Author/Committer/commit-message fields
    - Prints next-step instructions; does not push
 
 6. **Inspect the rewrite:**

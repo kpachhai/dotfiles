@@ -102,10 +102,34 @@ while IFS= read -r line; do
     [[ -n "$left" ]] && LEFT_SIDES+=("$left")
 done < "$REPL_FILE"
 
+# Optional: mailmap for author/committer rewrites (--mailmap)
+MAILMAP_FILE=".scrub/mailmap"
+mailmap_args=()
+if [[ -f "$MAILMAP_FILE" ]]; then
+    mailmap_args=(--mailmap "$MAILMAP_FILE")
+fi
+
+# Optional: message replacements for commit-message body rewrites (--replace-message).
+# Use this for Signed-off-by trailers and other commit-metadata text that
+# --mailmap does not touch.
+MSG_REPL_FILE=".scrub/message-replacements.txt"
+msg_args=()
+if [[ -f "$MSG_REPL_FILE" ]]; then
+    msg_args=(--replace-message "$MSG_REPL_FILE")
+fi
+
 if [[ $DRY_RUN -eq 1 ]]; then
-    echo "[DRY RUN] Would run: git filter-repo --replace-text $REPL_FILE --force"
+    echo "[DRY RUN] Would run: git filter-repo --replace-text $REPL_FILE ${mailmap_args[*]} ${msg_args[*]} --force"
     echo "[DRY RUN] LEFT-side strings to verify post-rewrite (${#LEFT_SIDES[@]} total):"
     printf '  - %s\n' "${LEFT_SIDES[@]}"
+    if [[ ${#mailmap_args[@]} -gt 0 ]]; then
+        echo "[DRY RUN] Mailmap detected at $MAILMAP_FILE; will rewrite Author/Committer:"
+        sed -nE 's/^[^<]*<([^>]+)>[^<]*<([^>]+)>.*/  \2 -> \1/p' "$MAILMAP_FILE"
+    fi
+    if [[ ${#msg_args[@]} -gt 0 ]]; then
+        echo "[DRY RUN] Message replacements detected at $MSG_REPL_FILE; will rewrite commit-message text:"
+        grep -vE '^(#|$)' "$MSG_REPL_FILE" | sed 's/^/  /'
+    fi
     echo "[DRY RUN] Backup branch $BACKUP_BRANCH was created."
     echo "[DRY RUN] No history rewrite performed."
     exit 0
@@ -113,9 +137,9 @@ fi
 
 # Run the rewrite
 echo "Running git filter-repo..."
-git filter-repo --replace-text "$REPL_FILE" --force
+git filter-repo --replace-text "$REPL_FILE" "${mailmap_args[@]}" "${msg_args[@]}" --force
 
-# Verify: no LEFT-side string remains anywhere
+# Verify file content: no LEFT-side string from replacements.txt remains anywhere
 echo "Verifying scrub..."
 FAILURES=0
 for s in "${LEFT_SIDES[@]}"; do
@@ -131,6 +155,33 @@ for s in "${LEFT_SIDES[@]}"; do
     fi
 done
 
+# Verify commit metadata: no OLD email from mailmap or message-replacements
+# survives in author/committer/commit-message fields.
+OLD_EMAILS=()
+if [[ -f "$MAILMAP_FILE" ]]; then
+    while IFS= read -r email; do
+        [[ -n "$email" ]] && OLD_EMAILS+=("$email")
+    done < <(sed -nE 's/^[^<]*<([^>]+)>[^<]*<([^>]+)>.*/\2/p' "$MAILMAP_FILE")
+fi
+if [[ -f "$MSG_REPL_FILE" ]]; then
+    while IFS= read -r line; do
+        [[ -z "$line" || "$line" =~ ^# ]] && continue
+        left="${line%%==>*}"
+        [[ -n "$left" ]] && OLD_EMAILS+=("$left")
+    done < "$MSG_REPL_FILE"
+fi
+
+if [[ ${#OLD_EMAILS[@]} -gt 0 ]]; then
+    # Dedupe
+    mapfile -t OLD_EMAILS < <(printf '%s\n' "${OLD_EMAILS[@]}" | sort -u)
+    for s in "${OLD_EMAILS[@]}"; do
+        if git log --all --format='%ae|%ce|%b' | grep -qF "$s"; then
+            echo "FAIL: author/committer/commit-message still contains: $s" >&2
+            FAILURES=$((FAILURES + 1))
+        fi
+    done
+fi
+
 if [[ $FAILURES -gt 0 ]]; then
     echo "ERROR: $FAILURES residual matches found. Restore from $BACKUP_BRANCH and investigate." >&2
     echo "       To restore: git reset --hard $BACKUP_BRANCH" >&2
@@ -138,7 +189,7 @@ if [[ $FAILURES -gt 0 ]]; then
 fi
 
 echo
-echo "SUCCESS: history scrubbed clean. ${#LEFT_SIDES[@]} rules verified, 0 residual matches."
+echo "SUCCESS: history scrubbed clean. ${#LEFT_SIDES[@]} content rules verified, ${#OLD_EMAILS[@]} email rewrites verified, 0 residual matches."
 echo
 echo "Next steps (manual):"
 echo "  1. Inspect a few commits: git log --oneline -10"

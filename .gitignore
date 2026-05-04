@@ -17,6 +17,8 @@ Thumbs.db
 
 # PII scrub input — contains literal PII strings, never commit
 .scrub/replacements.txt
+.scrub/mailmap
+.scrub/message-replacements.txt
 
 # Internal planning docs (specs/plans live in private workspace, not in
 # the public dotfiles repo). If you fork, you can keep planning artifacts

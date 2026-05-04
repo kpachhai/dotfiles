@@ -1,0 +1,15 @@
+# git-shortlog-style mailmap for git-filter-repo --mailmap.
+# Each line maps an OLD author/committer identity to a NEW canonical one.
+# Format:
+#   <New Name> <new@email>  <old@email>
+#   <New Name> <new@email>  <Old Name> <old@email>
+#
+# Copy this file to `mailmap` (gitignored), fill in your literal email
+# mappings, then run `~/.claude/scripts/scrub-pii-history.sh . --confirm`.
+# The script will pass --mailmap to git-filter-repo automatically when
+# `.scrub/mailmap` exists.
+#
+# Example: collapse a work email and an old personal alias into one
+# canonical author identity:
+Your Name <preferred@email.com> <work@example-employer.com>
+Your Name <preferred@email.com> <old-personal@example.com>

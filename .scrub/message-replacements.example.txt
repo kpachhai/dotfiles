@@ -1,0 +1,16 @@
+# Commit-message body replacements for git-filter-repo --replace-message.
+# Each line: <find>==><replace>. Same syntax as replacements.txt but applied
+# to commit messages (subject + body), not file content.
+#
+# Most common use: rewriting Signed-off-by trailers when --mailmap was used
+# to rewrite Author/Committer emails. --mailmap does NOT touch trailers.
+# This file does.
+#
+# Copy this file to `message-replacements.txt` (gitignored), fill in your
+# real email mappings, then run `~/.claude/scripts/scrub-pii-history.sh
+# . --confirm`. The script auto-detects this file and passes
+# --replace-message to git-filter-repo.
+#
+# Example (rewrites Signed-off-by trailers from work email to personal):
+work@example-employer.com==>preferred@email.com
+old-personal@example.com==>preferred@email.com

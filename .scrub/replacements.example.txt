@@ -3,7 +3,7 @@
 # Copy this file to `replacements.txt` (gitignored), fill in your literal PII strings,
 # then run `~/.claude/scripts/scrub-pii-history.sh . --confirm`.
 
-***REMOVED***
+# --- Personal identity ---
 <your-full-name>==>YOUR_NAME
 <your-personal-email>==>REMOVED-EMAIL
 <your-work-email>==>REMOVED-EMAIL
@@ -15,7 +15,16 @@
 <your-employer-product>==>generic-term
 
 # --- Hardcoded paths ---
-/Users/<your-username>/==>$HOME/
+# Tip: hardcoded usernames in paths leak via TWO patterns. The path WITH a
+# trailing slash matches when something follows (/Users/foo/bin), but a
+# bare path with no trailing slash (<string>/Users/foo</string>) needs its
+# own rule. Most-specific (with-slash) FIRST so the broader rule does not
+# pre-match. If you have multiple machines with different home dir names
+# (e.g. personal `kpachhai` vs work `kiranpachhai`), list each one.
+/Users/<your-personal-username>/==>$HOME/
+/Users/<your-personal-username>==>$HOME
+/Users/<your-work-username>/==>$HOME/
+/Users/<your-work-username>==>$HOME
 
 # Notes:
 # - The LEFT side is what gets scrubbed. Anywhere these strings appear in commit
@@ -23,3 +32,7 @@
 # - DO NOT commit your real `replacements.txt` (.gitignore handles this).
 # - The scrub script's verifier greps the rewritten history for the LEFT-side
 #   strings; any match means the scrub did not catch them and the run fails.
+# - For author/committer rewrites: also create `.scrub/mailmap` (see
+#   mailmap.example.txt). For Signed-off-by trailer rewrites: also create
+#   `.scrub/message-replacements.txt` (see message-replacements.example.txt).
+#   The scrub script auto-detects both files when present.
