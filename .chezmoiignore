@@ -7,5 +7,6 @@ iterm2/
 # Public-template artifacts that live only in the repo, not in $HOME
 MIGRATION.md
 devkit-identity.example.json
+devkit-references.example.json
 docs/
 .scrub/

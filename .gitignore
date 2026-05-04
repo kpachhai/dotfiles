@@ -17,3 +17,14 @@ Thumbs.db
 
 # PII scrub input — contains literal PII strings, never commit
 .scrub/replacements.txt
+
+# Internal planning docs (specs/plans live in private workspace, not in
+# the public dotfiles repo). If you fork, you can keep planning artifacts
+# here locally without committing them.
+docs/
+
+# Comprehension-gate explanation artifacts. These document AI-generated
+# changes per-commit and may contain identifying details about the
+# maintainer's reasoning. Kept out of the public repo by default; live in
+# your private workspace if needed.
+dot_claude/explanations/

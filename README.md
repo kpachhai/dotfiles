@@ -227,6 +227,29 @@ Schema (see `devkit-identity.example.json` at repo root for the canonical exampl
 
 After any edit to `~/.config/devkit/identity.json`, run `chezmoi apply` to regenerate gitconfig and other dependent files.
 
+## External References (URLs, MCP endpoints)
+
+A second devkit file, **`~/.config/devkit/references.json`**, holds pointers to external systems your tooling integrates with — MCP server URLs, dashboards, etc. Anything that contains a secret (e.g. an access key embedded in a URL) belongs here, not in committed dotfiles.
+
+Schema (see `devkit-references.example.json` at repo root):
+
+```json
+{
+  "open_brain_mcp_url": ""
+}
+```
+
+All fields optional. Today the file is consumed by:
+- `run_once_install-claude-mcps.sh` — reads `open_brain_mcp_url` to register the persistent-memory MCP.
+
+If you add a new external integration that needs a secret URL or token, add a key here rather than introducing a new env var. Setup:
+
+```bash
+cp devkit-references.example.json ~/.config/devkit/references.json
+chmod 600 ~/.config/devkit/references.json
+$EDITOR ~/.config/devkit/references.json
+```
+
 ## Machine-Specific Config
 
 `chezmoi init` prompts for a machine type (`personal` or `work`) and stores it in `~/.config/chezmoi/chezmoi.toml`. This drives:
@@ -237,6 +260,7 @@ To change the machine type later, edit `~/.config/chezmoi/chezmoi.toml` and re-r
 
 **Local extensions (gitignored, machine-specific):**
 - `~/.config/devkit/identity.json` - your identity (lives outside any repo)
+- `~/.config/devkit/references.json` - external system URLs/secrets (lives outside any repo)
 - `~/.config/chezmoi/chezmoi.toml` - machine type
 - `~/.claude/settings.local.json` - per-machine Claude permissions
 - `~/.claude/scopes/<name>.local.txt` - private repo paths for cross-project audit skills
@@ -272,6 +296,7 @@ dot_claude/                   -> ~/.claude/
   settings.local.json         -> ~/.claude/settings.local.json
   CLAUDE.md                   -> ~/.claude/CLAUDE.md
 devkit-identity.example.json     Schema example for ~/.config/devkit/identity.json
+devkit-references.example.json   Schema example for ~/.config/devkit/references.json (external URLs/secrets)
 dot_gitconfig.tmpl            -> ~/.gitconfig (rendered from identity.json)
 dot_gitconfig-work.tmpl       -> ~/.gitconfig-work (work email from identity.json)
 dot_gitconfig-personal.tmpl   -> ~/.gitconfig-personal (personal email from identity.json)

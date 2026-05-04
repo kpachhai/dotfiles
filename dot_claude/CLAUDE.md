@@ -185,7 +185,11 @@ Available across all projects via `~/.claude/skills/`:
 
 ## Open Brain - Persistent Memory
 
-Open Brain is the maintainer's name for their persistent AI memory layer — typically backed by a vector DB (Supabase + pgvector) and exposed to AI tools via an MCP server with `capture_thought` and `search_thoughts` tools. Forkers can wire up any compatible persistent-memory MCP (or skip this section entirely if not using one). When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
+Open Brain is the maintainer's name for their persistent AI memory layer — typically backed by a vector DB (Supabase + pgvector) and exposed to AI tools via an MCP server with `capture_thought` and `search_thoughts` tools. Forkers can wire up any compatible persistent-memory MCP (or skip this section entirely if not using one).
+
+**Setup:** the MCP URL (which embeds an access secret) lives in `~/.config/devkit/references.json` under the `open_brain_mcp_url` field — gitignored, machine-local, never committed. The `run_once_install-claude-mcps.sh` chezmoi hook reads it on apply and registers the MCP. See `devkit-references.example.json` at the dotfiles repo root for the schema.
+
+When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
 
 ### Proactive Capture
 

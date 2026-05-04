@@ -10,8 +10,11 @@
 #   - claude.ai-managed MCPs (Viator, Drive, Gmail, etc.) sync via OAuth from
 #     the claude.ai account; nothing to install locally.
 #   - Plugin-bundled MCPs (context7, vercel) come with their plugins.
-#   - Anything requiring a personal secret (e.g. open-brain Supabase URL) is
-#     opt-in via env var so dotfiles stays secret-free.
+#   - Anything requiring a personal secret (e.g. Open Brain Supabase URL) is
+#     opt-in via ~/.config/devkit/references.json so dotfiles stays
+#     secret-free. See devkit-references.example.json at the repo root for
+#     the schema. Set the value once on each machine; subsequent applies
+#     pick it up automatically.
 
 set -euo pipefail
 
@@ -45,12 +48,19 @@ add_user_http() {
 }
 
 # --- open-brain (optional, secret-gated) -----------------------------------
-# Set OPEN_BRAIN_MCP_URL in your shell env (NOT in dotfiles) to enable.
-# The URL embeds a Supabase access key, which is why it is not committed.
-if [[ -n "${OPEN_BRAIN_MCP_URL:-}" ]]; then
-  add_user_http open-brain "$OPEN_BRAIN_MCP_URL"
+# Reads the URL from ~/.config/devkit/references.json. The URL embeds a
+# Supabase access key, which is why it lives there (gitignored, machine-local)
+# and not in this committed file.
+references_file="${HOME}/.config/devkit/references.json"
+open_brain_url=""
+if [[ -f "$references_file" ]] && command -v jq >/dev/null 2>&1; then
+  open_brain_url="$(jq -r '.open_brain_mcp_url // ""' "$references_file" 2>/dev/null)"
+fi
+if [[ -n "$open_brain_url" ]]; then
+  add_user_http open-brain "$open_brain_url"
 else
-  echo "[claude-mcps] OPEN_BRAIN_MCP_URL not set; skipping open-brain. Export it in your shell to enable."
+  echo "[claude-mcps] open_brain_mcp_url not set in $references_file; skipping open-brain."
+  echo "[claude-mcps] To enable: copy devkit-references.example.json to $references_file and fill it in."
 fi
 
 echo "[claude-mcps] done."
