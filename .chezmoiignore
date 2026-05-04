@@ -3,3 +3,9 @@ LICENSE
 setup.sh
 .claude/settings.json
 iterm2/
+
+# Public-template artifacts that live only in the repo, not in $HOME
+MIGRATION.md
+devkit-identity.example.json
+docs/
+.scrub/
