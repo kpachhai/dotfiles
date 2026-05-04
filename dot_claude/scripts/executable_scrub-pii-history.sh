@@ -172,14 +172,15 @@ if [[ -f "$MSG_REPL_FILE" ]]; then
 fi
 
 if [[ ${#OLD_EMAILS[@]} -gt 0 ]]; then
-    # Dedupe
-    mapfile -t OLD_EMAILS < <(printf '%s\n' "${OLD_EMAILS[@]}" | sort -u)
-    for s in "${OLD_EMAILS[@]}"; do
+    # Stream-and-check (portable to bash 3.2 — `mapfile` is bash-4+ only,
+    # which macOS does not ship by default).
+    while IFS= read -r s; do
+        [[ -z "$s" ]] && continue
         if git log --all --format='%ae|%ce|%b' | grep -qF "$s"; then
             echo "FAIL: author/committer/commit-message still contains: $s" >&2
             FAILURES=$((FAILURES + 1))
         fi
-    done
+    done < <(printf '%s\n' "${OLD_EMAILS[@]}" | sort -u)
 fi
 
 if [[ $FAILURES -gt 0 ]]; then
