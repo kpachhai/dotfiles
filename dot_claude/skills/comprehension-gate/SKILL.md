@@ -129,6 +129,44 @@ Format the response as a structured report ending in one of three verdicts:
 - If COMPREHENSIBLE: ship it, optionally note follow-ups
 ```
 
+### Step 5 (Optional): Artifact Output Mode
+
+Steps 1-4 produce a private verdict. Sometimes the verdict alone is not enough - you need an explanation artifact that ships ALONGSIDE the work itself, like a commit message that travels with the deliverable. This is the public-facing counterpart to the private gate: proof of comprehension that a future reader (PR reviewer, future-you, employer, client, portfolio visitor) can verify on its own merits.
+
+**Trigger artifact mode** when the user explicitly asks for it: "comprehension gate + write the explanation artifact", "ship the explanation alongside this", "make this portfolio-ready", or similar. Do NOT fire artifact mode by default - it's opt-in to keep the cost of the regular gate low.
+
+When artifact mode fires, after the Step 4 verdict, ALSO produce a 4-question explanation artifact:
+
+```markdown
+## Explanation Artifact: <change / artifact name>
+
+### 1. What is this?
+<Plain-English statement of what this does AND what it explicitly does NOT do. Not marketing copy. A future reader should understand the scope in 30 seconds.>
+
+### 2. Why did I choose this?
+<Alternatives evaluated and why they were rejected. Trade-offs made. Hard choices. Where the path-of-least-resistance was rejected and why.>
+
+### 3. What's going to break?
+<Fragile points. Assumptions baked in. Blast radius if requirements change or upstream dependencies move. The honest version, not the marketing version.>
+
+### 4. What did I learn?
+<Concrete discoveries during the build. Places where AI output was confidently wrong and the human corrected. What would change next time. Pattern-level learnings that survive the project.>
+```
+
+**Default output path:** `<repo-root>/.claude/explanations/<artifact-slug>.md` where `<artifact-slug>` is the commit short-SHA, branch name, or feature slug. Configurable via user request (e.g., "save it next to the deliverable" → place it next to the file the artifact describes).
+
+**The 4 questions are deliberately simple.** Resist the urge to add more. The format's value is that a human reader can spot AI-generated slop in seconds because:
+- Q1 slop reads like marketing copy.
+- Q2 slop names alternatives no one would seriously consider.
+- Q3 slop describes risks that any project would share.
+- Q4 slop has no "AI was confidently wrong about X" moment - because slop never corrects AI.
+
+**No-Slop Rule (CRITICAL):** The human writes the answers. AI may sketch a strawman; the human edits, fact-checks against the actual decisions made during the build, and signs off. **Outsourcing the explanation artifact to AI defeats the entire signal value** - a human reader will detect the slop, and the artifact's credibility (and by extension, the user's) collapses to zero. This rule is enforced socially (readers will catch you), not technically (no tool prevents it).
+
+**Relationship to private gate (Steps 1-4):** The artifact is the EXPORT of the comprehension that already happened during Steps 1-4. The 4-question answers should be derivable from the structural / semantic / why-this-way questions already answered. If artifact mode fires and the Step 4 verdict was DARK, do NOT produce a slop artifact - tell the user "comprehension is incomplete, no shippable artifact yet, refine spec and re-run."
+
+**Relationship to `[Artifact]` Open Brain capture:** The same 4 answers feed both. When Open Brain MCP is available, capture the 4 answers as an `[Artifact]` thought (private canonical store). When shipping, write the 4 answers as the markdown artifact (public). One authoring effort, two destinations.
+
 ## Output Contract
 
 The comprehension report is delivered **inline in conversation**. Optional: save to `workspace/<project>/comprehension-<change-id>.md` if the user wants a record (rare for v1).
@@ -146,10 +184,13 @@ The comprehension report is delivered **inline in conversation**. Optional: save
 - Architecture-level decisions (use `n-agentic-harnesses` evaluation mode)
 - Pre-project viability (use `new-project-check`)
 
+**Optional artifact output mode (Step 5):** when explicitly invoked, additionally produces a 4-question explanation artifact at `<repo-root>/.claude/explanations/<slug>.md` for shipping alongside the work. Subject to the No-Slop Rule (human-authored answers).
+
 **Format guarantees:**
 - Verdict is one of: COMPREHENSIBLE / PARTIALLY-COMPREHENSIBLE / DARK
 - Every UNKNOWN is named explicitly (no "TBD" hand-waving)
 - Findings are concrete and traceable to specific code lines or interfaces
+- If artifact mode fires: 4 questions answered in the order specified, no extra sections added
 
 ## Common Pitfalls
 
@@ -174,6 +215,10 @@ Audit doc: `your-meta-repo/workspace/your-meta-repo-meta/nate-jones-dark-code-le
 
 This skill operationalizes the 3-layer context engineering pattern Nate describes (structural, semantic, comprehension) as a pre-merge filter. The skill itself is a thin v1 shim; if Nate ships a comprehensive comprehension-gate skill in OB1 (or comparable), swap to it.
 
+The artifact output mode (Step 5) was added in v1.1.0 from Nate B Jones, "Five Principles for Proving Your Worth in 2026" (2026-05). URL: https://www.youtube.com/watch?v=-dJ9WrTG6zQ. Audit doc: `your-meta-repo/workspace/your-meta-repo-meta/nate-jones-proving-worth-learn-improve-v1.md`. The 4-question format ports Nate's "commit message for AI" framing as the public-facing counterpart to the private gate.
+
 ## Version
+
+1.1.0 - Added Step 5: Artifact Output Mode (opt-in). Produces a 4-question explanation artifact (what is this / why this / what breaks / what I learned) for shipping alongside the work, distinct from the private verdict. Includes the No-Slop Rule: human writes the answers; AI may sketch but the human edits and signs. Source: Nate B Jones "Five Principles for Proving Your Worth in 2026."
 
 1.0.0 - Initial v1 shim. Three-layer question walk + verdict. Designed to be swap-replaced when upstream ships.

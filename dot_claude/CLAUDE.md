@@ -115,6 +115,7 @@ Dark code = code shipped to production that no human fully understands. AI-gener
 - **Spec becomes the eval.** Before generating non-trivial code, write a clear spec - even one paragraph. The spec IS the eval the agent passes (or doesn't). Skip-the-spec is skip-the-eval is dark code.
 - **Comprehension gate before merge.** "Tests pass" answers correctness, not comprehension. Before merging AI-generated code, ask: why was this dependency chosen? Why was it structured this way? Where does state live? What's the failure mode? If I cannot answer, it's dark. The `comprehension-gate` global skill operationalizes this; invoke it on any non-trivial AI-generated change before merging.
 - **Don't outsource comprehension to the AI.** Asking the AI to explain its own code re-runs the same training distribution - sometimes correct, sometimes plausibly confabulating. The accountable human must understand it.
+- **No slop in the explanation artifact.** When producing the 4-question explanation artifact for shipping (alongside code, on a portfolio, in a PR) via the `comprehension-gate` Step 5 mode, the human writes the answers. AI may sketch a strawman; the human edits, fact-checks against the actual decisions made, and signs off. A human reader spots AI-generated explanation slop in seconds because answers feel generic, name no concrete decisions, describe risks any project would share, and lack any "AI was confidently wrong about X" moment. The artifact's signal value depends entirely on it being unfakeable; outsourcing it removes the signal and collapses credibility to zero.
 - **Distributed authorship needs concentrated ownership.** Vibe-coding by anyone is fine. "Nobody owns the sustained total package" is not. Each shipped artifact has a single accountable human.
 - **Risk surface.** Dark code is a regulatory + board-level risk (SOC 2, encryption-at-rest, PCI). "AI generated it" is not a defensible answer to a regulator. Any client work in regulated domains: comprehension is a compliance obligation.
 
@@ -198,8 +199,9 @@ Automatically capture to Open Brain during sessions when you encounter:
 - **Domain context** - industry vocabulary, products, market dynamics, regulatory environment, internal acronyms - the BYOC Layer 1 vocabulary an AI needs to be useful in your work (prefix with `[Domain]`). Always include a Portability tag (see Portability Discipline below).
 - **Workflow preferences** - stated structural preferences (how I like research/code/docs structured, formats I want, sequencing I follow) - BYOC Layer 2 (prefix with `[Workflow]`).
 - **Behavioral style** - patterns the AI correctly inferred without being told (e.g. "skip trailing summaries because user prefers terse"), or unstated communication preferences (technical depth defaults, when to challenge vs execute, tolerance for preamble) - BYOC Layer 3 (prefix with `[Style]`).
-- **Artifact rationale** - on project completion (`session-wrap` or `ship`), capture project path + 2-3 key tradeoffs + what this would tell a future employer ("this person can think through these problems") - BYOC Layer 4 (prefix with `[Artifact]`). Always include a Portability tag.
-- **User corrections (friction)** - any time the user pushes back on Claude's output: factual error caught, scope overstated, surface-level test missed a real bug, UI shipped with visible issues, premature completion claim, missed verification step, fabricated citation, wrong approach taken (prefix with `[Friction]`). Capture friction as soon as the correction lands, not at session-wrap. Format: `[Friction] <one-line description of what went wrong> - <what the correct approach was> - <which skill or workflow should be updated>`. These thoughts feed `learn-and-improve` to drive skill audits.
+- **Artifact rationale** - on project completion (`session-wrap` or `ship`), capture project path + the 4 ship-with-explanation questions (Q1 what is this; Q2 why this / alternatives + trade-offs; Q3 what's going to break / fragile points + assumptions; Q4 what I learned / where AI was confidently wrong + what I'd do differently) - BYOC Layer 4 (prefix with `[Artifact]`). Always include a Portability tag. The same 4 answers feed both the private capture and the public explanation artifact (`comprehension-gate` Step 5) - one authoring effort, two destinations. Subject to the No-Slop Rule in Dark Code Discipline above: human writes the answers.
+- **Half-formed observations** - something worth remembering that does not fit an existing prefix yet (prefix with `[Notice]`). Reserve for the unnamed pattern that, once seen, may reframe how a system is understood. Reviewed during the quarterly Skill Health Audit and either promoted into an existing prefix, formalized into a new prefix, or removed.
+- **User corrections (friction)** - any time the user pushes back on Claude's output: factual error caught, scope overstated, surface-level test missed a real bug, UI shipped with visible issues, premature completion claim, missed verification step, fabricated citation, wrong approach taken (prefix with `[Friction]`). **AT THE MOMENT OF CORRECTION, before generating the next response, capture the friction.** Do not defer to session-wrap. Friction capture is reflexive, not retrospective; if you wait until wrap-up, you will forget. Format: `[Friction] <one-line description of what went wrong> - <what the correct approach was> - <which skill or workflow should be updated>`. These thoughts feed `learn-and-improve` to drive skill audits.
   - **Dual-write for portability:** Friction thoughts ALSO get appended as one line to the machine-local file `~/.claude/friction-log.md`, regardless of whether Open Brain is available. This is the work-machine fallback (Open Brain is personal-machine only; work data must not leave the work computer). The dual-write keeps the friction-feedback loop functional on both machines. See "How to Capture" below for the exact append.
 
 ### Do NOT Capture
@@ -213,12 +215,18 @@ Automatically capture to Open Brain during sessions when you encounter:
 
 1. Call `capture_thought` with a clear, standalone statement that will make sense when retrieved months later by any AI
 2. Include enough context that the thought is useful without the original conversation
-3. Use the appropriate prefix: `[Lesson]`, `[Pattern]`, `[Decision]`, `[Meta]`, `[Action Item]`, `[Friction]`, `[Parked]`, `[Resolution]`, `[Domain]`, `[Workflow]`, `[Style]`, `[Artifact]`
-4. **For `[Friction]` only - also append to local log.** Run a Bash one-liner to append the same friction one-liner to `~/.claude/friction-log.md`:
+3. Use the appropriate prefix: `[Lesson]`, `[Pattern]`, `[Decision]`, `[Meta]`, `[Action Item]`, `[Friction]`, `[Resolution]`, `[Parked]`, `[Notice]`, `[Domain]`, `[Workflow]`, `[Style]`, `[Artifact]`
+4. **For `[Friction]` and `[Resolution]` - also append to local log.** The friction-log is a two-row-type file: friction entries record corrections, resolution entries record skill changes that closed the loop. Append commands:
+
    ```
-   mkdir -p ~/.claude && printf '%s | %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '<friction-one-liner>' >> ~/.claude/friction-log.md
+   # Friction (at moment of correction)
+   mkdir -p ~/.claude && printf '%s | [Friction] | %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '<friction-one-liner>' >> ~/.claude/friction-log.md
+
+   # Resolution (when a skill / config change closes the loop on prior friction)
+   printf '%s | [Resolution] | %s | supersedes: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '<resolution-one-liner>' '<original friction date or summary>' >> ~/.claude/friction-log.md
    ```
-   This survives on machines without Open Brain (e.g., work computer). Do this in addition to `capture_thought`, not instead of it. If `capture_thought` is unavailable, still do the local append.
+
+   The local log survives on machines without Open Brain (e.g., work computer). Do this in addition to `capture_thought`, not instead of it. If `capture_thought` is unavailable, still do the local append. The Resolution append closes the outcomes loop - without it, friction accumulates as a knowledge base, not a world model.
 
 ### Portability Discipline
 
@@ -240,7 +248,17 @@ At the start of sessions or when encountering a problem:
 
 If the MCP tools are not available, work normally without mentioning Open Brain. Never suggest the user set it up or warn about missing tools.
 
-**Exception for `[Friction]`:** continue to append friction one-liners to `~/.claude/friction-log.md` even when Open Brain is unavailable. The local log is machine-local and gitignored; it does not touch external servers and is safe to use on work computers. This keeps the friction-feedback loop alive on every machine.
+**Exception for `[Friction]` and `[Resolution]`:** continue to append both row types to `~/.claude/friction-log.md` even when Open Brain is unavailable. The local log is machine-local and gitignored; it does not touch external servers and is safe to use on work computers. This keeps the friction-feedback loop alive on every machine.
+
+## World Model - Three Architectures
+
+My personal stack is a world model of my work life - and it runs all three architectures the field tends to talk about, each with a different boundary failure (per Nate Jones' world-models framing). Naming them explicitly so I think with the frame:
+
+- **Vector DB layer** - Open Brain (`search_thoughts` semantic similarity). Failure mode: never draws the line between surfacing and interpreting. Ranked retrieval IS interpretation; nothing in the architecture says it knows what matters. Mitigation: when relying on retrieved thoughts, treat them as "top retrieved by similarity" not "the relevant past lesson is X." Be explicit when ranking is doing work.
+- **Structured ontology layer** - your-meta-repo skill schemas (when-to-use, workflow phases, output contracts) + Open Brain prefix taxonomy. Failure mode: precise about what it knows, silent about what it does not. Emergent patterns have no slot. Mitigation: `[Notice]` prefix for half-formed observations + quarterly Skill Health Audit reviews them and either promotes or removes.
+- **Signal fidelity layer** - `~/.claude/friction-log.md` (real-time corrections, the highest-fidelity input). Failure mode: clean inputs feel authoritative; the inference drawn FROM them is still inference. Mitigation: distinguish friction (fact - the correction happened) from skill-change recommendations derived from it (interpretation).
+
+The interpretive boundary - the line between "act on this" and "interpret this first" - is the discipline that ties all three together. Per the Outcomes Loop: capture must compound. `[Friction]` without `[Resolution]` is a knowledge base, not a world model.
 
 ## Working Identity (BYOC)
 
