@@ -1,0 +1,25 @@
+# git-filter-repo --replace-text format. One rule per line: <find>==><replace>.
+# Use `regex:<pattern>==><replacement>` for regex.
+# Copy this file to `replacements.txt` (gitignored), fill in your literal PII strings,
+# then run `~/.claude/scripts/scrub-pii-history.sh . --confirm`.
+
+***REMOVED***
+<your-full-name>==>YOUR_NAME
+<your-personal-email>==>REMOVED-EMAIL
+<your-work-email>==>REMOVED-EMAIL
+<your-gpg-signing-key>==>REMOVED-GPG-KEY
+
+# --- Employer / company / ecosystem ---
+<your-employer-domain>==>example.com
+<your-employer-org-name>==>your-org
+<your-employer-product>==>generic-term
+
+# --- Hardcoded paths ---
+/Users/<your-username>/==>$HOME/
+
+# Notes:
+# - The LEFT side is what gets scrubbed. Anywhere these strings appear in commit
+#   blobs at any revision, they are replaced with the RIGHT side.
+# - DO NOT commit your real `replacements.txt` (.gitignore handles this).
+# - The scrub script's verifier greps the rewritten history for the LEFT-side
+#   strings; any match means the scrub did not catch them and the run fails.

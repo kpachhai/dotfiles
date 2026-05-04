@@ -15,3 +15,6 @@ Thumbs.db
 
 # Zim (installed per-machine)
 .zim/
+
+# PII scrub input — contains literal PII strings, never commit
+.scrub/replacements.txt
