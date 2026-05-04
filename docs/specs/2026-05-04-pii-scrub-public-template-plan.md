@@ -544,7 +544,41 @@ Run: `chezmoi diff | head -80`
 
 Expected: a diff showing the future `~/.gitconfig` rendered with placeholder values from the test JSON. No syntax errors. No surprises in unrelated files.
 
-- [ ] **Step 4: Commit Phase 1**
+- [ ] **Step 4: Resolve source/live divergence with `chezmoi apply` BEFORE committing**
+
+The dotfiles repo's `.git/hooks/pre-commit` refuses any commit that stages chezmoi-managed files (paths starting with `dot_`, `executable_`, `run_once_`, etc.) when `chezmoi diff` shows ANY source/live divergence. The check is global (not scoped to staged paths) — its purpose is to prevent the paired pre-push hook (which runs `chezmoi re-add` live → source) from silently reverting source-only changes.
+
+Practical implication: Phase 1 added new chezmoi-managed templates that the live $HOME doesn't yet reflect, so a commit attempt fails. To resolve:
+
+1. Ensure `~/.config/devkit/identity.json` contains REAL values (not the placeholder from Step 2). On the maintainer's first machine, populate from current live `~/.gitconfig` + `~/.gitconfig-personal` + `~/.gitconfig-work`:
+   ```bash
+   # Read your live values
+   cat ~/.gitconfig ~/.gitconfig-personal ~/.gitconfig-work
+   # Write identity.json with those literal values (replace placeholders below)
+   cat > ~/.config/devkit/identity.json <<'JSON'
+   {
+     "full_name": "<from-gitconfig-name>",
+     "email_personal": "<from-gitconfig-personal-email>",
+     "email_work": "<from-gitconfig-work-email>",
+     "github_username": "<your-gh-username>",
+     "gpg_signing_key": "<from-gitconfig-signingkey>",
+     "work_gh_orgs": ["<from-includeIf-rules>"]
+   }
+   JSON
+   ```
+2. Verify the rendered template would match current live (byte-identical render = no behavior change):
+   ```bash
+   chezmoi execute-template < dot_gitconfig.tmpl
+   diff <(chezmoi execute-template < dot_gitconfig.tmpl) ~/.gitconfig
+   ```
+   Should show no diff if you populated identity.json from the same live values.
+3. Apply chezmoi to install new managed files (load-identity.sh, setup-identity.sh, etc.) and reset divergence:
+   ```bash
+   chezmoi apply
+   chezmoi diff   # should be empty
+   ```
+
+- [ ] **Step 5: Commit Phase 1**
 
 ```bash
 git add devkit-identity.example.json \
@@ -566,17 +600,18 @@ git commit -S -s -m "phase 1: identity contract + loader
 - Add test harness for the loader"
 ```
 
-- [ ] **Step 5: Restore live identity if you backed it up**
-
-```bash
-ls /tmp/identity-backup-*.json 2>/dev/null && cp /tmp/identity-backup-*.json ~/.config/devkit/identity.json
-```
-
 ---
 
 ## Phase 2: HEAD Cleanup (file edits, no history rewrite)
 
-Each task strips PII from one file or coherent group of files. After each task, the working tree is cleaner. After the whole phase, `grep` for PII at HEAD returns near-empty (only `~kpachhai` GH username remains in path strings, which is acknowledged as out-of-scope).
+Each task strips PII from one file or coherent group of files. After each task, the working tree is cleaner.
+
+**Phase 2 has two sub-scopes:**
+
+1. **PII strip** (Tasks 2.1-2.5, 2.8) — remove personal name, employer references, hardcoded paths from committed content.
+2. **Cross-repo decoupling** (Tasks 2.6-2.7) — make the dotfiles repo standalone for forkers: no committed content references companion repos by name (no `your-meta-repo`, `your-data-repo`, etc.). Prose uses generic terms ("your meta-stack repo", "your project workspace", "your persistent-memory MCP"). Maintainer-side personal skills that are structurally tied to a separate repo are detached from chezmoi via `chezmoi forget` (live files preserved on the maintainer's machine).
+
+After the whole phase, `grep` for PII or specific companion-repo names at HEAD returns near-empty (only `~kpachhai` GH username remains in path strings, acknowledged as out-of-scope).
 
 ### Task 2.1: Strip identity from `dot_claude/CLAUDE.md`
 
@@ -625,25 +660,39 @@ git add dot_claude/CLAUDE.md
 
 ---
 
-### Task 2.2: Genericize `dot_claude/agents/solidity-engineer.md`
+### Task 2.2: Remove EVM smart contracts-specific content from `dot_claude/agents/solidity-engineer.md`
 
 **Files:**
 - Modify: `dot_claude/agents/solidity-engineer.md`
 
-- [ ] **Step 1: Replace 4 EVM smart contracts references**
+The original plan was to do a `sed`-based rename of "EVM smart contracts" → "EVM smart contract platforms". A look at the file revealed that the agent has an entire **EVM smart contracts-Specific** section (system contract addresses 0x167/0x168/0x169, token-service precompile integration patterns, platform-specific fork testing). These are chain-specific details that don't generalize. Cleanest move is to drop the section + the description-line mention entirely rather than do a confusing rename.
 
-Run:
-```bash
-sed -i.bak 's|EVM smart contracts|EVM smart contract platforms|g' dot_claude/agents/solidity-engineer.md
-rm dot_claude/agents/solidity-engineer.md.bak
+- [ ] **Step 1: Drop the description-line mention**
+
+Edit `dot_claude/agents/solidity-engineer.md` line 3 (frontmatter `description:` field):
+- Before: `Expert Solidity developer for EVM smart contracts - architecture, gas optimization, upgradeable patterns, DeFi protocols, EVM smart contracts integration, and security-first design.`
+- After: `Expert Solidity developer for EVM smart contracts - architecture, gas optimization, upgradeable patterns, DeFi protocols, and security-first design.`
+
+- [ ] **Step 2: Remove the entire EVM smart contracts-Specific section**
+
+Remove these lines (typically lines 28-35, between "## Gas Optimization" and "## Architecture Patterns" sections):
+```
+## EVM smart contracts-Specific
+
+- EVM token contract (token-service) precompile integration
+- System contract addresses (0x167, 0x168, 0x169)
+- Token associate/dissociate patterns
+- platform-specific fork testing with Foundry
+- Gas scheduling differences from Ethereum mainnet
+
 ```
 
-- [ ] **Step 2: Verify**
+- [ ] **Step 3: Verify**
 
 Run: `grep -nE 'platform|token-service' dot_claude/agents/solidity-engineer.md || echo "clean"`
 Expected: `clean`.
 
-- [ ] **Step 3: Stage**
+- [ ] **Step 4: Stage**
 
 ```bash
 git add dot_claude/agents/solidity-engineer.md
@@ -797,18 +846,132 @@ git add iterm2/com.googlecode.iterm2.plist run_once_setup-iterm2.sh
 
 ---
 
-### Task 2.6: Rewrite `README.md` as fork-and-personalize guide
+### Task 2.6: Cross-repo decoupling sweep
+
+**Files:** any committed file under `dot_claude/`, `README.md`, etc. that names a companion repo (`your-meta-repo`, `your-data-repo`) or hard-paths into one (`~/repos/.../your-meta-repo/...`).
+
+**Goal:** committed content reads as standalone — no skill, agent, or doc requires the reader to also clone another specific repo. Prose uses generic terms ("your meta-stack repo", "your project workspace", "your persistent-memory MCP"). The maintainer reads these and knows what they mean on their own machine; a forker reads them and maps them to their own setup or ignores.
+
+- [ ] **Step 1: Sweep for cross-repo references**
+
+Run:
+```bash
+grep -rnE 'your-meta-repo|your-data-repo' dot_claude/ README.md 2>/dev/null \
+  | grep -v 'docs/specs/' \
+  | grep -v 'explanations/' \
+  | head -50
+```
+
+Expected: a list of files with line numbers. Each match is a candidate for genericization or deletion.
+
+- [ ] **Step 2: Genericize each match — pattern**
+
+Replace concrete repo names with generic concepts:
+
+| Concrete | Generic |
+|----------|---------|
+| `your-meta-repo/skills/intake/learn-and-improve/` | "your meta-stack repo's local `learn-and-improve` skill" |
+| `your-meta-repo/workspace/your-meta-repo-meta/<doc>.md` | "an audit doc in your meta-stack workspace" |
+| `your-meta-repo` (as a project name) | "your meta-stack repo" / "your portfolio" / "your project workspace" |
+| `your-data-repo/open-brain/<file>` | "your persistent-memory recipe repo" |
+| `Open Brain` (in user-facing prose) | leave as-is, but redefine generically in CLAUDE.md (see Step 3) |
+
+Files that typically have references (not exhaustive — re-run the grep to confirm):
+- `dot_claude/CLAUDE.md` (Skill Discipline section, Subagents section description, World Model section)
+- `dot_claude/skills/learn-and-improve/SKILL.md` (When NOT to use, Output, Differences-from-Local-Version, Version history)
+- `dot_claude/skills/new-project-check/SKILL.md` (verdict routing, references)
+- `dot_claude/skills/new-project-check/references/framework.md` (How To Apply section)
+- `dot_claude/skills/skill-improver/SKILL.md` (intro, Authoring Blueprint, file-layout examples)
+- `dot_claude/skills/skill-improver/template-SKILL.md` (project-scope hint, Source section)
+- `dot_claude/skills/comprehension-gate/SKILL.md` (Tracked-at note, Source citations)
+- `dot_claude/cta-english-patch/README.md` (upstream-fix pointer)
+- `dot_claude/scopes/README.md` (example layout)
+- `README.md` (file layout, machine-specific config)
+
+- [ ] **Step 3: Redefine "Open Brain" in CLAUDE.md as a generic persistent-memory layer**
+
+Edit the "Open Brain - Persistent Memory" section header definition. Replace "Open Brain is my persistent AI memory system (Supabase + pgvector + MCP)" with a defined-term framing that names a generic implementation: e.g. "Open Brain is the maintainer's name for their persistent AI memory layer — typically backed by a vector DB exposed to AI tools via an MCP server with `capture_thought` and `search_thoughts` tools. Forkers can wire up any compatible persistent-memory MCP, or skip this section entirely if not using one."
+
+The rest of the file's "Open Brain" usages then read correctly without further edits — the term is defined generically.
+
+- [ ] **Step 4: Verify**
+
+Run:
+```bash
+grep -rnE 'your-meta-repo|your-data-repo' dot_claude/ README.md 2>/dev/null \
+  | grep -v 'docs/specs/' \
+  | grep -v 'explanations/'
+```
+
+Expected: empty output.
+
+- [ ] **Step 5: Stage**
+
+```bash
+git add -u .
+```
+
+---
+
+### Task 2.7: Detach personal cross-repo skills from chezmoi
+
+**Files:** `dot_claude/work-operating-model-meta/` (and any similar `*-meta/` dir whose entire premise is structural coupling to a separate companion repo).
+
+**Goal:** keep these skills functional on the maintainer's machine without shipping them into the public dotfiles source. The pattern: `chezmoi forget` removes them from chezmoi management without deleting the live files. Live files at `~/.claude/<skill>/` continue to work; the maintainer syncs them across machines via their own private mechanism (a private dotfiles-personal repo, rsync, etc.).
+
+- [ ] **Step 1: Audit candidates**
+
+```bash
+ls dot_claude/ | grep -E 'meta$'
+```
+
+Inspect each `*-meta/` directory's README. Keep dirs whose coupling is to PUBLIC upstream repos (e.g., `n-agentic-harnesses-meta/` couples to a public GitHub repo via `PINNED_COMMIT` — that's vendoring, not private coupling). DETACH dirs whose coupling is to a private companion repo on the maintainer's machine.
+
+For this dotfiles repo, the only candidate is `dot_claude/work-operating-model-meta/` (paired with a recipe in the maintainer's persistent-memory recipe repo).
+
+- [ ] **Step 2: Backup live files (safety net)**
+
+```bash
+cp -R ~/.claude/work-operating-model-meta /tmp/wom-backup-$(date +%s)
+```
+
+- [ ] **Step 3: Remove from chezmoi management**
+
+```bash
+chezmoi forget --force ~/.claude/work-operating-model-meta
+```
+
+This removes the file from chezmoi's tracked source AND from the source tree (`dot_claude/work-operating-model-meta/` is deleted from your dotfiles repo). The LIVE files at `~/.claude/work-operating-model-meta/` are PRESERVED. Verify:
+
+```bash
+ls dot_claude/work-operating-model-meta/ 2>&1 | head -3   # should error: No such file
+ls ~/.claude/work-operating-model-meta/                    # should list the live files
+```
+
+- [ ] **Step 4: Stage the source removal**
+
+```bash
+git add -u dot_claude/work-operating-model-meta/
+git status --short | grep work-operating-model
+```
+
+Expected: `D` lines for each file in the directory (deletions staged).
+
+---
+
+### Task 2.8: Update `README.md` (PII strip + identity contract + cross-repo independence)
 
 **Files:**
 - Modify: `README.md`
 
-This is the most prose-heavy task. The current README likely frames the repo as the maintainer's personal dotfiles. The new README should:
+The original plan was a wholesale rewrite. In practice the existing README is well-structured (cheatsheets, agent table, etc.) and a surgical update is cleaner. The updated README must:
 
-1. Open with what the repo does (a chezmoi-managed personal-developer config) and who it's for (anyone who wants this opinionated stack as a starting point).
-2. Document the identity contract (`~/.config/devkit/identity.json`) — what fields, where to put it, two paths to set it up (chezmoi prompts vs. `setup-identity.sh`).
-3. Explain the `.local.*` extension pattern.
-4. Reference `MIGRATION.md` for the multi-machine and history-rewrite flow.
-5. Drop any "I'm YOUR_NAME" / "my workflow" framing — write in second person ("when you fork this," "you can extend with…").
+1. Strip name + employer references from existing prose (e.g., "work email auto-set for your-org/platform/your-org repos" → "work email auto-set for configured org repos"; "solidity-engineer | Smart contracts, EVM smart contracts" → "Smart contracts (EVM)"; `cd ~/repos/github.com/kpachhai/dotfiles` → `cd ~/repos/github.com/<your-username>/dotfiles`).
+2. Replace the old "Machine-Specific Config" identity narrative ("gmail.com on personal, example.com on work; includeIf for your-org/platform/your-org") with a section that documents the `~/.config/devkit/identity.json` contract — fields, three setup paths (chezmoi prompts / `setup-identity.sh` / copy-and-edit example file), how to update.
+3. Update the "File Layout" section: remove old `dot_gitconfig-personal` / `dot_gitconfig-work` entries, add new `devkit-identity.example.json`, `*.tmpl` versions of gitconfig files, and `run_once_before_bootstrap-identity.sh.tmpl`.
+4. Add a new "Personal Skills That Couple to Other Repos" section that documents the `chezmoi forget` pattern (see Task 2.7). This is the public-facing explainer for why the committed repo is intentionally standalone, and how the maintainer can keep private cross-repo skills working without committing them.
+5. Reference `MIGRATION.md` for the multi-machine sync + scrub procedure (introduced in Phase 3).
+6. Drop any first-person "my workflow" framing — write in second person ("when you fork this," "you can extend with...").
 
 - [ ] **Step 1: Read the current README**
 
@@ -879,32 +1042,44 @@ git add README.md
 
 ---
 
-### Task 2.7: Commit Phase 2
+### Task 2.9: Commit Phase 2
 
 - [ ] **Step 1: Confirm everything is staged**
 
 Run: `git status`
 
-Expected: only the files modified in Phase 2 are staged. No surprises.
+Expected: every modified/deleted file from Phase 2 is staged. No surprises.
 
-- [ ] **Step 2: Smoke test — render templates with chezmoi (placeholder identity from Phase 1)**
+- [ ] **Step 2: Resolve source/live divergence with `chezmoi apply` (same constraint as Task 1.8 Step 4)**
 
-Run: `chezmoi diff | head -40`
+Phase 2 modified many `dot_claude/` files. Chezmoi sees source-vs-live divergence; the pre-commit hook will block. Apply first:
 
-Expected: shows the rendered files using your placeholder identity. No template errors.
+```bash
+chezmoi apply
+chezmoi diff   # should be empty
+```
+
+This installs the genericized content into `~/.claude/...` on your machine. The behavior change is intentional — Claude reads the same generic patterns either way (you know what "your meta-stack repo" maps to on your machine).
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git commit -S -s -m "phase 2: HEAD cleanup — strip PII from dotfiles working tree
+git commit -S -s -m "phase 2: HEAD cleanup — strip PII + decouple cross-repo dependencies
 
-- CLAUDE.md: strip personal name + EVM smart contracts reference
-- solidity-engineer.md: replace EVM smart contracts with EVM phrasing
-- learn-and-improve, working-identity SKILL.md: drop author fields
-- scopes/meta-stack.txt: replace user-specific paths with header-only stub
-- iterm2 plist: replace hardcoded path with __HOME_PLACEHOLDER__
+PII strip:
+- CLAUDE.md: drop personal name + EVM smart contracts reference
+- solidity-engineer agent: remove chain-specific EVM smart contracts section + description
+- learn-and-improve, working-identity, new-project-check: drop author fields + maintainer name refs
+- scopes/meta-stack.txt: replace user-specific paths with header-only stub (live paths moved to ~/.claude/scopes/meta-stack.local.txt)
+- iterm2 plist: replace hardcoded /Users/<name> with __HOME_PLACEHOLDER__
 - run_once_setup-iterm2.sh: substitute placeholder at install time
-- README.md: rewrite as fork-and-personalize guide"
+
+Cross-repo decoupling (each repo standalone for forkers):
+- Remove dot_claude/work-operating-model-meta/ from chezmoi management (chezmoi forget): live files preserved at ~/.claude/work-operating-model-meta/ on maintainer's machine; structurally tied to a separate data-layer repo and shouldn't ship in public dotfiles
+- Genericize prose references: your-meta-repo/your-data-repo paths and names → 'your meta-stack repo' / 'your project workspace' / 'your persistent-memory MCP' etc.
+- Redefine Open Brain in CLAUDE.md as generic persistent-memory MCP layer
+- README: rewrite identity setup to point at ~/.config/devkit/identity.json; add 'Personal Skills That Couple to Other Repos' section documenting the chezmoi-forget pattern
+- scopes README: example layout no longer names specific repos"
 ```
 
 ---
@@ -1737,7 +1912,7 @@ If your threat model requires removing GitHub's cache of old commits, file a Sup
 - Spec §3 PII Scrub Procedure → Tasks 3.1, 3.2, 3.3
 - Spec §4 Scrub Script → Tasks 3.4, 3.5
 - Spec §5 Migration Documentation → Task 3.6
-- Spec "Per-Repo Changes (dotfiles)" → Phase 2 (Tasks 2.1-2.7)
+- Spec "Per-Repo Changes (dotfiles)" → Phase 2 (Tasks 2.1-2.9, including cross-repo decoupling at Tasks 2.6-2.7 added during execution)
 - Spec "Multi-Machine Migration Flow" → Tasks 4.1, 4.7, 4.8 + MIGRATION.md
 - Spec "Verification Gates" → embedded in Tasks 3.5, 4.4, 4.6, 4.8 verification steps
 - Spec "Risks & Mitigations" → backup branch in scrub script (Task 3.4) + dirty-tree gate + force-with-lease (Task 4.5)
