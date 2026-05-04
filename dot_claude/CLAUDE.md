@@ -137,6 +137,30 @@ Models are not expensive; my habits are. As Mythos / next-gen models enter highe
 - Versioned files: `<slug>-<type>-v<N>.md` - keep only latest version
 - North Star documents are immutable once approved
 
+## PII Discipline (publishable repos)
+
+When working in any personal repo intended to be public — currently `dotfiles`, `idea-forge`, and any future fork-able artifact — treat these as PII and DO NOT introduce them in committed content:
+
+- Real personal names in prose, comments, or examples (project-attribution metadata fields like `package.json` `"author"` are the only exception)
+- Personal or work email addresses anywhere in committed file content
+- Employer or company brand names (e.g. `Hashgraph`). Open-source protocol / algorithm / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them.
+- GPG signing keys, API keys, access tokens, MCP URLs with embedded secrets — these belong in `~/.config/devkit/{identity,references}.json` (machine-local, gitignored), not in committed source
+- Hardcoded `/Users/<name>/` paths — use `$HOME` in shell scripts, or chezmoi template variables in `.tmpl` files
+- Direct paths into companion repos that name the maintainer's GitHub username (`~/repos/github.com/<your-username>/<repo>/...`)
+
+Genericization patterns to use when prose needs to reference these:
+
+| Concrete | Generic |
+|---|---|
+| Maintainer's name in prose | `<Your Name>` placeholder |
+| Maintainer's specific companion repos by name | `your meta-stack repo` / `your dotfiles` / `your persistent-memory MCP` |
+| Employer brand | `your-employer` / `an industry partner` |
+| Specific username paths | drop username or use `<your-username>` placeholder |
+
+`memex` is currently private and not held to this discipline strictly, but follow the same hygiene as defense-in-depth — private repos can leak via accidental push, screenshares, or future public extraction.
+
+If you discover PII in committed content while working, flag it before adding new content. Recovery procedure: `~/.claude/scripts/scrub-pii-history.sh` plus the `.scrub/` toolkit (see `MIGRATION.md` in dotfiles for the full procedure).
+
 ## Dotfiles Discipline (Generic vs Local)
 
 When making any change to my dotfiles repo (`~/repos/github.com/kpachhai/dotfiles`), always consider environment portability before committing. I run dotfiles across multiple machines (personal, work, potentially others) with different available repos, services, secrets, and constraints. Apply this split:
