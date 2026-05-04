@@ -1,2 +1,3 @@
 # Local scrub input — contains literal PII, never commit
 replacements.txt
+mailmap
