@@ -97,6 +97,17 @@ Save to memory (not to a file) unless the user requests a file. The memory entry
 - <idea> - revisit when <trigger>
 ```
 
+### Step 5.4: Friction Enumeration
+
+Before persisting (Step 5.5), explicitly enumerate frictions noticed during this session:
+
+1. List each correction the user made: factual error caught, scope overstated, surface-level test missed a real bug, UI shipped with visible issues, premature completion claim, missed verification step, fabricated citation, wrong approach taken.
+2. For each one, ask: "Is this already in `~/.claude/friction-log.md` and Open Brain?" If not, capture both NOW per CLAUDE.md "How to Capture" Step 4 (the dual-write to friction-log + `capture_thought`).
+3. Friction capture should have happened at the moment of correction. This step is the safety net: anything that slipped through gets caught here.
+4. **Resolution check:** if any of this session's work closed the loop on prior friction (skill change, config update, doc fix that addresses a logged friction), append a `[Resolution]` row to friction-log AND capture a `[Resolution]` thought to Open Brain. Per CLAUDE.md "World Model - Three Architectures": friction without resolution is a knowledge base, not a world model.
+
+If no frictions were noticed this session, state that explicitly. The absence is signal too - either the session was routine, or friction is being missed.
+
 ### Step 5.5: Persist to Open Brain (Optional)
 
 If the `capture_thought` MCP tool is available (Open Brain is connected):
