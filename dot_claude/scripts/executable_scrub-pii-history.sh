@@ -60,10 +60,11 @@ if [[ ! -f "$REPL_FILE" ]]; then
     exit 1
 fi
 
-# Sanity: working tree clean
-if [[ -n "$(git status --porcelain)" ]]; then
-    echo "ERROR: working tree is dirty in $REPO. Commit or stash before running." >&2
-    git status --short >&2
+# Sanity: working tree clean (modified/staged tracked files only — untracked
+# files don't affect filter-repo, which only rewrites commit blobs)
+if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+    echo "ERROR: working tree has staged or modified tracked files in $REPO. Commit or stash before running." >&2
+    git status --short --untracked-files=no >&2
     exit 1
 fi
 
