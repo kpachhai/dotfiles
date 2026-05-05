@@ -151,6 +151,28 @@ If the `capture_thought` MCP tool is available (Open Brain is connected):
 
 If the `capture_thought` tool is NOT available, skip Step 5.5 silently. Do not warn the user or suggest they set up Open Brain.
 
+### Step 5.6: Persist Pending Task List To Disk (Mandatory For Wrap-Then-Clear)
+
+The Claude Code harness `TaskCreate` / `TaskList` task list is session-scoped: `/clear` resets it. Files on disk survive `/clear`. If this wrap will be followed by `/clear` (checkpoint mode always; end-of-session if the user plans to resume in a fresh session), the pending task list MUST be persisted to a project-side breadcrumb file before clearing — otherwise the next session has no idea what's left to do.
+
+Procedure:
+
+1. Call `TaskList` to enumerate every task with status `pending` or `in_progress`.
+2. Write a `PENDING_TASKS.md` (or update an existing one) to a project-side breadcrumb location:
+   - **Default location:** `<git-repo-root>/PENDING_TASKS.md` if the cwd is inside a git repo.
+   - **Workspace-style projects** (idea-forge convention): `<repo-root>/workspace/<project-slug>/PENDING_TASKS.md`. Detect by presence of `workspace/<slug>/` matching the active project; otherwise default.
+   - **Override:** user can pass `--tasks-file <path>` to direct the dump elsewhere.
+3. The file should include for each pending task:
+   - Status emoji (✅ completed, 🔄 in progress, ⏭️ pending) + task subject.
+   - For in-progress tasks: which sub-items are done vs remaining.
+   - The single most-immediate next step (so the resume prompt has a clear pointer).
+4. Include a "Resume prompt" suggestion section at the bottom: a copy-pastable user message that points at PENDING_TASKS.md + relevant files (CHANGELOG, plan doc, audit logs) so the next session rebuilds minimal context without re-reading the prior conversation.
+5. Include a quality-gate snapshot if the project has one (test count, coverage, lint state) so the resume session can verify nothing regressed during the gap.
+
+If the task list is empty, skip this step but note it in the wrap output ("no pending tasks; nothing to persist").
+
+If `TaskList` is unavailable (project doesn't use the harness task tools), this step is a no-op.
+
 ### Step 6: Skill Improvement Check (Optional)
 
 If anything in "What Was Learned" or "What Should Change" qualifies for the skill-improver (investigation > 10 min, workaround found, etc.), ask the user: "Should I run the skill-improver to capture these patterns?"
@@ -172,20 +194,25 @@ The flow:
 1. Claude detects a trigger (commit-and-push, `[Resolution]`, end-of-session signal, or ~70% context fill).
 2. Claude suggests: "good wrap point — run `/session-wrap` then we `/clear` and continue with [the named next step]?"
 3. User confirms; Claude invokes the skill via the `Skill` tool. Mid-session wraps use `--checkpoint` mode (lighter; deltas only).
-4. After wrap completes, Claude tells the user the natural next step ("OK to `/clear`; next iteration: [Step N] of [plan-file]").
-5. User runs `/clear` (CLI-side; Claude cannot trigger it).
-6. The user's next message rebuilds minimal context from the breadcrumbs the wrap left — CHANGELOG `[Unreleased]`, the relevant audit log, recent Open Brain captures, the implementation plan's "next step" pointer. DO NOT re-load the full prior conversation; that defeats the point.
+4. The skill runs Step 5.6 (Persist Pending Task List) — the in-session `TaskCreate` task list is dumped to a project-side `PENDING_TASKS.md` because the harness task list is session-scoped and `/clear` would otherwise lose it.
+5. After wrap completes, Claude tells the user the natural next step ("OK to `/clear`; next iteration: [Step N] of [plan-file]").
+6. User runs `/clear` (CLI-side; Claude cannot trigger it).
+7. The user's next message rebuilds minimal context from the breadcrumbs the wrap left — CHANGELOG `[Unreleased]`, the persisted `PENDING_TASKS.md`, the relevant audit log, recent Open Brain captures, the implementation plan's "next step" pointer. DO NOT re-load the full prior conversation; that defeats the point.
 
 This pattern is what makes BYOC operationally cheap. Every wrap is a deposit into persistent memory; every `/clear` is the dividend - a fresh context window without losing the work product.
 
 ## Configurable Behavior
 
 - **Mode** (the `--checkpoint` vs default distinction):
-  - **Default (full retrospective):** all 6 steps. Used at end of session or before a project ships. Thorough; longer.
-  - **`--checkpoint`:** Steps 1 (Accomplished), 2 (Learned), 5.4 (Friction Enumeration), 5.5 (Persist) only. Skips ACT NOW / PARKED / Skill Improvement Check, since those make more sense aggregated at end of session. Mid-session wraps focus on capturing deltas. Faster; lighter.
+  - **Default (full retrospective):** all steps including Steps 1 + 2 + Should Change + ACT NOW + PARKED + Friction Enumeration + Persist + Persist Pending Task List + Skill Improvement Check. Used at end of session or before a project ships. Thorough; longer.
+  - **`--checkpoint`:** Steps 1 (Accomplished), 2 (Learned), 5.4 (Friction Enumeration), 5.5 (Persist), 5.6 (Persist Pending Task List) only. Skips ACT NOW / PARKED / Skill Improvement Check, since those make more sense aggregated at end of session. Mid-session wraps focus on capturing deltas. Faster; lighter. **Always runs Step 5.6** because checkpoint mode is followed by `/clear`.
+- **Tasks file location** (Step 5.6 destination):
+  - Default: `<git-repo-root>/PENDING_TASKS.md`.
+  - Workspace-style: `<repo-root>/workspace/<project-slug>/PENDING_TASKS.md` when the active project lives under a `workspace/` subtree.
+  - Override: `--tasks-file <path>` to direct elsewhere.
 - **Output:** Memory entry (default) or file in `workspace/<project>/session-wrap-<date>.md`. The Open Brain capture in Step 5.5 is the canonical persistent home; the file is for project-specific traceability.
 - **Skill-improver integration:** Optional (Step 6). Skipped by default unless the user enables it.
 
 ---
 
-**Version:** 1.2.0
+**Version:** 1.3.0
