@@ -116,6 +116,60 @@ When verifying agent runs, multi-step automated workflows, or any work where out
 
 If any failure is observed, do not declare done. Fix the named mode (each has distinct fixes - shorter sessions for context degradation, forced spec reminders for spec drift, input validation for sycophantic confirmation, tool description sharpening for tool selection, correction loops for cascading, functional checks for silent failure).
 
+### Section 6: Spec Audit (Public-Release / Major-Milestone Claims Only)
+
+Run this section ONLY when the claim is "public-release ready", "v1.0 ready", "Phase N complete and ready for users", or any equivalent at-the-milestone language - not for routine commits or internal checkpoints. Premise: every code-side criterion in Sections 1-4 can pass while the spec has additional requirements that were never checked. Code-correctness is not the same as spec-completeness.
+
+```
+12. Public-release / major-milestone claim?
+    <yes - run spec walk / no - skip Section 6>
+
+13. Spec sources identified
+    <path(s) to spec docs - e.g., specs/<date>-<project>/, RFCs, plan docs, PHASE_N_PLAN.md, PHASE_N_CODE_COMPLETE.md, exit-criteria lists>
+
+14. Sub-agent spec audit dispatched
+    Use the Agent tool (general-purpose unless the spec is highly domain-specific) with this prompt template:
+    """
+    Walk every spec doc under <spec-path> and every PHASE_<N>_PLAN.md / PHASE_<N>_CODE_COMPLETE.md
+    in the source repo. For each requirement, classify:
+    - IMPLEMENTED: cite the source file + function / commit / test that fulfills it
+    - PARTIAL: implemented but with named gaps (list each gap explicitly)
+    - MISSING: no implementation found in the source repo
+    - DEFERRED: explicitly deferred to a later phase / version (cite the deferral doc + line)
+
+    Compare against:
+    - Source code under <repo>/src/
+    - Tests under <repo>/tests/
+    - Public docs under <repo>/docs/
+    - Exit-criteria lists in plan + code-complete docs
+
+    Also bounds-check any "we shipped N <thing>" claims (doctor codes, ADRs, error variants,
+    MCP tools, CLI subcommands) against actual counts derived from the source. Drift here
+    is a tell that other completion claims are drifting too.
+
+    Return structured findings: { requirement_id, classification, evidence_paths, notes }.
+    Flag any case where a CODE_COMPLETE doc claims completion that the spec contradicts.
+    """
+    Result: <gap count + brief summary>
+
+15. Gaps closed before claim
+    - <gap 1>: <fix commit / "deferred per <doc>" / "no - claim retracted to <smaller scope>">
+    - <gap 2>: <...>
+    All gaps closed or explicitly deferred with paper trail: <yes / no - claim retracted>
+
+16. Doc-count drift check
+    Verify "we shipped N <thing>" claims against the source. Examples that should match:
+    doctor codes registered vs claimed; error variants in errors.py vs claimed; ADR files
+    in docs/adr/ vs claimed; MCP tools registered vs claimed; CLI subcommands wired in
+    cli/__init__.py vs claimed.
+    Drift found: <none / list>
+    All drift reconciled (either fix the count claim OR fix the implementation): <yes / no>
+```
+
+The spec audit is the difference between "tests pass" and "spec satisfied". It catches the failure mode where every code-side criterion in Sections 1-4 is met but the spec has more requirements that were never checked.
+
+Confirmed first at engram public-release polish 2026-05-05: a Sections-1-4-clean Phase 4 still surfaced 3 spec gaps under audit (FastEmbed integrity manifest populated but not consumed; LLM CLI commands missing despite the LLM resolver shipping; doctor-code count drift in CHANGELOG vs source). Without Section 6, those would have shipped to public users despite all green Section 1-4 checks.
+
 ## Output Contract
 
 The checklist is delivered inline in the conversation as a structured response. The artifact is the discipline of filling it in honestly, not a permanent document.
@@ -128,6 +182,7 @@ The checklist is delivered inline in the conversation as a structured response. 
 
 **Optional sections (depends on work type):**
 - **Section 5: Six-Failure-Type Diagnostic** (only if work involved agents or multi-step automated workflows)
+- **Section 6: Spec Audit** (only on public-release / major-milestone claims - the at-the-milestone language: "ready for users", "v1.0 ready", "Phase N complete and ready to ship". Routine commits and internal checkpoints skip this)
 
 **Out of scope (this skill does NOT produce):**
 - Actual fixes to issues found (this is verification, not remediation - if a fix is needed, the agent does it as a separate step)
@@ -140,6 +195,7 @@ The checklist is delivered inline in the conversation as a structured response. 
 - Empty checkmarks not allowed - every item gets a real answer
 - Sections appear in numerical order even if compressed
 - Section 5 appears only when applicable (agent/multi-step work)
+- Section 6 appears only on public-release / major-milestone claims
 
 If the user asked for a quick check, you can compress sections into a single paragraph - but every numbered item must still be addressed honestly.
 
@@ -155,6 +211,7 @@ These are real failures from past sessions that this skill exists to prevent:
 | Commit overstated scope | Diff not compared to message | Section 2 items 5-7 |
 | UI shipped with overlapping pieces | No visual verification | Section 1 item 4 |
 | Mobile breakpoints broken | "Done" claimed without testing them | Section 3 item 8 |
+| Phase shipped "code-complete" but spec had unimplemented items | Code-side criteria met but spec never walked | Section 6 items 12-16 (sub-agent spec audit + doc-count drift check) |
 
 ## Rules
 
@@ -175,8 +232,9 @@ These are real failures from past sessions that this skill exists to prevent:
 
 - **Light mode:** Sections 1, 2, and 4 only (skip explicit gaps section if everything was checked)
 - **Full mode:** All four sections
-- **Default:** Full mode for code changes, light mode for config/docs changes
+- **Public-release mode:** Full mode + Section 6 (spec audit). Trigger on at-the-milestone language ("ready for users", "v1.0 ready", "Phase N complete and ready to ship", "public-release ready").
+- **Default:** Full mode for code changes, light mode for config/docs changes, public-release mode whenever the claim language signals a milestone.
 
 ---
 
-**Version:** 1.0.0
+**Version:** 1.1.0
