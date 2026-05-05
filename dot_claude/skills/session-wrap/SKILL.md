@@ -13,16 +13,32 @@ Capture structured knowledge at the end of productive work sessions so insights 
 
 ## When To Use
 
-### Behavioral Cues
+### Explicit Triggers (User-Initiated)
 
 Activate when the user signals session end:
 - "let's wrap up", "that's it for now", "park this", "goodnight"
 - "what did we accomplish?", "summarize this session"
-- User invokes `/session-wrap`
+- User invokes `/session-wrap` directly
 
-### Do NOT Auto-Trigger
+### Proactive Triggers (Claude-Initiated)
 
-This skill is opt-in. Never run it without the user signaling they want to wrap up. Not every conversation needs a formal wrap-up.
+Claude proactively suggests `/session-wrap` at four logical boundaries:
+
+1. **Substantive commit-and-push checkpoint.** A feat / refactor / new-tests / new-docs commit lands on a remote branch. EXCLUDES chore/style/typo micro-fixes — those don't warrant a wrap. The wrap captures what shipped, what surprised us, what changed about the approach mid-implementation.
+
+2. **`[Resolution]` event.** A skill change, config update, or doc fix that closes the loop on a previously-logged `[Friction]`. The resolution itself is a learning worth preserving; the wrap formalizes it before context drift erases the why.
+
+3. **End of session.** User signals stop ("wrap up", "park this", "goodnight"), OR the conversation has reached a coherent stopping point with no clear next step queued up.
+
+4. **~70% context-fill fallback.** If none of (1)-(3) has triggered and the context window is approaching ~70% full, suggest a wrap so durable knowledge lands in memory before auto-compact starts dropping things. Better to wrap proactively than to lose context to summarization heuristics.
+
+The user runs `/session-wrap` (Claude can invoke the skill via the `Skill` tool) and `/clear` (CLI-side command; only the user can run it). After Claude suggests a wrap and the user confirms, Claude runs the wrap, then proposes `/clear` and names the natural next step so the user can resume cleanly.
+
+**Cadence target:** 3-5 wraps per long working session. Dense enough to catch learnings; not so dense that wrap overhead dominates.
+
+### Do NOT Auto-Invoke The Skill
+
+Even when a proactive trigger fires, Claude SUGGESTS the wrap and asks for confirmation; it does not silently invoke the skill. The user remains in control of when wraps happen — proactive suggestion is a recommendation, not an action.
 
 ## Process
 
@@ -147,12 +163,29 @@ If anything in "What Was Learned" or "What Should Change" qualifies for the skil
 4. **Don't capture what's in the code.** The commit history and diff show what changed. Capture the WHY and the WHAT-NEXT, not the WHAT.
 5. **Don't force it.** If the session was a quick Q&A or minor edit, a wrap-up adds no value. Say "Nothing substantial to capture from this session" and move on.
 
+## Wrap-Then-Clear Pattern
+
+When the wrap is mid-session (proactive trigger 1, 2, or 4 above), the natural follow-up is `/clear` so the next chunk of work starts with a fresh context window. The wrap has just captured the session's durable knowledge to Open Brain + friction-log + CHANGELOG; raw conversation history was paying token-tax for context that is now persisted.
+
+The flow:
+
+1. Claude detects a trigger (commit-and-push, `[Resolution]`, end-of-session signal, or ~70% context fill).
+2. Claude suggests: "good wrap point — run `/session-wrap` then we `/clear` and continue with [the named next step]?"
+3. User confirms; Claude invokes the skill via the `Skill` tool. Mid-session wraps use `--checkpoint` mode (lighter; deltas only).
+4. After wrap completes, Claude tells the user the natural next step ("OK to `/clear`; next iteration: [Step N] of [plan-file]").
+5. User runs `/clear` (CLI-side; Claude cannot trigger it).
+6. The user's next message rebuilds minimal context from the breadcrumbs the wrap left — CHANGELOG `[Unreleased]`, the relevant audit log, recent Open Brain captures, the implementation plan's "next step" pointer. DO NOT re-load the full prior conversation; that defeats the point.
+
+This pattern is what makes BYOC operationally cheap. Every wrap is a deposit into persistent memory; every `/clear` is the dividend - a fresh context window without losing the work product.
+
 ## Configurable Behavior
 
-- **Depth:** Can be "quick" (Steps 1 + 4 only) or "full" (all steps)
-- **Output:** Memory entry (default) or file in `workspace/<project>/session-wrap-<date>.md`
+- **Mode** (the `--checkpoint` vs default distinction):
+  - **Default (full retrospective):** all 6 steps. Used at end of session or before a project ships. Thorough; longer.
+  - **`--checkpoint`:** Steps 1 (Accomplished), 2 (Learned), 5.4 (Friction Enumeration), 5.5 (Persist) only. Skips ACT NOW / PARKED / Skill Improvement Check, since those make more sense aggregated at end of session. Mid-session wraps focus on capturing deltas. Faster; lighter.
+- **Output:** Memory entry (default) or file in `workspace/<project>/session-wrap-<date>.md`. The Open Brain capture in Step 5.5 is the canonical persistent home; the file is for project-specific traceability.
 - **Skill-improver integration:** Optional (Step 6). Skipped by default unless the user enables it.
 
 ---
 
-**Version:** 1.1.0
+**Version:** 1.2.0
