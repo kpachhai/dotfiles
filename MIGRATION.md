@@ -112,19 +112,28 @@ PII that was committed by accident at any point in history.
 After force-pushing rewritten history, every other machine that has the repo
 cloned needs to align its local clone.
 
+> **Do NOT use `git pull` on other machines.** After the force-push, the
+> remote history shares no common ancestor with the local clone, and
+> `git pull` (which tries to merge) fails with
+> `fatal: refusing to merge unrelated histories`. The fix is a hard
+> reset, not a merge - see commands below.
+
 ### On each remaining machine
 
 For each repo (do them in the same order you scrubbed them):
 
-1. **Verify clean working tree first** — anything uncommitted will be lost.
+1. **Verify clean working tree first** — anything uncommitted will be lost
+   by the hard reset. If you have local work to preserve, stash it
+   (`git stash push -m 'pre-scrub-rescue'`); after the reset, inspect
+   `git stash show -p` and cherry-pick what's still worth keeping.
    ```bash
    cd <repo>
-   git status
+   git status --porcelain   # must be empty before continuing
    ```
 
-2. **Fetch and hard-reset:**
+2. **Fetch and hard-reset (NOT `git pull`):**
    ```bash
-   git fetch
+   git fetch origin
    git reset --hard origin/main
    ```
 

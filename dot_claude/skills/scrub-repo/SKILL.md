@@ -186,14 +186,29 @@ git branch -D <feature-branch>
 
 ### Step 10: Multi-machine sync
 
+> **Do NOT use `git pull` on other machines.** After the force-push, the remote
+> history shares no common ancestor with the local clone, and `git pull`
+> (which tries to merge) fails with `fatal: refusing to merge unrelated
+> histories`. The fix is a hard reset, not a merge.
+
 For every other machine the user listed in Step 1, give them the exact commands to run on that machine:
 
 ```bash
 cd <repo>
-git status                            # must be clean; uncommitted work will be lost
-git fetch
-git reset --hard origin/<branch>
+git status --porcelain                # MUST be empty; uncommitted work will be lost by the reset
+git fetch origin
+git reset --hard origin/<branch>      # NOT git pull - the histories are unrelated post-scrub
 git log --oneline | head -3           # verify SHAs match the new post-scrub history
+```
+
+If `git status` shows uncommitted work that needs preserving, stash it first (`git stash push -m 'pre-scrub-rescue'`); after the reset, inspect `git stash show -p` and cherry-pick what is still worth keeping.
+
+If the scrub also renamed skill/install paths, clean up stale state on each machine before the install scripts run:
+
+```bash
+rm -rf ~/.claude/skills/<old-skill-name>      # any skill renamed by the scrub
+# If config files use the old skill name as a key (e.g., ~/.config/<repo>/config.json),
+# rename keys via jq, or delete the config file and re-run the project's setup.sh.
 ```
 
 For dotfiles specifically: also re-run `chezmoi apply` after the reset so any templated files re-render with this machine's `~/.config/devkit/identity.json` values.
