@@ -119,7 +119,7 @@ if [[ -f "$MSG_REPL_FILE" ]]; then
 fi
 
 if [[ $DRY_RUN -eq 1 ]]; then
-    echo "[DRY RUN] Would run: git filter-repo --replace-text $REPL_FILE ${mailmap_args[*]} ${msg_args[*]} --force"
+    echo "[DRY RUN] Would run: git filter-repo --replace-text $REPL_FILE ${mailmap_args[*]:-} ${msg_args[*]:-} --force"
     echo "[DRY RUN] LEFT-side strings to verify post-rewrite (${#LEFT_SIDES[@]} total):"
     printf '  - %s\n' "${LEFT_SIDES[@]}"
     if [[ ${#mailmap_args[@]} -gt 0 ]]; then
@@ -137,7 +137,7 @@ fi
 
 # Run the rewrite
 echo "Running git filter-repo..."
-git filter-repo --replace-text "$REPL_FILE" "${mailmap_args[@]}" "${msg_args[@]}" --force
+git filter-repo --replace-text "$REPL_FILE" ${mailmap_args[@]+"${mailmap_args[@]}"} ${msg_args[@]+"${msg_args[@]}"} --force
 
 # Verify file content: no LEFT-side string from replacements.txt remains anywhere
 echo "Verifying scrub..."

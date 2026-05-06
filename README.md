@@ -6,7 +6,7 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 
 | Category | What | Highlights |
 |----------|------|------------|
-| **Claude Code** | Settings, 17 subagents, 3 skills | Opus default, auto-permissions, desktop notifications |
+| **Claude Code** | Settings, 17 subagents, 17 global skills | Opus default, auto-permissions, desktop notifications, repo PII scrubbing (`scrub-repo`) |
 | **Zsh** | Zim framework, autosuggestions, syntax highlighting | Fish-like experience with history substring search |
 | **Git** | GPG signing, per-machine email | DCO sign-off ready, work email auto-set for configured org repos |
 | **iTerm2** | Catppuccin Mocha, MesloLGS Nerd Font | True color, auto-installed profile, 14pt font |
@@ -31,6 +31,7 @@ Optional (installed automatically by configs if missing):
 - **MesloLGS Nerd Font** - Installed automatically with iTerm2 setup
 - **Zim** - Installed automatically by `.zshrc` on first shell launch
 - **chezmoi** - Can self-install during setup (see below)
+- **git-filter-repo** - `brew install git-filter-repo`. Used by the `scrub-repo` skill and the `~/.claude/scripts/scrub-pii-history.sh` recovery procedure (see [MIGRATION.md](MIGRATION.md)). Skip if you do not plan to scrub any repo's history.
 
 ## Optional Add-Ons (After Setup)
 

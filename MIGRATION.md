@@ -6,6 +6,14 @@ This doc covers two related flows:
    or any other personal repo with the same `.scrub/` + `~/.config/devkit/`
    conventions).
 
+> **Faster path:** the [`scrub-repo`](dot_claude/skills/scrub-repo/SKILL.md) global
+> skill (deployed to `~/.claude/skills/scrub-repo/` via chezmoi) automates the
+> procedure below, including discovery, rule drafting with correct ordering,
+> the dry-run / `--confirm` / re-add-origin / force-push sequence, and
+> multi-machine sync commands. Invoke it inside Claude Code with phrases like
+> "scrub this repo" or "remove `<string>` from history". The manual procedure
+> below remains the reference for what the skill is doing under the hood.
+
 ---
 
 ## PII Scrub Procedure
