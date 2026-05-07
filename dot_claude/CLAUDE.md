@@ -140,7 +140,7 @@ Models are not expensive; my habits are. As Mythos / next-gen models enter highe
 
 ## PII Discipline (publishable repos)
 
-When working in any personal repo intended to be public — currently `dotfiles`, `idea-forge`, and any future fork-able artifact — treat these as PII and DO NOT introduce them in committed content:
+When working in any personal repo intended to be public — currently `dotfiles`, `idea-forge`, `engram`, and any future fork-able artifact — treat these as PII and DO NOT introduce them in committed content:
 
 - Real personal names in prose, comments, or examples (project-attribution metadata fields like `package.json` `"author"` are the only exception)
 - Personal or work email addresses anywhere in committed file content
@@ -161,6 +161,22 @@ Genericization patterns to use when prose needs to reference these:
 `memex` is currently private and not held to this discipline strictly, but follow the same hygiene as defense-in-depth — private repos can leak via accidental push, screenshares, or future public extraction.
 
 If you discover PII in committed content while working, flag it before adding new content. Recovery procedure: `~/.claude/scripts/scrub-pii-history.sh` plus the `.scrub/` toolkit (see `MIGRATION.md` in dotfiles for the full procedure).
+
+### Pre-Write Checklist for Publishable Repos
+
+Before writing or editing ANY file in a publishable repo (`dotfiles`, `idea-forge`, `engram`, or future fork-able artifacts), pause and run this check. The genericization patterns table above tells you HOW to genericize; this checklist tells you WHEN to pause and verify.
+
+1. **Identify the repo.** If the file path is anywhere inside a publishable repo's working tree, this checklist fires. Default to "yes" if unsure.
+2. **Scan candidate content for PII BEFORE staging:**
+   - Real personal names in prose, comments, or examples? (Project-attribution metadata fields like `package.json` `"author"` or `pyproject.toml` `authors` are the only exception.)
+   - Personal or work email addresses anywhere in committed content?
+   - Employer or company brand names (e.g. `Hashgraph`)? Open-source protocol / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them.
+   - Hardcoded `/Users/<name>/` paths instead of `$HOME` / `~/` / chezmoi template variables?
+   - Direct paths bearing the maintainer's GitHub username (`~/repos/github.com/<your-username>/<repo>/...`)?
+   - GPG fingerprints, API keys, access tokens, MCP URLs with embedded secrets? These belong in `~/.config/devkit/{identity,references}.json` (gitignored), never in committed source.
+3. **If candidate PII exists, FLAG it before writing.** Do not silently genericize — surface what was caught + propose the genericization. The maintainer is in control of what lands. Active guidance > silent rewrites.
+4. **For machine-asymmetric patterns** (e.g. "personal-only because the work machine doesn't have feature X"): write to the committed file ONLY if the pattern is capability-conditional ("if feature X is available, do Y; else fall through"). Write to a `*.local.*` file (gitignored via the `*.local.*` rule) if the pattern is genuinely machine-specific. See "Dotfiles Discipline (Generic vs Local)" below for the precedent.
+5. **For new patterns that span multiple machines unevenly** (e.g. "personal has both Open Brain + engram, work has only engram"): the committed rule should describe the capability ("when MCP X exposes tool Y, do Z"), not the machine ("on personal machine, do Z"). Capability-conditional rules are stable across machine inventories.
 
 ## Dotfiles Discipline (Generic vs Local)
 
@@ -214,6 +230,17 @@ Available across all projects via `~/.claude/skills/`:
 Open Brain is the maintainer's name for their persistent AI memory layer — typically backed by a vector DB (Supabase + pgvector) and exposed to AI tools via an MCP server with `capture_thought` and `search_thoughts` tools. Forkers can wire up any compatible persistent-memory MCP (or skip this section entirely if not using one).
 
 **Setup:** the MCP URL (which embeds an access secret) lives in `~/.config/devkit/references.json` under the `open_brain_mcp_url` field — gitignored, machine-local, never committed. The `run_once_install-claude-mcps.sh` chezmoi hook reads it on apply and registers the MCP. See `devkit-references.example.json` at the dotfiles repo root for the schema.
+
+### Multiple Persistent-Memory MCPs
+
+When more than one MCP exposes `capture_thought` and `search_thoughts` (e.g. an upstream-maintained Open Brain backed by a vector DB alongside a local-first markdown-backed engram), treat them as a multi-write group. The rule is **capability-conditional**, not machine-specific - a machine with one such MCP behaves correctly because "fire all registered" trivially reduces to "fire the one".
+
+- **Capture:** every `[Lesson]/[Pattern]/[Decision]/[Friction]/...` thought fires ALL registered persistent-memory MCPs in parallel. Identical content + prefix + portability tag; only the destination differs. Local-first MCPs (e.g. engram-style stdio servers) typically fire faster - prefer them first; HTTP-backed MCPs (e.g. Open Brain edge functions) fire second. If one fails (network glitch, transient edge-function error), log + proceed - the others have the canonical copy. Reconciliation between stores is via periodic comparison (count parity + spot-search overlap), not transactional.
+- **Search:** default to whichever MCP is fastest / most local. If results look thin or you suspect drift, also query the alternative and reconcile by union.
+- **Single-MCP machines** (e.g. work machine with only engram registered, OR a future machine with only Open Brain registered): the rule degrades gracefully - fire whichever IS registered. No "if/else by machine" branching needed.
+- **Zero-MCP machines:** fall through to the existing "When Tools Are Unavailable" rule below + continue the friction-log dual-write to `~/.claude/friction-log.md`.
+
+The friction-log dual-write is unchanged - it runs in addition to whichever persistent-memory MCP captures succeed. Friction-log remains the universal fallback for `[Friction]` and `[Resolution]` rows on every machine.
 
 When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
 
