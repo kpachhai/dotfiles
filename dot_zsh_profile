@@ -8,3 +8,7 @@ export NVM_DIR="$HOME/.nvm"
 
 # GPG
 export GPG_TTY=$(tty)
+
+# uv tool install (engram, etc.) drops binaries here. Generic; works on any
+# machine without naming the user.
+export PATH="$HOME/.local/bin:$PATH"

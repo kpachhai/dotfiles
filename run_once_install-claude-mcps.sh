@@ -63,6 +63,27 @@ else
   echo "[claude-mcps] To enable: copy devkit-references.example.json to $references_file and fill it in."
 fi
 
+# --- engram (local-first; gated on the engram binary existing) -------------
+# Engram is a local stdio MCP server. There is no URL / secret to inject; the
+# only requirement is that the `engram` binary is reachable. Install on a
+# given machine via `uv tool install --editable .` from your engram source
+# clone. Each machine has its own ~/.config/engram/config.yaml pointing at
+# its own vault - no cross-machine contamination.
+#
+# We register with the ABSOLUTE path ($HOME/.local/bin/engram) rather than
+# the bare `engram` command, because Claude Code launches MCP subprocesses
+# with its own (stripped) PATH that does not source the user's shell rc.
+# uv tool install canonically deposits binaries at $HOME/.local/bin so
+# hardcoding that path is portable across machines.
+engram_binary="$HOME/.local/bin/engram"
+if [[ -x "$engram_binary" ]]; then
+  add_user engram "$engram_binary" serve
+else
+  echo "[claude-mcps] engram binary not found at $engram_binary; skipping engram MCP."
+  echo "[claude-mcps] To enable: install engram via 'uv tool install --editable .'"
+  echo "[claude-mcps]   from your engram source clone, then re-run 'chezmoi apply'."
+fi
+
 echo "[claude-mcps] done."
 echo ""
 echo "[claude-mcps] One-time manual step on this machine:"
