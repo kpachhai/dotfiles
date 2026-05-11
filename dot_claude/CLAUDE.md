@@ -89,25 +89,11 @@ Do not ask me to re-share URLs or paste content until this fallback chain is ful
 
 ## Verification Discipline
 
-Before declaring any task complete, run through this gate. The most common failure pattern is shipping work that looks done but isn't - tests that pass while stderr leaks, percentages that exceed logical bounds, surface-level checks that miss real bugs, commit messages that overstate scope. These are caught only when the user pushes back, which means hours wasted.
+Before declaring any task complete: check stderr (not just stdout — tests can exit 0 while leaking warnings), bounds-check any numerical claim (percentages, rates, ratios respect logical bounds), write a regression test before claiming a bug is fixed (must fail-pre / pass-post), match commit scope to `git diff --stat` (no inflation, no aspirational scope), visually verify UI changes (Chrome MCP / Playwright / screenshot — tests passing while UI is broken is a known failure mode), and explicitly list what was NOT verified (mobile breakpoints, edge cases, etc).
 
-### Before claiming "done"
+For UI/frontend work, prefer local test runs over deploy-then-test cycles.
 
-1. **Stderr matters.** When running tests or commands, check stderr in addition to stdout. A test that prints to stderr but exits 0 is not actually green - it is leaking state or warnings that hide real issues.
-2. **Bounds-check numerical claims.** Percentages, rates, and ratios must respect logical bounds (e.g., a disconnect rate cannot exceed 100%). If a metric is outside its possible range, the metric is wrong, not the data.
-3. **Regression test before "fixed".** Before claiming a bug is fixed, write or identify a test that fails before the fix and passes after. If you cannot reproduce the bug in a test, you have not actually verified the fix.
-4. **Surface-level tests are not coverage.** Tests that only check "did the function run without throwing?" are not catching real bugs. Edge cases, boundary values, and adversarial inputs need explicit coverage. If the test suite cannot fail in any realistic scenario, it is theater, not verification.
-5. **Match commit scope to actual changes.** Do not say "added X, Y, Z and refactored A" when the diff only added X. Run `git diff --stat` and write commit messages that accurately reflect what changed - no inflation, no aspirational scope.
-6. **Visual verification for UI.** UI work is not done until you have seen it render correctly. Use Chrome MCP, Playwright, or screenshots before claiming a UI task is complete. Tests passing while the UI is broken is a known failure mode.
-7. **List what you did NOT verify.** When summarizing completion, explicitly note unchecked areas (e.g., "verified happy path locally; did not test mobile breakpoints"). Honesty about gaps prevents false confidence.
-
-### Local testing over deploy-test loops
-
-For UI/frontend work, prefer local test runs and local screenshot/preview tools over deploy-then-test-on-device cycles. The deploy round-trip is slow and obscures the source of issues. Use Chrome MCP or Playwright locally before requesting device verification.
-
-### When in doubt, invoke `verify-before-done`
-
-The `verify-before-done` global skill produces an explicit verification checklist for any task. If a task is non-trivial or the cost of a missed bug is high, run it before declaring completion.
+Non-trivial tasks: invoke the `verify-before-done` global skill — it produces the explicit checklist + new Section 6 for milestone claims (spec audit sub-agent + doc-count drift check).
 
 ## Dark Code Discipline
 
@@ -247,70 +233,42 @@ When more than one MCP exposes persistent-memory tools (e.g. an upstream-maintai
 
 The friction-log dual-write is unchanged - it runs in addition to whichever persistent-memory MCP captures succeed. Friction-log remains the universal fallback for `[Friction]` and `[Resolution]` rows on every machine.
 
-When the `capture_thought` and `search_thoughts` MCP tools are available, follow these rules:
-
 ### Proactive Capture
 
-Automatically capture to Open Brain during sessions when you encounter:
-- **Debugging breakthroughs** - root cause found after investigation (prefix with `[Lesson]`)
-- **Architectural decisions** - why we chose approach A over B (prefix with `[Decision]`)
-- **Surprising behaviors** - something that didn't work as expected (prefix with `[Lesson]`)
-- **Reusable patterns** - techniques worth remembering for future projects (prefix with `[Pattern]`)
-- **Workarounds** - non-obvious fixes for tools, libraries, or APIs (prefix with `[Lesson]`)
-- **Key project context** - important decisions or constraints that future sessions need (prefix with `[Decision]`)
-- **Domain context** - industry vocabulary, products, market dynamics, regulatory environment, internal acronyms - the BYOC Layer 1 vocabulary an AI needs to be useful in your work (prefix with `[Domain]`). Always include a Portability tag (see Portability Discipline below).
-- **Workflow preferences** - stated structural preferences (how I like research/code/docs structured, formats I want, sequencing I follow) - BYOC Layer 2 (prefix with `[Workflow]`).
-- **Behavioral style** - patterns the AI correctly inferred without being told (e.g. "skip trailing summaries because user prefers terse"), or unstated communication preferences (technical depth defaults, when to challenge vs execute, tolerance for preamble) - BYOC Layer 3 (prefix with `[Style]`).
-- **Artifact rationale** - on project completion (`session-wrap` or `ship`), capture project path + the 4 ship-with-explanation questions (Q1 what is this; Q2 why this / alternatives + trade-offs; Q3 what's going to break / fragile points + assumptions; Q4 what I learned / where AI was confidently wrong + what I'd do differently) - BYOC Layer 4 (prefix with `[Artifact]`). Always include a Portability tag. The same 4 answers feed both the private capture and the public explanation artifact (`comprehension-gate` Step 5) - one authoring effort, two destinations. Subject to the No-Slop Rule in Dark Code Discipline above: human writes the answers.
-- **Half-formed observations** - something worth remembering that does not fit an existing prefix yet (prefix with `[Notice]`). Reserve for the unnamed pattern that, once seen, may reframe how a system is understood. Reviewed during the quarterly Skill Health Audit and either promoted into an existing prefix, formalized into a new prefix, or removed.
-- **User corrections (friction)** - any time the user pushes back on Claude's output: factual error caught, scope overstated, surface-level test missed a real bug, UI shipped with visible issues, premature completion claim, missed verification step, fabricated citation, wrong approach taken (prefix with `[Friction]`). **AT THE MOMENT OF CORRECTION, before generating the next response, capture the friction.** Do not defer to session-wrap. Friction capture is reflexive, not retrospective; if you wait until wrap-up, you will forget. Format: `[Friction] <one-line description of what went wrong> - <what the correct approach was> - <which skill or workflow should be updated>`. These thoughts feed `learn-and-improve` to drive skill audits.
-  - **Dual-write for portability:** Friction thoughts ALSO get appended as one line to the machine-local file `~/.claude/friction-log.md`, regardless of whether Open Brain is available. This is the work-machine fallback (Open Brain is personal-machine only; work data must not leave the work computer). The dual-write keeps the friction-feedback loop functional on both machines. See "How to Capture" below for the exact append.
+When MCP capture is available, capture these moments:
 
-### Do NOT Capture
+- Debugging breakthroughs, surprising behaviors, workarounds → `[Lesson]`
+- Architectural decisions, key project context future sessions need → `[Decision]`
+- Reusable patterns worth remembering across projects → `[Pattern]`
+- BYOC layers (working-identity capture; portable across AI vendors / employers): domain vocabulary → `[Domain]` (+ Portability tag); workflow preferences → `[Workflow]`; inferred behavioral style → `[Style]`; project-completion rationale → `[Artifact]` (+ Portability tag, via `comprehension-gate` Step 5's 4-question answers — human-written per the No-Slop Rule)
+- Half-formed observations not yet fitting a prefix → `[Notice]` (reviewed quarterly via Skill Health Audit → promoted / formalized / retired)
+- **User corrections → `[Friction]`** — REFLEXIVE, captured AT THE MOMENT of correction, before the next response. Do not defer to session-wrap. Format: `[Friction] <what went wrong> - <correct approach> - <skill/workflow to update>`
 
-- Trivial Q&A or simple lookups
-- Information already in the code, docs, or git history
-- Intermediate debugging steps (only capture the breakthrough)
-- Anything the user explicitly says not to save
+**Do NOT capture:** trivial Q&A, info already in code/docs/git, intermediate debugging steps (only the breakthrough), anything the user says not to save.
 
-### How to Capture
+See `~/.claude/references/capture-prefixes.md` for per-prefix examples + BYOC layer mapping + portability tag semantics.
 
-1. Call `capture_thought` with a clear, standalone statement that will make sense when retrieved months later by any AI
-2. Include enough context that the thought is useful without the original conversation
-3. Use the appropriate prefix: `[Lesson]`, `[Pattern]`, `[Decision]`, `[Meta]`, `[Action Item]`, `[Friction]`, `[Resolution]`, `[Parked]`, `[Notice]`, `[Domain]`, `[Workflow]`, `[Style]`, `[Artifact]`
-4. **For `[Friction]` and `[Resolution]` - also append to local log.** The friction-log is a two-row-type file: friction entries record corrections, resolution entries record skill changes that closed the loop. Append commands:
+### How to Capture + friction-log dual-write
+
+1. Call `capture_thought` with a standalone statement (no conversational context dependencies; retrievable months later by any AI).
+2. Use the appropriate prefix from the list above.
+3. **For `[Friction]` and `[Resolution]`, ALSO append one line to `~/.claude/friction-log.md`** — load-bearing for the work-machine fallback (Open Brain may not be available; local log always is) AND for the outcomes loop (`[Resolution]` closes a prior `[Friction]`, otherwise it's a knowledge base not a world model):
 
    ```
    # Friction (at moment of correction)
    mkdir -p ~/.claude && printf '%s | [Friction] | %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '<friction-one-liner>' >> ~/.claude/friction-log.md
 
-   # Resolution (when a skill / config change closes the loop on prior friction)
+   # Resolution (when a skill/config change closes the loop on prior friction)
    printf '%s | [Resolution] | %s | supersedes: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '<resolution-one-liner>' '<original friction date or summary>' >> ~/.claude/friction-log.md
    ```
 
-   The local log survives on machines without Open Brain (e.g., work computer). Do this in addition to `capture_thought`, not instead of it. If `capture_thought` is unavailable, still do the local append. The Resolution append closes the outcomes loop - without it, friction accumulates as a knowledge base, not a world model.
+   Friction-log dual-write fires regardless of MCP availability — the local log is machine-local + gitignored + safe on work computers.
 
-### Portability Discipline
+### Proactive Search + Unavailable Tools
 
-When capturing `[Domain]` or `[Artifact]` thoughts, classify portability inline:
-- `Portability: portable` - safe to surface at next employer/client (working style, generic patterns)
-- `Portability: sensitive` - default for `[Domain]`; requires redaction before cross-employer use
-- `Portability: block` - confidential content; do not capture verbatim. Recapture with the confidential string removed.
+At session start / when hitting a problem: search Open Brain for relevant past lessons before working. Reference naturally ("I found a past note...").
 
-`[Workflow]` and `[Style]` default to portable. The portability tag is the IT-acceptance and legal-safety story: portable working style transfers, sensitive needs redaction, block never lands in the canonical store.
-
-### Proactive Search
-
-At the start of sessions or when encountering a problem:
-- Search Open Brain for relevant past learnings before starting work
-- If the user is debugging something, search for related past lessons
-- Reference found thoughts naturally: "I found a past note about this..."
-
-### When Tools Are Unavailable
-
-If the MCP tools are not available, work normally without mentioning Open Brain. Never suggest the user set it up or warn about missing tools.
-
-**Exception for `[Friction]` and `[Resolution]`:** continue to append both row types to `~/.claude/friction-log.md` even when Open Brain is unavailable. The local log is machine-local and gitignored; it does not touch external servers and is safe to use on work computers. This keeps the friction-feedback loop alive on every machine.
+If the MCP tools are not available, work normally without mentioning Open Brain — never suggest setup or warn about missing tools. **Exception:** continue the `~/.claude/friction-log.md` dual-write for `[Friction]` and `[Resolution]` rows regardless.
 
 ## World Model - Three Architectures
 
@@ -332,21 +290,4 @@ For tools that block external MCPs (work computer, regulated environments), `~/.
 
 ## Subagents Available
 
-Use these when the task matches their specialty:
-- `code-reviewer` - Read-only code review
-- `researcher` - Deep research with web search
-- `debugger` - Systematic bug tracing
-- `writer` - Technical documentation
-- `security-auditor` - General security audit and threat modeling
-- `blockchain-security-auditor` - Adversarial Solidity audit, DeFi exploit analysis
-- `solidity-engineer` - Smart contracts (EVM)
-- `dev-advocate` - Tutorials, demos, conference content
-- `architect` - System design and ADRs
-- `frontend-developer` - React/Vue/Angular, UI, accessibility, performance
-- `backend-architect` - API design, scalability, server-side architecture
-- `ai-engineer` - ML models, LLM integration, RAG, embeddings
-- `devops-automator` - CI/CD, Docker, Kubernetes, GitHub Actions
-- `database-optimizer` - Schema design, query performance, indexing
-- `mcp-builder` - MCP server design and implementation
-- `accessibility-auditor` - WCAG compliance, ARIA, screen readers
-- `api-tester` - API validation, endpoint testing, OWASP API Security
+Specialist agents live at `~/.claude/agents/*.md` (full descriptions + tool scopes). Use the Agent tool with `subagent_type=<name>` when the task matches a specialist; default to `general-purpose` for tasks that don't need domain expertise. Common picks: `code-reviewer` (read-only review), `researcher` (web search + citations), `debugger` (root-cause tracing), `writer` (docs), `security-auditor` (threat modeling + general audit), `architect` (system design + ADRs), `solidity-engineer` (EVM contracts), `mcp-builder` (MCP servers), `frontend-developer` / `backend-architect` (domain-specific UI/API work). Full roster in the agents/ directory.
