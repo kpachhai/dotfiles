@@ -47,21 +47,26 @@ add_user_http() {
   fi
 }
 
-# --- open-brain (optional, secret-gated) -----------------------------------
-# Reads the URL from ~/.config/devkit/references.json. The URL embeds a
-# Supabase access key, which is why it lives there (gitignored, machine-local)
-# and not in this committed file.
-references_file="${HOME}/.config/devkit/references.json"
-open_brain_url=""
-if [[ -f "$references_file" ]] && command -v jq >/dev/null 2>&1; then
-  open_brain_url="$(jq -r '.open_brain_mcp_url // ""' "$references_file" 2>/dev/null)"
-fi
-if [[ -n "$open_brain_url" ]]; then
-  add_user_http open-brain "$open_brain_url"
-else
-  echo "[claude-mcps] open_brain_mcp_url not set in $references_file; skipping open-brain."
-  echo "[claude-mcps] To enable: copy devkit-references.example.json to $references_file and fill it in."
-fi
+# --- open-brain ------------------------------------------------------------
+# Previously registered here as a local HTTP MCP reading from
+# ~/.config/devkit/references.json. Now obsolete: Open Brain auto-syncs via
+# the claude.ai account as 'claude.ai My Personal OpenBrain' (same Supabase
+# URL, OAuth-managed). Keeping the local registration AS WELL caused every
+# capture to fire BOTH MCPs in parallel (per the global multi-MCP rule),
+# silently double-writing to the same OB1 store.
+#
+# If you ever need a local fallback (claude.ai sync disabled, work machine
+# without the account, etc.), uncomment the block below and ensure
+# 'claude.ai My Personal OpenBrain' is NOT also active.
+#
+# references_file="${HOME}/.config/devkit/references.json"
+# open_brain_url=""
+# if [[ -f "$references_file" ]] && command -v jq >/dev/null 2>&1; then
+#   open_brain_url="$(jq -r '.open_brain_mcp_url // ""' "$references_file" 2>/dev/null)"
+# fi
+# if [[ -n "$open_brain_url" ]]; then
+#   add_user_http open-brain "$open_brain_url"
+# fi
 
 # --- engram (local-first; gated on the engram binary existing) -------------
 # Engram is a local stdio MCP server. There is no URL / secret to inject; the
