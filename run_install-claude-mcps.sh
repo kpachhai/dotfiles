@@ -2,9 +2,14 @@
 #
 # Install Claude Code MCP servers that need manual setup.
 #
-# Chezmoi runs `run_once_*` scripts once per machine. Edit this file (do not
-# rename) to add or remove MCPs - chezmoi re-runs on hash change. Idempotent:
-# uses `claude mcp list` to skip already-installed servers.
+# Chezmoi runs plain `run_*` scripts on every `chezmoi apply`. We deliberately
+# do NOT use `run_once_*` here because some MCP registrations depend on local
+# binaries (e.g. ~/.local/bin/engram) whose presence flips over time as the
+# user finishes per-machine bootstrap. A `run_once_*` script is hash-gated and
+# would never retry after a skipped-because-binary-not-found path. Running
+# every apply is safe because the script is idempotent: `installed()` greps
+# `claude mcp list` and skips servers that are already registered. Cost is a
+# few `claude mcp list` invocations per apply (<1s total).
 #
 # Note on what is NOT here:
 #   - claude.ai-managed MCPs (Viator, Drive, Gmail, etc.) sync via OAuth from

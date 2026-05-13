@@ -29,7 +29,7 @@ if [ -z "$STAGED" ]; then
   exit 0
 fi
 
-DIFF=$(chezmoi diff 2>/dev/null)
+DIFF=$(chezmoi diff --exclude=scripts 2>/dev/null)
 if [ -z "$DIFF" ]; then
   exit 0
 fi

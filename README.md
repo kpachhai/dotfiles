@@ -241,7 +241,7 @@ Schema (see `devkit-references.example.json` at repo root):
 ```
 
 All fields optional. Today the file is consumed by:
-- `run_once_install-claude-mcps.sh` — reads `open_brain_mcp_url` to register the persistent-memory MCP.
+- `run_install-claude-mcps.sh` — reads `open_brain_mcp_url` to register the persistent-memory MCP.
 
 If you add a new external integration that needs a secret URL or token, add a key here rather than introducing a new env var. Setup:
 
