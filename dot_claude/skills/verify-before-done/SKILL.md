@@ -86,6 +86,20 @@ Output a checklist with these items. Each item must be either `VERIFIED: <how>`,
 
 10. What would I check if I had 5 more minutes?
     <one specific action - if non-trivial, do it>
+
+10.5. Memory dual-write reflex (lessons / decisions / frictions captured this session)
+     For each capture-worthy moment in this session (lesson, decision, pattern,
+     friction, resolution, BYOC layer), confirm it landed in ALL registered
+     persistent-memory MCPs PLUS the local friction-log (for [Friction] /
+     [Resolution] rows). Auto-memory alone is NOT enough — the personal-stack
+     world model spans Open Brain + engram + friction-log AND auto-memory.
+     - Captured to all registered persistent-memory MCPs?     <yes / no - what's missing>
+     - [Friction] / [Resolution] also appended to friction-log? <yes / no / N/A>
+     - Why this matters: a lesson stored only in auto-memory is invisible to
+       future sessions in other projects and to other AI tools that share the
+       same MCPs. Engram Phase 5 caught this miss empirically — the user had
+       to explicitly point out that auto-memory alone defeats the purpose of
+       maintaining the persistent-memory stack.
 ```
 
 ### Section 5: Six-Failure-Type Diagnostic (Agent / Multi-Step Work Only)
