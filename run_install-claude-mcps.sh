@@ -28,6 +28,13 @@ if ! command -v claude >/dev/null 2>&1; then
   exit 0
 fi
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "[claude-mcps] 'jq' not found on PATH; skipping permissions sync. Install jq first."
+  exit 0
+fi
+
+settings_local="${HOME}/.claude/settings.local.json"
+
 installed() {
   claude mcp list 2>/dev/null | grep -qE "^$1:"
 }
@@ -52,6 +59,43 @@ add_user_http() {
   fi
 }
 
+# Ensure settings.local.json exists with at least an empty permissions block.
+_ensure_settings_local() {
+  if [[ ! -f "$settings_local" ]]; then
+    echo '{"permissions":{"allow":[],"deny":[]}}' > "$settings_local"
+  fi
+  # Ensure the .permissions.allow array exists even if the file predates it.
+  local tmp
+  tmp="$(jq 'if .permissions == null then .permissions = {"allow":[],"deny":[]} elif .permissions.allow == null then .permissions.allow = [] else . end' "$settings_local")"
+  echo "$tmp" > "$settings_local"
+}
+
+# Add a single entry to .permissions.allow if not already present.
+allow_permission() {
+  local entry="$1"
+  _ensure_settings_local
+  if jq -e ".permissions.allow | index(\"$entry\")" "$settings_local" >/dev/null 2>&1; then
+    return 0  # already present
+  fi
+  local tmp
+  tmp="$(jq ".permissions.allow += [\"$entry\"]" "$settings_local")"
+  echo "$tmp" > "$settings_local"
+  echo "[claude-mcps] permissions: allowed $entry"
+}
+
+# Remove a single entry from .permissions.allow (cleanup for stale entries).
+revoke_permission() {
+  local entry="$1"
+  if [[ ! -f "$settings_local" ]]; then return 0; fi
+  if ! jq -e ".permissions.allow | index(\"$entry\")" "$settings_local" >/dev/null 2>&1; then
+    return 0  # not present, nothing to do
+  fi
+  local tmp
+  tmp="$(jq ".permissions.allow -= [\"$entry\"]" "$settings_local")"
+  echo "$tmp" > "$settings_local"
+  echo "[claude-mcps] permissions: revoked stale entry $entry"
+}
+
 # --- open-brain (dotfiles-canonical; manage from here, not from claude.ai) -
 # Reads the URL from ~/.config/devkit/references.json. The URL embeds a
 # Supabase access key, which is why it lives there (gitignored, machine-local)
@@ -68,9 +112,17 @@ if [[ -f "$references_file" ]] && command -v jq >/dev/null 2>&1; then
 fi
 if [[ -n "$open_brain_url" ]]; then
   add_user_http open-brain "$open_brain_url"
+  allow_permission "mcp__open-brain__search_thoughts"
+  allow_permission "mcp__open-brain__thought_stats"
+  allow_permission "mcp__open-brain__list_thoughts"
+  allow_permission "mcp__open-brain__capture_thought"
 else
   echo "[claude-mcps] open_brain_mcp_url not set in $references_file; skipping open-brain."
   echo "[claude-mcps] To enable: copy devkit-references.example.json to $references_file and fill it in."
+  revoke_permission "mcp__open-brain__search_thoughts"
+  revoke_permission "mcp__open-brain__thought_stats"
+  revoke_permission "mcp__open-brain__list_thoughts"
+  revoke_permission "mcp__open-brain__capture_thought"
 fi
 
 # --- engram (local-first; gated on the engram binary existing) -------------
@@ -88,10 +140,25 @@ fi
 engram_binary="$HOME/.local/bin/engram"
 if [[ -x "$engram_binary" ]]; then
   add_user engram "$engram_binary" serve
+  allow_permission "mcp__engram__search_thoughts"
+  allow_permission "mcp__engram__capture_thought"
+  allow_permission "mcp__engram__list_thoughts"
+  allow_permission "mcp__engram__thought_stats"
+  allow_permission "mcp__engram__fetch"
+  allow_permission "mcp__engram__summarize_thought"
+  allow_permission "mcp__engram__synthesize_thoughts"
 else
   echo "[claude-mcps] engram binary not found at $engram_binary; skipping engram MCP."
   echo "[claude-mcps] To enable: install engram via 'uv tool install --editable .'"
   echo "[claude-mcps]   from your engram source clone, then re-run 'chezmoi apply'."
+  # Remove stale engram permissions when the binary is not installed.
+  revoke_permission "mcp__engram__search_thoughts"
+  revoke_permission "mcp__engram__capture_thought"
+  revoke_permission "mcp__engram__list_thoughts"
+  revoke_permission "mcp__engram__thought_stats"
+  revoke_permission "mcp__engram__fetch"
+  revoke_permission "mcp__engram__summarize_thought"
+  revoke_permission "mcp__engram__synthesize_thoughts"
 fi
 
 echo "[claude-mcps] done."
