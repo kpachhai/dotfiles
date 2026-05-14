@@ -270,6 +270,48 @@ To change the machine type later, edit `~/.config/chezmoi/chezmoi.toml` and re-r
 
 **Cross-machine Claude config:** `~/.claude/settings.local.json` is now chezmoi-managed (sourced from `dot_claude/settings.local.json`). Permissions, hooks, model defaults, etc. flow across personal + work machines. Work-machine-specific things (MCPs only on personal, paths with personal username) are deliberately excluded from the baseline. A pre-commit PII scan protects against accidental PII propagation when Claude Code adds permissions interactively.
 
+## PII Pre-Commit Discipline (Cross-Repo Pattern)
+
+A small two-file bundle gives every publishable repo the same PII protection without coupling the repos to each other or to this dotfiles repo. Self-contained: the bundle lives inside each repo and survives clones, forks, and machines without the dotfiles installed.
+
+**Canonical source (this dotfiles repo):**
+- `dot_claude/scripts/executable_pii-scan.sh` — the scanner (chezmoi-managed to `~/.claude/scripts/pii-scan.sh`)
+- `dot_claude/scripts/pii-patterns.conf` — generic structural patterns
+
+The scanner is self-locating — it prefers a `pii-patterns.conf` next to it, so it works both at `~/.claude/scripts/` (dotfiles-managed) AND when bundled inside another repo at `.githooks/`.
+
+**Per-repo install pattern** (used today by `idea-forge`, `engram`, `team-digest`, and this `dotfiles` repo):
+
+1. Bundle the scanner + patterns into `.githooks/`:
+   ```bash
+   cp ~/.claude/scripts/pii-scan.sh   .githooks/pii-scan.sh
+   cp ~/.claude/scripts/pii-patterns.conf .githooks/pii-patterns.conf
+   chmod +x .githooks/pii-scan.sh
+   ```
+2. Hook installation depends on the repo's existing setup:
+   - **No pre-commit framework** (`idea-forge`, `team-digest`): copy the bundled `.githooks/pre-commit` template into `.git/hooks/pre-commit`:
+     ```bash
+     cp .githooks/pre-commit .git/hooks/pre-commit
+     chmod +x .git/hooks/pre-commit
+     ```
+   - **pre-commit framework** (`engram`): add a `local` hook to `.pre-commit-config.yaml`:
+     ```yaml
+     - repo: local
+       hooks:
+         - id: pii-scan
+           name: PII scan
+           entry: bash -c 'SCANNER="$(git rev-parse --show-toplevel)/.githooks/pii-scan.sh"; if [ -x "$SCANNER" ]; then "$SCANNER" --staged; fi'
+           language: system
+           pass_filenames: false
+     ```
+     Then `uv run pre-commit install` (or equivalent).
+
+**Identity-specific patterns** load dynamically from `~/.config/devkit/identity.json` if present — real name, personal/work emails, GitHub username get added as literal regexes at scan time. This keeps repo-bundled `pii-patterns.conf` files publishable (no real PII committed). Forker machines without `identity.json` get only the structural patterns; still useful, just less specific.
+
+**Pattern update propagation:** when `dot_claude/scripts/pii-patterns.conf` changes, re-copy it into each repo's `.githooks/` and commit. No automatic propagation today — the design favors per-repo independence over centralized sync.
+
+**Per-line allow markers:** lines containing the string `pii-allow` are skipped by the scanner. Use this to mark legitimate meta-discussion of PII patterns (e.g., in PII-discipline docs themselves) or attribution metadata. Markdown convention: `<!-- pii-allow:meta -->` at end of line; shell convention: `# pii-allow:meta`.
+
 ## Personal Skills That Couple to Other Repos
 
 The committed dotfiles repo is intentionally **standalone** — no skill in `dot_claude/skills/` requires you to also clone another repo (project workspace, persistent-memory recipe repo, etc.) for it to work. Skill prose uses generic terms like "your meta-stack repo" / "your persistent-memory MCP" / "your project workspace"; if you have those, the references are meaningful, otherwise just ignore them.

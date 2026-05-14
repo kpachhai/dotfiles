@@ -22,7 +22,19 @@
 
 set -euo pipefail
 
-PATTERNS_FILE="${HOME}/.claude/scripts/pii-patterns.conf"
+# Self-locating: prefer a pii-patterns.conf next to this script (the
+# per-repo bundling pattern), otherwise fall back to the dotfiles-managed
+# canonical location. This keeps the same script working when it's
+# installed at ~/.claude/scripts/ via dotfiles AND when it's bundled
+# inside a repo at <repo>/.githooks/.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
+if [[ -f "${SCRIPT_DIR}/pii-patterns.conf" ]]; then
+  PATTERNS_FILE="${SCRIPT_DIR}/pii-patterns.conf"
+else
+  PATTERNS_FILE="${HOME}/.claude/scripts/pii-patterns.conf"
+fi
+# identity.json is always machine-local (gitignored, outside any repo).
+# Repo-bundled installs and dotfiles-managed installs both read the same path.
 IDENTITY_FILE="${HOME}/.config/devkit/identity.json"
 
 die() { echo "pii-scan: $*" >&2; exit 2; }

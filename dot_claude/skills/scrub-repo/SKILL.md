@@ -63,7 +63,7 @@ git log --all -p -S "<candidate>" --oneline | head
 
 Run this for every string the user named in Step 1. Also run it for common PII patterns the user did NOT name explicitly but might have leaked:
 
-- `kpachhai` and `kiranpachhai` (or whatever appears in `~/.config/devkit/identity.json` `username_personal` / `username_work` fields, if that file exists)
+- `<your-github-username>` and `<your-username-no-spaces>` (or whatever appears in `~/.config/devkit/identity.json` `username_personal` / `username_work` fields, if that file exists)
 - The user's real name (`identity.json` `full_name`)
 - Both personal and work email (`identity.json` `email_personal` / `email_work`)
 - GPG signing key fingerprint
@@ -82,7 +82,7 @@ For each candidate string, do the working-tree edit:
 - File renames: `git mv old new`. Then update content references inside the renamed files.
 - File deletions: `git rm path` for files that should not exist publicly at all (e.g., a personalized profile that was committed by mistake).
 
-If the change is non-trivial, this is the place to invoke `deep-plan` to enumerate every file and rule before touching anything. Today's `team-digest` scrub had ~21 files and 328 occurrences; deep-plan caught risks (rule-ordering, partial-match traps for `Hashgraph`/`hashgraph`) that a one-shot edit pass would have missed.
+If the change is non-trivial, this is the place to invoke `deep-plan` to enumerate every file and rule before touching anything. A recent `team-digest` scrub had ~21 files and 328 occurrences; deep-plan caught risks (rule-ordering, partial-match traps for `Hashgraph`/`hashgraph`) that a one-shot edit pass would have missed. <!-- pii-allow:meta -->
 
 After the edits, run a final residual check on tracked files only:
 
@@ -105,16 +105,16 @@ If the repo does not have a `.scrub/` directory, copy the examples from the dotf
 
 ```bash
 mkdir -p .scrub
-cp ~/repos/github.com/kpachhai/dotfiles/.scrub/replacements.example.txt .scrub/replacements.example.txt
-cp ~/repos/github.com/kpachhai/dotfiles/.scrub/message-replacements.example.txt .scrub/message-replacements.example.txt
-cp ~/repos/github.com/kpachhai/dotfiles/.scrub/mailmap.example.txt .scrub/mailmap.example.txt
+cp ~/repos/github.com/<your-github-username>/dotfiles/.scrub/replacements.example.txt .scrub/replacements.example.txt
+cp ~/repos/github.com/<your-github-username>/dotfiles/.scrub/message-replacements.example.txt .scrub/message-replacements.example.txt
+cp ~/repos/github.com/<your-github-username>/dotfiles/.scrub/mailmap.example.txt .scrub/mailmap.example.txt
 echo '.scrub/' >> .git/info/exclude   # local exclude; the .example files stay tracked, the actual configs are gitignored by .gitignore patterns
 ```
 
 Author `replacements.txt`. Two ordering rules are load-bearing:
 
 1. **Longer phrases before shorter substrings.** If you scrub `Solutions Architect team` to `team` AND `Solutions Architect` to `team`, list the longer rule FIRST. Otherwise the shorter rule fires first and corrupts the longer match into `team team`.
-2. **Case-sensitive by default.** `git filter-repo --replace-text` is literal. To handle both `hashgraph` (lowercase, often org/URL form) and `Hashgraph` (capitalized, often brand mention), write two separate rules. Do NOT assume case-insensitivity.
+2. **Case-sensitive by default.** `git filter-repo --replace-text` is literal. To handle both `hashgraph` (lowercase, often org/URL form) and `Hashgraph` (capitalized, often brand mention), write two separate rules. Do NOT assume case-insensitivity. <!-- pii-allow:meta -->
 
 If author/committer emails or commit-message text need rewriting, also create `.scrub/mailmap` (Author/Committer) and `.scrub/message-replacements.txt` (commit subject + body, including Signed-off-by trailers that mailmap does not touch).
 
@@ -230,7 +230,7 @@ Do NOT do this in the same run as the scrub. The backup is the rollback path; ke
 - **Do not run scrub on a dirty working tree.** The script refuses, but worth saying. Stash or commit first.
 - **Do not skip the dry-run.** It catches malformed rules, missing files, and the bash-3.2 array bug if present. Cheap insurance.
 - **Do not use `--force` instead of `--force-with-lease`.** `--force` silently overwrites concurrent pushes from other machines. Always pin the lease.
-- **Do not assume the rules are case-insensitive.** They are not. `Hashgraph` and `hashgraph` are different rules.
+- **Do not assume the rules are case-insensitive.** They are not. `Hashgraph` and `hashgraph` are different rules. <!-- pii-allow:meta -->
 - **Do not use a regex-prefixed rule unless you've tested it.** The verifier skips regex rules, so a bad regex can leave residuals that the script reports as clean. If the user wants a regex, double-check the post-scrub repo manually with `git log -p | grep` before declaring done.
 - **GPG signatures on rewritten commits are stripped by filter-repo.** The script does not re-sign. If signed history is required, run an additional pass:
   `git rebase --exec 'git commit --amend --no-edit -S -s' --root` (slow on large repos; consider whether unsigned historical commits + signed new commits is acceptable).
@@ -245,7 +245,7 @@ Do NOT do this in the same run as the scrub. The backup is the rollback path; ke
 
 ## Source
 
-Operationalized from the workflow we ran on `kpachhai/team-digest` on 2026-05-05. That run revealed (a) the working-tree-first sequencing requirement, (b) the rule-ordering rule for partial overlaps, (c) the case-sensitive `Hashgraph`/`hashgraph` trap, (d) the bash 3.2 empty-array bug in the script (now patched), and (e) the importance of the `--force-with-lease=branch:sha` pin for safety. Each of those became a step in this skill.
+Operationalized from a `team-digest` scrub workflow on 2026-05-05. That run revealed (a) the working-tree-first sequencing requirement, (b) the rule-ordering rule for partial overlaps, (c) the case-sensitive `Hashgraph`/`hashgraph` trap, (d) the bash 3.2 empty-array bug in the script (now patched), and (e) the importance of the `--force-with-lease=branch:sha` pin for safety. Each of those became a step in this skill. <!-- pii-allow:meta -->
 
 ---
 
