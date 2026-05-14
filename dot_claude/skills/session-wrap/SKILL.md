@@ -40,6 +40,18 @@ The user runs `/session-wrap` (Claude can invoke the skill via the `Skill` tool)
 
 Even when a proactive trigger fires, Claude SUGGESTS the wrap and asks for confirmation; it does not silently invoke the skill. The user remains in control of when wraps happen — proactive suggestion is a recommendation, not an action.
 
+## Target Repo Awareness
+
+At skill entry, invoke `~/.claude/scripts/target-repo-check.sh --get`. If it returns a non-empty path, target-repo mode is active. Route project-side wrap artifacts accordingly:
+
+- `PENDING_TASKS.md` (the in-session task-list dump) goes to `<target>/PENDING_TASKS.md`, NOT cwd's. The target repo is the natural home for "what's next on this project."
+- `CHANGELOG.md` updates (if the wrap touches release notes) go to `<target>/CHANGELOG.md`.
+- Friction-log entries dual-write to `~/.claude/friction-log.md` as usual, but each entry annotates with `(target: <basename>)` for retrievability. Example: `[Friction] (target: foo-service) <description>`.
+- Persistent-memory captures (Open Brain + engram) similarly annotate with `(target: <name>)` so future search can filter by what you were actually working on.
+- Memory file (`~/.claude/projects/<encoded-cwd>/.../memory/MEMORY.md`) updates STAY anchored to cwd - meta-stack learnings accrue there regardless of target.
+
+When `--get` returns empty, behave as today (cwd-scoped).
+
 ## Process
 
 ### Step 1: What Was Accomplished

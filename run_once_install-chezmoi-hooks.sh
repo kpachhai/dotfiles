@@ -19,10 +19,24 @@ mkdir -p "${HOOKS_DIR}"
 # ---------- pre-commit ----------
 cat > "${HOOKS_DIR}/pre-commit" << 'EOF'
 #!/bin/sh
-# Abort commit if chezmoi sees source/live divergence on a file this commit
-# touches. Forces the user to explicitly resolve (apply or re-add) so the
-# pre-push re-add cannot silently revert source changes.
+# Two-layer protection:
+# 1. PII scan on staged content (unconditional - applies to any commit).
+# 2. chezmoi source/live divergence check (only when commit touches managed paths).
 
+# --- Layer 1: PII scan ---
+if [ -x "$HOME/.claude/scripts/pii-scan.sh" ]; then
+  if ! "$HOME/.claude/scripts/pii-scan.sh" --staged; then
+    cat >&2 <<PIIMSG
+
+ABORT: PII patterns matched in staged content (see findings above).
+Fix the content (preferred) or document a false-positive exception before
+proceeding. To bypass once (rarely correct), use: git commit --no-verify
+PIIMSG
+    exit 1
+  fi
+fi
+
+# --- Layer 2: chezmoi divergence ---
 # Only check if the commit touches chezmoi-managed paths.
 STAGED=$(git diff --cached --name-only | grep -E '^(dot_|private_|empty_|exact_|executable_|symlink_|run_once_)' || true)
 if [ -z "$STAGED" ]; then

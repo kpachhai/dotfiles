@@ -1,0 +1,116 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(cargo:*)",
+      "Bash(go:*)",
+      "Bash(forge:*)",
+      "Bash(cast:*)",
+      "Bash(anvil:*)",
+      "Bash(docker:*)",
+      "Bash(kubectl:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(which:*)",
+      "Bash(echo:*)",
+      "Bash(curl:*)",
+      "Bash(jq:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(diff:*)",
+      "Bash(source:*)",
+      "Bash(chezmoi:*)",
+      "Bash(chezmoi diff)",
+      "Bash(chezmoi diff:*)",
+      "Bash(chezmoi status)",
+      "Bash(chezmoi status:*)",
+      "Bash(chezmoi managed)",
+      "Bash(chezmoi managed:*)",
+      "Bash(claude mcp list)",
+      "Bash(claude mcp list:*)",
+      "mcp__claude-in-chrome__find",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__claude-in-chrome__read_console_messages",
+      "mcp__claude-in-chrome__get_page_text",
+      "mcp__claude-in-chrome__read_page",
+      "mcp__claude-in-chrome__read_network_requests",
+      "mcp__open-brain__search_thoughts",
+      "mcp__open-brain__list_thoughts",
+      "mcp__open-brain__thought_stats",
+      "mcp__engram__search_thoughts",
+      "mcp__engram__capture_thought",
+      "mcp__engram__list_thoughts",
+      "mcp__engram__thought_stats",
+      "mcp__engram__fetch",
+      "mcp__engram__summarize_thought",
+      "mcp__engram__synthesize_thoughts",
+      "mcp__claude_ai_Hedera_Docs__search_hedera",
+      "mcp__claude_ai_Hedera_Docs__query_docs_filesystem_hedera",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.hedera.com)",
+      "WebFetch(domain:hedera.com)",
+      "WebFetch(domain:npmjs.com)",
+      "WebFetch(domain:docs.soliditylang.org)",
+      "WebFetch(domain:docs.openzeppelin.com)",
+      "WebFetch(domain:book.getfoundry.sh)",
+      "WebFetch(domain:developer.mozilla.org)",
+      "WebFetch(domain:stackoverflow.com)",
+      "WebFetch(domain:docs.rs)",
+      "WebFetch(domain:pkg.go.dev)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf /*)"
+    ]
+  },
+  "model": {{ if eq .machine_type "personal" }}"opus[1m]"{{ else }}"claude-opus-4-7"{{ end }},
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/scripts/target-repo-check.sh --banner 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude has finished the task\" with title \"Claude Code\" sound name \"Glass\"'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git log -1 --pretty=%B 2>/dev/null | grep -qE 'Co-Authored-By: Claude|Generated with .?Claude Code|Generated with .?\\[Claude' && echo 'WARN: Last commit contains Claude attribution. Amend with: git commit --amend --no-edit and remove the offending lines.' >&2 || true"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -42,6 +42,18 @@ This skill is opt-in. Never run it without the user signaling they want a briefi
 - **debug** - Dispatch this when a task hits a bug during implementation.
 - **Project-specific skills** - The orchestrator can invoke any skill in the target repo's `skills/` directory.
 
+## Target Repo Awareness
+
+At skill entry, invoke `~/.claude/scripts/target-repo-check.sh --get`. If it returns a non-empty path, target-repo mode is active and this session's operational target is that path - NOT cwd.
+
+When target mode is active, scope the briefing and dispatch to `<target>`:
+- Read project context (CLAUDE.md, milestones, git history) from `<target>`, not cwd.
+- Briefing references `<target>`'s repo state, branch, recent commits.
+- Agent dispatch operates on `<target>`'s files via absolute paths and `git -C "<target>"`.
+- Memory (the cwd-anchored MEMORY.md) still loads from cwd - meta-stack learnings accrue there as usual.
+
+When `--get` returns empty, behave as today (cwd-scoped).
+
 ## Session Flow
 
 ### Phase 1: Read Context

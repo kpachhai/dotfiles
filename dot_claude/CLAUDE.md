@@ -67,6 +67,32 @@ The `superpowers:using-superpowers` skill is loaded every session and says "if t
 - **Steer `/compact`.** Pass a focus instruction: `/compact focus on the auth refactor, drop the test debugging`. Auto-compact during long sessions often drops context that becomes relevant for the next prompt; proactive steered compaction beats waiting.
 - **Wrap-and-clear at logical boundaries.** Claude proactively suggests `/session-wrap` at three trigger points: (a) a substantive commit-and-push checkpoint (a feat / refactor / new-tests / new-docs commit landing on a remote branch — NOT a chore/style/typo micro-fix), (b) a `[Resolution]` event that closes the loop on a previously-logged `[Friction]`, (c) end of session. Plus a fallback at ~70% context fill when no natural checkpoint has hit. After the wrap completes, Claude proposes `/clear` so the next work chunk starts with a fresh context window — the wrap has captured what mattered to memory (Open Brain + friction-log + CHANGELOG + a project-side `PENDING_TASKS.md` dumped from the in-session task list, which is otherwise wiped by `/clear`); raw conversation history was paying token-tax for context that's now persisted. Mid-session wraps use the lighter `--checkpoint` mode (Steps 1 + 2 + Friction Enumeration + Persist + Persist-Pending-Tasks); end-of-session uses full retrospective. Aim for 3-5 wraps per long working session - dense enough to catch learnings, not so dense that wrap overhead dominates. `/clear` is a CLI-side command only the user can execute; Claude can invoke the wrap skill via the `Skill` tool but cannot trigger `/clear` itself.
 
+## Target Repo Mode
+
+You can run a Claude session in one repo (typically `idea-forge` for the meta stack - skills, memory, CLAUDE.md, agent roster) and operate on a DIFFERENT repo via a persistent target binding. This decouples "where my skills + memory live" from "what code I'm changing right now."
+
+**Binding is keyed by Claude session UUID** (derived from the most-recently-modified `.jsonl` in `~/.claude/projects/<encoded-cwd>/`). One binding per session. The binding survives `/clear`, quit-and-resume in the same OR a different terminal, and works correctly with multiple concurrent sessions in the same project.
+
+**Automatic announcement:** A SessionStart hook in `~/.claude/settings.local.json` runs `~/.claude/scripts/target-repo-check.sh --banner` at session start. If a binding exists for the current UUID, the banner appears as a system reminder before any other interaction - no need to read this file or remember to check.
+
+**Operational contract when target mode is active** (banner has appeared):
+- File edits use absolute paths under `<target>`. Never cwd-relative.
+- Bash commands either use absolute paths inside the command OR prefix with `cd "<target>" && <command>` for tools that require a specific cwd (npm scripts, build tools that read `package.json` from cwd). Prefer absolute paths per the Bash discipline elsewhere in this file.
+- Git operations use `git -C "<target>" <subcommand>` so they target the right repo without changing cwd.
+- Memory (`~/.claude/projects/<encoded-cwd>/.../memory/MEMORY.md`) continues to load from cwd - learnings about role + working patterns accrue to the cwd-anchored memory regardless of which target you happen to be operating on today. This is the whole point: skills + memory stay anchored to the meta stack, files + git + builds flow to the target.
+- Friction-log entries and persistent-memory captures add `(target: <repo-name>)` to the body for retrievability. Example: `[Friction] (target: foo-service) <description>`. Capture mechanics otherwise unchanged.
+- If `<target>/CLAUDE.md` exists, read it and layer it on top of this global CLAUDE.md - target's CLAUDE.md governs project specifics, this one governs meta. Conflicts: target wins for code in that target.
+- PII discipline from cwd's CLAUDE.md still applies. If cwd is a publishable repo (`dotfiles`, `idea-forge`, `engram`), its PII rules apply to edits anywhere, including the target.
+
+**Set / show / clear** via the `target-repo` skill (delegates to `~/.claude/scripts/target-repo-check.sh`):
+- `/target-repo <PATH>` - set target for current session
+- `/target-repo` - show current target
+- `/target-repo --clear` - clear binding for current session
+
+**Cross-session coverage:** `/clear`, quit + resume same terminal, quit + resume different terminal, and multiple concurrent sessions in the same project all auto-restore correctly because each Claude session has its own UUID and its own binding file at `~/.claude/target-repo/<uuid>.md`. Bindings are machine-local (`.claude/target-repo/` is `.chezmoiignore`'d) - what you're working on is per-machine, not synced.
+
+When no binding exists for the current UUID, the hook outputs nothing - operate on cwd as today.
+
 ## YouTube URLs
 
 When a YouTube URL appears, **do not attempt to fetch the transcript yourself** - WebFetch returns rendered HTML not captions, the YouTube transcript scraping ecosystem is unreliable, and I will paste the transcript manually when I want one processed. If I share a URL without a transcript, ask whether I want to paste one or proceed without.
@@ -130,7 +156,7 @@ When working in any personal repo intended to be public — currently `dotfiles`
 
 - Real personal names in prose, comments, or examples (project-attribution metadata fields like `package.json` `"author"` are the only exception)
 - Personal or work email addresses anywhere in committed file content
-- Employer or company brand names (e.g. `Hashgraph`). Open-source protocol / algorithm / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them.
+- Employer or company brand names (e.g. `Hashgraph`). Open-source protocol / algorithm / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them. <!-- pii-allow:meta -->
 - GPG signing keys, API keys, access tokens, MCP URLs with embedded secrets — these belong in `~/.config/devkit/{identity,references}.json` (machine-local, gitignored), not in committed source
 - Hardcoded `/Users/<name>/` paths — use `$HOME` in shell scripts, or chezmoi template variables in `.tmpl` files
 - Direct paths into companion repos that name the maintainer's GitHub username (`~/repos/github.com/<your-username>/<repo>/...`)
@@ -156,7 +182,7 @@ Before writing or editing ANY file in a publishable repo (`dotfiles`, `idea-forg
 2. **Scan candidate content for PII BEFORE staging:**
    - Real personal names in prose, comments, or examples? (Project-attribution metadata fields like `package.json` `"author"` or `pyproject.toml` `authors` are the only exception.)
    - Personal or work email addresses anywhere in committed content?
-   - Employer or company brand names (e.g. `Hashgraph`)? Open-source protocol / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them.
+   - Employer or company brand names (e.g. `Hashgraph`)? Open-source protocol / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them. <!-- pii-allow:meta -->
    - Hardcoded `/Users/<name>/` paths instead of `$HOME` / `~/` / chezmoi template variables?
    - Direct paths bearing the maintainer's GitHub username (`~/repos/github.com/<your-username>/<repo>/...`)?
    - GPG fingerprints, API keys, access tokens, MCP URLs with embedded secrets? These belong in `~/.config/devkit/{identity,references}.json` (gitignored), never in committed source.
@@ -166,7 +192,7 @@ Before writing or editing ANY file in a publishable repo (`dotfiles`, `idea-forg
 
 ## Dotfiles Discipline (Generic vs Local)
 
-When making any change to my dotfiles repo (`~/repos/github.com/kpachhai/dotfiles`), always consider environment portability before committing. I run dotfiles across multiple machines (personal, work, potentially others) with different available repos, services, secrets, and constraints. Apply this split:
+When making any change to my dotfiles repo (`~/repos/github.com/<your-username>/dotfiles`), always consider environment portability before committing. I run dotfiles across multiple machines (personal, work, potentially others) with different available repos, services, secrets, and constraints. Apply this split:
 
 - **Committed file** (`<name>.json`, `<name>.txt`, etc.): the generic / public / cross-machine default that works everywhere.
 - **Local file** (`<name>.local.json`, `<name>.local.txt`, etc.): machine-specific additions - private repo paths, work-only services, client identifiers, secrets. Gitignored via `*.local.*` rules.
@@ -204,7 +230,7 @@ Available across all projects via `~/.claude/skills/`:
 - `evaluate-ai-tool` - Structured rubric for evaluating new AI tools (MCP servers, agent frameworks, models, platforms) against six dimensions: infrastructure fit, layering/pluggability, semantic surface, configurability, scale economics, lock-in. Use for personal adoption decisions, internal tooling choices, or client/enterprise recommendations. Prevents shallow "this looks cool" decisions.
 - `learn-and-improve` - Project-scope version: ingest external articles/URLs/videos with improvement intent, extract patterns, audit current project, produce versioned recommendations doc at `<project>/.claude/audits/<slug>-learn-improve-v<N>.md`. Use in any project. For meta-stack improvements (dotfiles + project workspace + persistent-memory repo + cross-project workflow), use the corresponding local `learn-and-improve` skill in your meta-stack repo (if you maintain one).
 - `ship` - Active completion workflow. Detects project type, runs tests with stderr discipline, optionally `/simplify`s, drafts a scope-honest commit message and PR. Counterpart to `verify-before-done` (passive checklist) - this one executes. Never commits/pushes; always hands off draft to user.
-- `scrub-repo` - Guided workflow for removing PII (employer brands, real names, emails, hardcoded paths, leaked secrets) from a git repo's working tree AND its full history. Wraps `~/.claude/scripts/scrub-pii-history.sh` + the `.scrub/` toolkit. Orchestrates discovery -> working-tree fix -> commit -> dry-run -> confirm -> re-add origin -> force-push -> multi-machine sync. Codifies the gotchas (working-tree-first sequencing, longer-rule-first ordering, case-sensitive `Hashgraph`/`hashgraph` trap, bash 3.2 empty-array bug). Force-push gated on explicit user authorization. Use when preparing a private repo for first public release, or when PII leaked into an old commit.
+- `scrub-repo` - Guided workflow for removing PII (employer brands, real names, emails, hardcoded paths, leaked secrets) from a git repo's working tree AND its full history. Wraps `~/.claude/scripts/scrub-pii-history.sh` + the `.scrub/` toolkit. Orchestrates discovery -> working-tree fix -> commit -> dry-run -> confirm -> re-add origin -> force-push -> multi-machine sync. Codifies the gotchas (working-tree-first sequencing, longer-rule-first ordering, case-sensitive `Hashgraph`/`hashgraph` trap, bash 3.2 empty-array bug). Force-push gated on explicit user authorization. Use when preparing a private repo for first public release, or when PII leaked into an old commit. <!-- pii-allow:meta -->
 - `review-pr` - PR review with structured checklist
 - `debug` - Systematic debugging workflow
 - `quick-research` - Quick research briefs

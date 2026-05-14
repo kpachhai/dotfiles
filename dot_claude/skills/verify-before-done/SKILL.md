@@ -30,6 +30,17 @@ Activate when:
 - Pure exploration or research tasks (nothing to verify)
 - Tasks where the user has explicitly said "just do a quick pass, don't verify"
 
+## Target Repo Awareness
+
+At skill entry, invoke `~/.claude/scripts/target-repo-check.sh --get`. If it returns a non-empty path, target-repo mode is active. ALL verification commands (tests, builds, lint, type-check, smoke tests) run against `<target>`, NOT cwd:
+
+- Use `cd "<target>" && <command>` or absolute paths for tooling that reads `package.json`/`pyproject.toml`/etc. from cwd.
+- For git operations in verification (e.g., `git status` to confirm scope), use `git -C "<target>" ...`.
+- Spec audit (Section 6 of this checklist when present) reads spec docs from `<target>`'s `docs/`, not cwd's.
+- The "list what was NOT verified" line still applies, scoped to target.
+
+When `--get` returns empty, verify against cwd as today.
+
 ## The Verification Checklist
 
 Output a checklist with these items. Each item must be either `VERIFIED: <how>`, `SKIPPED: <why>`, or `BLOCKED: <reason>`. Empty checkmarks are not allowed - every item gets a real disposition.

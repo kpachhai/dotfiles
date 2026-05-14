@@ -2,6 +2,7 @@ README.md
 LICENSE
 setup.sh
 .claude/settings.json
+.claude/target-repo/
 iterm2/
 
 # Public-template artifacts that live only in the repo, not in $HOME

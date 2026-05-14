@@ -263,10 +263,12 @@ To change the machine type later, edit `~/.config/chezmoi/chezmoi.toml` and re-r
 - `~/.config/devkit/identity.json` - your identity (lives outside any repo)
 - `~/.config/devkit/references.json` - external system URLs/secrets (lives outside any repo)
 - `~/.config/chezmoi/chezmoi.toml` - machine type
-- `~/.claude/settings.local.json` - per-machine Claude permissions
 - `~/.claude/scopes/<name>.local.txt` - private repo paths for cross-project audit skills
 - `~/.claude/projects/` - auto-memory (machine-specific paths)
+- `~/.claude/target-repo/` - cross-repo working-mode bindings (UUID-keyed, per-session)
 - `~/.zim/` - Zim modules (installed per-machine)
+
+**Cross-machine Claude config:** `~/.claude/settings.local.json` is now chezmoi-managed (sourced from `dot_claude/settings.local.json`). Permissions, hooks, model defaults, etc. flow across personal + work machines. Work-machine-specific things (MCPs only on personal, paths with personal username) are deliberately excluded from the baseline. A pre-commit PII scan protects against accidental PII propagation when Claude Code adds permissions interactively.
 
 ## Personal Skills That Couple to Other Repos
 
