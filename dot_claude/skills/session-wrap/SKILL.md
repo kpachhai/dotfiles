@@ -138,7 +138,13 @@ If no frictions were noticed this session, state that explicitly. The absence is
 
 ### Step 5.5: Persist to Open Brain (Optional)
 
-If the `capture_thought` MCP tool is available (Open Brain is connected):
+**Precondition — verify all registered persistent-memory MCPs are connected.** Tool-list visibility in this session is NOT authoritative: a registered MCP that failed to connect at session-start has no tools in the deferred-tool list, which silently looks identical to "not registered" and would degrade this step to single-write. Instead:
+
+1. Run `claude mcp list 2>&1 | grep -E "engram|open-brain"` (or read `~/.claude.json` `mcpServers` keys for the registered set).
+2. Every registered persistent-memory MCP must show `✓ Connected`. If any shows `Failed to connect` or is missing, surface the gap to the user explicitly: name the offending MCP and ask whether to (a) single-write-and-log-gap (capture to the available MCP only, note the missing writer in the wrap output), or (b) fix-and-retry (resolve the connection issue first — note that MCP set is frozen at session-start, so most fixes require a full Claude Code restart to take effect).
+3. Do NOT silently degrade to fewer writers — that's the failure mode this check exists to prevent. See CLAUDE.md "Multiple Persistent-Memory MCPs" for the multi-write contract.
+
+If all registered persistent-memory MCPs are connected (or the user opted single-write-and-log-gap), and the `capture_thought` MCP tool is available (Open Brain is connected):
 
 1. **Capture the session summary** as a single thought. Format the content as:
    ```
