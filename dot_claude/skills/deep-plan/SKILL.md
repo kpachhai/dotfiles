@@ -33,6 +33,18 @@ Activate when any of these apply:
 
 If unsure, default to using the skill - the cost of an over-engineered plan is small; the cost of a wrong implementation on multi-file work is large.
 
+## When To Dispatch Sub-Agents vs Read Files Directly
+
+Default: dispatch sub-agents (parallel, isolated context, summary-back). Sub-agent dispatch is the right move for breadth/retrieval - "what files exist, what conventions apply, what risks lurk."
+
+Exception (read files directly in main agent): apply when ALL of the following are true:
+
+- The task's load-bearing reasoning depends on relationships BETWEEN files - invariants preserved across modules, contracts honored across layers, a state machine split across handlers, a type guarantee threaded through several call sites.
+- A summary would collapse the pair-wise relationships into noun-phrases. ("File A defines X; file B uses X" is the kind of summary that loses HOW the use preserves the invariant.)
+- Main agent has the context budget to hold the relevant files.
+
+In that case, the main agent reads the files directly so cross-file co-attention is possible. Sub-agent dispatch is for breadth/retrieval; direct read is for depth/cross-file reasoning. They are complementary, not competing - a deep plan may dispatch sub-agents for breadth in Step 2 AND read a small set of files directly when Step 3 synthesis needs to reason about how they fit together.
+
 ## Workflow
 
 ### Step 1: Verifiable Goal
