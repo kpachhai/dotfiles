@@ -189,11 +189,46 @@ The plan is delivered inline in the conversation. It is the work product, not a 
 - Every Risk and Edge Case appears in either the Plan section (as a step that handles it) or Open Questions (deferred with reason); never silently dropped
 - Every Plan step has an inline verifier (`-> verify: <how>`)
 
+## Optional Mode: Throw-Away First Draft
+
+When the mental model for a task is genuinely uncertain - greenfield design, complex business logic with multiple defensible approaches, refactors where the optimal target shape isn't yet clear - the main Workflow's plan + execute loop can land an implementation that encodes the wrong design instinct. Throw-Away First Draft is the bias-discovery counter-move: implement a deliberately disposable first draft, compare against your mental model to surface where the agent's defaults diverge from your judgment, then iterate with sharpened prompts.
+
+### When to use throw-away mode
+
+- Greenfield design where the user's mental model isn't yet sharp
+- Complex business logic with multiple defensible approaches
+- Refactors where the target shape is uncertain (e.g. extracting an abstraction whose shape depends on use cases not yet enumerated)
+- Architectural decisions where a reconnaissance implementation reveals constraints faster than analysis alone
+
+### When NOT to use throw-away mode
+
+- Small well-specified tasks (overhead exceeds value)
+- Bug fixes with clear root cause - you don't need reconnaissance, you need the fix
+- Mechanical refactors (rename, format, lift function) where the target is unambiguous
+- Tight time budget - throw-away mode at minimum doubles implementation effort
+
+### Throw-away workflow
+
+1. **Clarify** (main Workflow Step 1): Restate the task as a verifiable goal; resolve ambiguity before dispatching anything.
+2. **Plan** (main Workflow Steps 2-5): Run the full multi-sub-agent plan including critique pass.
+3. **Throw-away implementation:** Create an experimental branch named `throwaway/<feature-or-task>`. Direct the agent to implement the plan end-to-end on that branch. Deliberately disposable - no test polish, no documentation, no commit-message care.
+4. **Mental-model diff:** Compare the implementation against the user's mental model. Surface concrete divergences: "I expected X to be a class; the agent made it a module-level function. I expected errors to propagate; the agent swallows them and returns None." Each divergence is a bias-discovery datum.
+5. **Plan refinement:** Incorporate the divergence findings into sharpened prompts. Re-run the plan with the new constraints baked in ("X must be a class because <reason>; errors must propagate because <reason>").
+6. **Final implementation:** Discard the throw-away branch (or keep as reference only). Execute the refined plan on a clean branch via the standard `superpowers:executing-plans` flow.
+
+### Discipline
+
+- **Name the branch.** `throwaway/<feature>` is non-negotiable. A throw-away branch without the prefix risks accidental merge. Delete the branch after extracting findings.
+- **Don't sanitize the throw-away.** The goal is to see the agent's UNSUPERVISED defaults. Cleaning up midstream defeats the bias-discovery purpose.
+- **Extract divergences explicitly.** Don't just feel "something is off" - write out the specific decision points where the implementation diverged from your expectation. These become the constraints in the refined plan.
+- **One throw-away pass, not multiple.** If you find yourself running throw-away mode twice for the same task, the issue is your initial mental model is still unclear - return to clarification, not another throw-away.
+
 ## Cost & Trade-offs
 
 - **Cost:** 4 agent dispatches per plan (3 parallel + 1 sequential critique). Roughly 30-90 seconds total wall-clock depending on file-read scope.
 - **Justified for:** non-trivial work where shipping a wrong plan is expensive (multi-file refactors, architectural decisions, security-relevant changes, migrations).
 - **NOT justified for:** trivial tasks. Skip the skill entirely.
+- **Throw-away mode cost:** doubles total implementation effort (one disposable pass + one keeper). Justified only when the bias-discovery benefit outweighs the second-implementation cost - i.e. the "When to use throw-away mode" list above.
 
 ## Integration
 
