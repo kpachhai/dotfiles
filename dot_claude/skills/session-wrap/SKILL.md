@@ -1,6 +1,6 @@
 ---
 name: session-wrap
-description: Structured end-of-session protocol that captures what was accomplished, what was learned, what should change, and next actions. Triggers on wrap-up cues or explicit invocation. Produces a concise session summary for memory persistence.
+description: Use AT four proactive trigger points - (1) substantive commit-and-push checkpoint (feat/refactor/new-tests/new-docs landing on remote - NOT chore/style micro-fixes), (2) `[Resolution]` event closing a prior `[Friction]` row in the friction-log, (3) end of session, (4) ~60% context fill fallback when no natural checkpoint hit. Also triggered by "/handoff", "wrap this up", "let's checkpoint", "session wrap". Mid-session uses `--checkpoint` mode (lighter); end-of-session uses full retrospective. Persists to Open Brain + friction-log + CHANGELOG + project-side PENDING_TASKS.md. Pair with `/clear` after each wrap so the next chunk starts fresh.
 ---
 
 # Session Wrap-Up
@@ -24,7 +24,7 @@ Activate when the user signals session end:
 
 Claude proactively suggests `/session-wrap` at four logical boundaries:
 
-1. **Substantive commit-and-push checkpoint.** A feat / refactor / new-tests / new-docs commit lands on a remote branch. EXCLUDES chore/style/typo micro-fixes — those don't warrant a wrap. The wrap captures what shipped, what surprised us, what changed about the approach mid-implementation.
+1. **Substantive commit-and-push checkpoint.** A feat / refactor / new-tests / new-docs commit lands on a remote branch. EXCLUDES chore/style/typo micro-fixes - those don't warrant a wrap. The wrap captures what shipped, what surprised us, what changed about the approach mid-implementation.
 
 2. **`[Resolution]` event.** A skill change, config update, or doc fix that closes the loop on a previously-logged `[Friction]`. The resolution itself is a learning worth preserving; the wrap formalizes it before context drift erases the why.
 
@@ -38,7 +38,7 @@ The user runs `/session-wrap` (Claude can invoke the skill via the `Skill` tool)
 
 ### Do NOT Auto-Invoke The Skill
 
-Even when a proactive trigger fires, Claude SUGGESTS the wrap and asks for confirmation; it does not silently invoke the skill. The user remains in control of when wraps happen — proactive suggestion is a recommendation, not an action.
+Even when a proactive trigger fires, Claude SUGGESTS the wrap and asks for confirmation; it does not silently invoke the skill. The user remains in control of when wraps happen - proactive suggestion is a recommendation, not an action.
 
 ## Target Repo Awareness
 
@@ -138,11 +138,11 @@ If no frictions were noticed this session, state that explicitly. The absence is
 
 ### Step 5.5: Persist to Open Brain (Optional)
 
-**Precondition — verify all registered persistent-memory MCPs are connected.** Tool-list visibility in this session is NOT authoritative: a registered MCP that failed to connect at session-start has no tools in the deferred-tool list, which silently looks identical to "not registered" and would degrade this step to single-write. Instead:
+**Precondition - verify all registered persistent-memory MCPs are connected.** Tool-list visibility in this session is NOT authoritative: a registered MCP that failed to connect at session-start has no tools in the deferred-tool list, which silently looks identical to "not registered" and would degrade this step to single-write. Instead:
 
 1. Run `claude mcp list 2>&1 | grep -E "engram|open-brain"` (or read `~/.claude.json` `mcpServers` keys for the registered set).
-2. Every registered persistent-memory MCP must show `✓ Connected`. If any shows `Failed to connect` or is missing, surface the gap to the user explicitly: name the offending MCP and ask whether to (a) single-write-and-log-gap (capture to the available MCP only, note the missing writer in the wrap output), or (b) fix-and-retry (resolve the connection issue first — note that MCP set is frozen at session-start, so most fixes require a full Claude Code restart to take effect).
-3. Do NOT silently degrade to fewer writers — that's the failure mode this check exists to prevent. See CLAUDE.md "Multiple Persistent-Memory MCPs" for the multi-write contract.
+2. Every registered persistent-memory MCP must show `✓ Connected`. If any shows `Failed to connect` or is missing, surface the gap to the user explicitly: name the offending MCP and ask whether to (a) single-write-and-log-gap (capture to the available MCP only, note the missing writer in the wrap output), or (b) fix-and-retry (resolve the connection issue first - note that MCP set is frozen at session-start, so most fixes require a full Claude Code restart to take effect).
+3. Do NOT silently degrade to fewer writers - that's the failure mode this check exists to prevent. See CLAUDE.md "Multiple Persistent-Memory MCPs" for the multi-write contract.
 
 If all registered persistent-memory MCPs are connected (or the user opted single-write-and-log-gap), and the `capture_thought` MCP tool is available (Open Brain is connected):
 
@@ -171,7 +171,7 @@ If the `capture_thought` tool is NOT available, skip Step 5.5 silently. Do not w
 
 ### Step 5.6: Persist Pending Task List To Disk (Mandatory For Wrap-Then-Clear)
 
-The Claude Code harness `TaskCreate` / `TaskList` task list is session-scoped: `/clear` resets it. Files on disk survive `/clear`. If this wrap will be followed by `/clear` (checkpoint mode always; end-of-session if the user plans to resume in a fresh session), the pending task list MUST be persisted to a project-side breadcrumb file before clearing — otherwise the next session has no idea what's left to do.
+The Claude Code harness `TaskCreate` / `TaskList` task list is session-scoped: `/clear` resets it. Files on disk survive `/clear`. If this wrap will be followed by `/clear` (checkpoint mode always; end-of-session if the user plans to resume in a fresh session), the pending task list MUST be persisted to a project-side breadcrumb file before clearing - otherwise the next session has no idea what's left to do.
 
 Procedure:
 
@@ -210,12 +210,12 @@ When the wrap is mid-session (proactive trigger 1, 2, or 4 above), the natural f
 The flow:
 
 1. Claude detects a trigger (commit-and-push, `[Resolution]`, end-of-session signal, or ~70% context fill).
-2. Claude suggests: "good wrap point — run `/session-wrap` then we `/clear` and continue with [the named next step]?"
+2. Claude suggests: "good wrap point - run `/session-wrap` then we `/clear` and continue with [the named next step]?"
 3. User confirms; Claude invokes the skill via the `Skill` tool. Mid-session wraps use `--checkpoint` mode (lighter; deltas only).
-4. The skill runs Step 5.6 (Persist Pending Task List) — the in-session `TaskCreate` task list is dumped to a project-side `PENDING_TASKS.md` because the harness task list is session-scoped and `/clear` would otherwise lose it.
+4. The skill runs Step 5.6 (Persist Pending Task List) - the in-session `TaskCreate` task list is dumped to a project-side `PENDING_TASKS.md` because the harness task list is session-scoped and `/clear` would otherwise lose it.
 5. After wrap completes, Claude tells the user the natural next step ("OK to `/clear`; next iteration: [Step N] of [plan-file]").
 6. User runs `/clear` (CLI-side; Claude cannot trigger it).
-7. The user's next message rebuilds minimal context from the breadcrumbs the wrap left — CHANGELOG `[Unreleased]`, the persisted `PENDING_TASKS.md`, the relevant audit log, recent Open Brain captures, the implementation plan's "next step" pointer. DO NOT re-load the full prior conversation; that defeats the point.
+7. The user's next message rebuilds minimal context from the breadcrumbs the wrap left - CHANGELOG `[Unreleased]`, the persisted `PENDING_TASKS.md`, the relevant audit log, recent Open Brain captures, the implementation plan's "next step" pointer. DO NOT re-load the full prior conversation; that defeats the point.
 
 This pattern is what makes BYOC operationally cheap. Every wrap is a deposit into persistent memory; every `/clear` is the dividend - a fresh context window without losing the work product.
 

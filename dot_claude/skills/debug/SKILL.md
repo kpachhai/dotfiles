@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Systematic debugging workflow - reproduce, isolate, trace, root-cause, and suggest a fix. Usage - /debug <error-description-or-file>
+description: Use WHEN a bug or test failure doesn't have an obvious one-line fix - multi-file traces, unfamiliar error messages, behavior that "should work," failures that reappear after a fix. Triggers on "debug this", "why is X failing", "/debug", "what's actually going wrong". Runs reproduce → isolate → trace → root-cause → fix-suggestion. Skip for typos, missing imports, or any error with a one-line fix.
 user-invocable: true
 ---
 

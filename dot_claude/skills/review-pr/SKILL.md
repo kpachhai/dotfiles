@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Review a pull request - analyze changes, check for issues, and provide structured feedback. Usage - /review-pr <PR-number-or-URL>
+description: Use WHEN reviewing a pull request and the user wants a structured second opinion focused on correctness, security, maintainability - not an automated linter pass and not a full architectural review. Triggers on "review this PR", "/review-pr <num>", "check my changes", "look over this PR before I merge". Produces a structured findings doc (correctness / security / maintainability / questions). Skip when CodeRabbit has already run and the user wants a different perspective - invoke `coderabbit:code-review` instead for first-pass automated review.
 user-invocable: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: quick-research
-description: Quick research on a topic - gather facts, verify claims, produce a concise brief. Usage - /quick-research <topic>
+description: Use WHEN the user wants a fast, citation-light brief on a topic before deciding next steps - not deep multi-source research, not tool evaluation, not project-improvement learning. Triggers on "quick research on X", "what's the deal with Y", "give me a brief on Z", "/quick-research". Produces a 200-400 word brief with 3-5 verified facts and a confidence note. Skip for deep dives (use `researcher` sub-agent), tool adoption decisions (use `evaluate-ai-tool`), or external-resource-driven audits (use `learn-and-improve`).
 user-invocable: true
 ---
 
