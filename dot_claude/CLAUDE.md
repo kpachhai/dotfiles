@@ -156,7 +156,7 @@ Models are not expensive; my habits are. As Mythos / next-gen models enter highe
 
 When working in any personal repo intended to be public — currently `dotfiles`, `idea-forge`, `engram`, and any future fork-able artifact — treat these as PII and DO NOT introduce them in committed content:
 
-- Real personal names in prose, comments, or examples (project-attribution metadata fields like `package.json` `"author"` are the only exception)
+- Real personal names in prose, comments, or examples. The ONLY carve-out: project-package-manifest attribution fields (`package.json` `"author"`, `pyproject.toml` `authors`, `Cargo.toml` `authors`, `go.mod` `module`-author equivalents, etc.). This does NOT extend to `author:` fields in arbitrary document frontmatter — blog post YAML, presentation TOML, talk plan headers, etc. — those are content, not manifest metadata. Use `<Your Name>` placeholder in committed drafts; substitute at publish time in the destination CMS.
 - Personal or work email addresses anywhere in committed file content
 - Employer or company brand names (e.g. `Hashgraph`). Open-source protocol / algorithm / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them. <!-- pii-allow:meta -->
 - GPG signing keys, API keys, access tokens, MCP URLs with embedded secrets — these belong in `~/.config/devkit/{identity,references}.json` (machine-local, gitignored), not in committed source
@@ -182,7 +182,7 @@ Before writing or editing ANY file in a publishable repo (`dotfiles`, `idea-forg
 
 1. **Identify the repo.** If the file path is anywhere inside a publishable repo's working tree, this checklist fires. Default to "yes" if unsure.
 2. **Scan candidate content for PII BEFORE staging:**
-   - Real personal names in prose, comments, or examples? (Project-attribution metadata fields like `package.json` `"author"` or `pyproject.toml` `authors` are the only exception.)
+   - Real personal names in prose, comments, or examples? (ONLY carve-out: project-package-manifest attribution fields like `package.json` `"author"` or `pyproject.toml` `authors`. NOT `author:` in document frontmatter — blog post YAML, presentation TOML, talk plan headers — use `<Your Name>` placeholder; substitute at publish time in the destination CMS.)
    - Personal or work email addresses anywhere in committed content?
    - Employer or company brand names (e.g. `Hashgraph`)? Open-source protocol / spec names (e.g. `Hedera`, `HIP`, `HTS`, `Hiero`) are NOT PII — keep them. <!-- pii-allow:meta -->
    - Hardcoded `/Users/<name>/` paths instead of `$HOME` / `~/` / chezmoi template variables?
